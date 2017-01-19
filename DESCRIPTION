@@ -9,7 +9,7 @@ Authors@R: c(
   )
 URL: https://github.com/r-spatial/mapedit
 BugReports: https://github.com/r-spatial/mapedit/issues
-License: What license is it under?
+License: MIT + file LICENSE
 Depends:
     R (>= 3.1.0)
 Imports:
