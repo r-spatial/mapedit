@@ -93,3 +93,25 @@ view(l_in) %>%
 
 view(l_out) %>%
   addGeoJSON(drawn[[1]])
+
+
+# try with sf
+library(sf)
+library(purrr)
+
+map(drawn, function(feat) {
+  str(feat,max.level=1)
+  eval(
+    call(
+      paste0("st_",tolower(feat$geometry$type)),
+      list(
+        matrix(
+          unlist(feat$geometry$coordinates),
+          byrow=TRUE,
+          ncol=2
+        )
+      )
+    )
+  )
+})
+
