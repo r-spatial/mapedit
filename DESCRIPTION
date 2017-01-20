@@ -16,6 +16,7 @@ Imports:
     htmltools (>= 0.3),
     leaflet,
     leaflet.extras,
+    miniUI,
     shiny
 Suggests:
     mapview
