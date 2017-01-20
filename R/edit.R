@@ -16,7 +16,7 @@ edit_map <- function(x, ...) {
 }
 
 #' @export
-edit_map.leaflet <- function(x = NULL, targetLayer = NULL) {
+edit_map.leaflet <- function(x = NULL, targetLayerId = NULL) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
   stopifnot(
@@ -37,7 +37,7 @@ edit_map.leaflet <- function(x = NULL, targetLayer = NULL) {
     # add draw toolbar if not found
     x <- leaflet.extras::addDrawToolbar(
       x,
-      targetLayer = targetLayer,
+      targetGroup = targetLayerId,
       editOptions = leaflet.extras::editToolbarOptions()
     )
   }
