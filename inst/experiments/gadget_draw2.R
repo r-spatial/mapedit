@@ -115,3 +115,26 @@ map(drawn, function(feat) {
   )
 })
 
+
+
+# use example polygon from ?st_polygon
+#  I don't think Leaflet.Draw handles holes
+outer = matrix(c(0,0,10,0,10,10,0,10,0,0),ncol=2, byrow=TRUE)
+hole1 = matrix(c(1,1,1,2,2,2,2,1,1,1),ncol=2, byrow=TRUE)
+hole2 = matrix(c(5,5,5,6,6,6,6,5,5,5),ncol=2, byrow=TRUE)
+pts = list(outer, hole1, hole2)
+pl1 <- st_polygon(pts)
+# make it geojson so we can use with drawonme
+pl1_g <- geojsonio::geojson_json(pl1)
+lf_pg <- leaflet() %>%
+  addGeoJSONv2(pl1_g, layerId = "polygon") %>%
+  addTiles() %>%
+  addDrawToolbar(targetLayer="polygon", editOptions=editToolbarOptions())
+drawonme(lf_pg)
+
+# just for fun demo geojson to sf
+jsonlite::fromJSON(pl1_g,simplifyVector=FALSE)$coordinates %>%
+  lapply(
+    function(x) unlist(x) %>% matrix(byrow=TRUE, ncol=2)
+  ) %>%
+  st_polygon()
