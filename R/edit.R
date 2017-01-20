@@ -1,3 +1,15 @@
+#' Interactively Edit a Map
+#'
+#' @param x map to edit
+#'
+#' @param ... other arguments
+#'
+#' @examples
+#' library(leaflet)
+#' library(mapedit)
+#' edit_map(leaflet() %>% addTiles())
+#'
+#' @example inst/experiments/randgeo_edit.R
 #' @export
 edit_map <- function(x, ...) {
   UseMethod("edit_map")
@@ -31,7 +43,7 @@ edit_map.leaflet <- function(x = NULL, targetLayer = NULL) {
   }
 
   ui <- miniUI::miniPage(
-    miniUI::miniContentPanel(lf, height=NULL, width=NULL),
+    miniUI::miniContentPanel(x, height=NULL, width=NULL),
     miniUI::gadgetTitleBar("Edit Map", right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE))
   )
 
