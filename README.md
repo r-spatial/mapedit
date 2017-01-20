@@ -11,6 +11,25 @@ Interactive editing of spatial data in R | an [RConsortium](https://www.r-consor
 
 `mapedit` is in a very alpha state right now. We would very much appreciate feedback, ideas, and use cases. The API is very likely to change dramatically and rapidly over the next couple of months. We will use semantic versioning to track changes and progress.
 
+### Install
+
+As the CRAN badge above indicates, `mapedit` is a long way from CRAN. To install, please use `devtools`.
+
+    devtools::install_github("r-spatial/mapedit")
+
+### Examples
+
+    library(mapedit)
+    library(leaflet)
+    library(mapview)
+
+    edit_map(leaflet() %>% addTiles())
+
+    edit_map(
+      mapview(breweries91)@map,
+      targetLayerId = "breweries91"
+    )
+
 ### Code of Conduct
 
 Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
