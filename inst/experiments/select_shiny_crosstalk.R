@@ -5,10 +5,8 @@ library(sf)
 library(dplyr)
 
 library(leaflet)
-library(plotly)
 library(htmltools)
 library(crosstalk)
-library(shiny)
 
 usa <- map("state", fill = TRUE)
 IDs <- sapply(strsplit(usa$names, ":"), function(x) x[1])
@@ -73,25 +71,25 @@ $(document).on(
   )
 )
 
+library(shiny)
 # set this up in .GlobalEnv for now
 #   but would be better in a gadget
 selections <- data.frame(
   state = usa_sf$state,
   selected = FALSE
 )
-
 shinyApp(
   tgs,
   function(input, output){
-    # make sure we start with selected = FALSE
-    selections$selected <<- FALSE
-
     id = "undefined"
+    #if(!is.null(lf$elementId)) {
+    #  id <- lf$elementId
+    #}
     click_evt = paste0(id, "_shape_click")
 
     observeEvent(input[[click_evt]], {
       print(input[[click_evt]])
-      selections[which(selections$state==input[[click_evt]]$group),"selected"] <<- !selections[which(selections$state==input[[click_evt]]$group),"selected"]
+      selections[which(selections$state==input[[click_evt]]$group),"selected"] <<- c(selections, list(input[[click_evt]]))
     })
   }
 )
@@ -101,18 +99,10 @@ shinyApp(
 #   crosstalk and leaflet don't support addPolygons
 
 shinyApp(
-  fluidPage(
-    fluidRow(
-      column(6,leafletOutput("leafmap")),
-      column(6,plotlyOutput("plotly"))
-    )
-  ),
+  leafletOutput("leafmap"),
   function(input, output, session) {
     # use crosstalk SharedData with sf
     sd <- SharedData$new(usa_sf, key=~state, group="states")
-    output$plotly <- renderPlotly({
-      plot_ly(sd, x=~area, y=~state) %>% add_markers()
-    })
 
     output$leafmap <- renderLeaflet({
       leaflet(sd) %>%
@@ -147,11 +137,7 @@ function(el,x) {
       var loc = new_selection.indexOf(group);
       if(loc >= 0) {
         new_selection.splice(loc,1);
-        //if(new_selection.length === 0) {
-        //  ct_select.clear();
-        //} else {
-          ct_select.set(new_selection);
-        //}
+        ct_select.set(new_selection);
       } else {
         new_selection.push(group);
         ct_select.set(new_selection);
@@ -174,6 +160,10 @@ function(el,x) {
 }
 "
         )
+    })
+
+    observeEvent(input$leafmap_shape_click, {
+      print(sd$data(withSelection=TRUE))
     })
   }
 )
