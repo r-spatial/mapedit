@@ -1,0 +1,18 @@
+---
+title: "Interactivity in R Geospatial Workflows"
+author: "Tim Appelhans and Kenton Russell"
+date: "January 22, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The R ecosystem offers a powerful set of packages for geospatial analysis.  However, many geospatial workflows require interactivity for smooth uninterrupted completion.  With new tools, such as htmlwidgets, shiny, and crosstalk, we can now inject this useful interactivity without leaving the R environment.
+
+### Drawing, Editing, Deleting Features
+
+### Selecting Regions
+
+### Editing Attributes
