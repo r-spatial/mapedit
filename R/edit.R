@@ -71,7 +71,7 @@ edit_map.leaflet <- function(x = NULL, targetLayerId = NULL) {
       lapply(edited$features, function(x) {
         loc <- match(x$properties$`_leaflet_id`, ids)
         if(length(loc) > 0) {
-          drawn[loc] <<- list(x)
+          finished[loc] <<- list(x)
         }
       })
 
