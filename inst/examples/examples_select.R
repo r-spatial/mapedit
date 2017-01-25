@@ -28,6 +28,8 @@ local({
 library(albersusa)
 library(sf)
 library(leaflet)
+library(mapedit)
+
 spdf <- usa_composite() %>% st_as_sf()
 pal <- colorNumeric(
   palette = "Blues",
