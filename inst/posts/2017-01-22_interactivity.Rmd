@@ -9,10 +9,51 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-The R ecosystem offers a powerful set of packages for geospatial analysis.  However, many geospatial workflows require interactivity for smooth uninterrupted completion.  With new tools, such as htmlwidgets, shiny, and crosstalk, we can now inject this useful interactivity without leaving the R environment.
+The R ecosystem offers a powerful set of packages for geospatial analysis.  However, many geospatial workflows require interactivity for smooth uninterrupted completion.  With new tools, such as htmlwidgets, shiny, and crosstalk, we can now inject this useful interactivity without leaving the R environment.  In the first phase of the project, we have focused on experimenting and creating proof of concepts for the following three objectives:
 
-### Drawing, Editing, Deleting Features
+1. drawing, editing, and deleting features,
 
-### Selecting Regions
+2. selection and querying of features and map regions,
 
-### Editing Attributes
+3. editing attributes.
+
+## Install mapedit
+
+To run the code in the following discussion, please install with `devtools::install_github`.  Please be aware that the current functionality is strictly a proof of concept, and the API will change rapidly and dramatically.
+
+```
+devtools::install_github("r-spatial/mapedit")
+```
+
+## Drawing, Editing, Deleting Features
+
+We would like to set up an easy process for CRUD (create, read, update, and delete) of map features.  The function `edit_map` demonstrates a first step toward this goal.
+
+### Proof of Concept 1 | Draw on Blank Map
+
+To see how we might add some features, let's start with a blank map, and then feel free to draw, edit, and delete with the `Leaflet.Draw` toolbar on the map.
+
+```
+library(leaflet)
+library(mapedit)
+
+what_we_created <- leaflet() %>%
+  addTiles() %>%
+  edit_map()
+```
+
+`edit_map` returns a `list` with drawn, edited, deleted, and finished features as [`GeoJSON`](https://tools.ietf.org/html/rfc7946).  In this case, if we would like to see our finished creation we can focus on `what_we_created$finished`.  Since this is `GeoJSON`, the easiest way to see what we just created will be to use the `addGeoJSON` function from `leaflet`.  This works well with polylines, polygons, rectangles, and points, but circles will be treated as points without some additional code.
+
+```
+leaflet() %>%
+  addTiles() %>%
+  addGeoJSON(what_we_created$finished)
+```
+
+### Proof of Concept 2 | Edit and Delete Existing Features
+
+
+
+## Selecting Regions
+
+## Editing Attributes
