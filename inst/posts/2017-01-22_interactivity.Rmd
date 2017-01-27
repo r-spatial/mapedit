@@ -83,8 +83,13 @@ Now, we can quickly inspect our new borders and then send the coordinates to the
 ```
 leaflet() %>%
   addTiles() %>%
+  fitBounds(-120, 35, -104, 25) %>%
   addGeoJSON(new_borders$drawn)
 ```
+
+### Disclaimers
+
+If you played enough with the border example, you might notice a couple of glitches and missing functionality.  This is a good time for a reminder that this is alpha and intended as a proof of concept.  Please provide feedback, so that we can insure a quality final product.  In this case, the older version of `Leaflet.Draw` in RStudio Viewer has some bugs, so clicking an existing point creates a new one rather than allowing editing of that point.  Also, the returned `list` from `edit_map` has no knowledge of the provided features.
 
 ## Selecting Regions
 
