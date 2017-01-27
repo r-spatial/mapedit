@@ -67,15 +67,23 @@ border <- st_as_sfc(
 plot(border)
 ```
 
-Since we are Trump, we can do what we want, so let's edit the line to our liking.  We will use `mapview` for our interactive map since it by default gives us an OpenTopoMap layer and the `develop` branch includes simple features support.
+Since we are Trump, we can do what we want, so let's edit the line to our liking.  We will use `mapview` for our interactive map since it by default gives us an OpenTopoMap layer and the `develop` branch includes simple features support.  With our new border and fence, we will avoid the difficult mountains and get a little extra beachfront.
 
 ```
 # use develop branch of mapview with simple features support
 # devtools::install_github("environmentalinformatics-marburg/mapview@develop")
 library(mapview)
 
-mapview(border)@map %>%
+new_borders <- mapview(border)@map %>%
   edit_map("border")
+```
+
+Now, we can quickly inspect our new borders and then send the coordinates to the wall construction company.
+
+```
+leaflet() %>%
+  addTiles() %>%
+  addGeoJSON(new_borders$drawn)
 ```
 
 ## Selecting Regions
