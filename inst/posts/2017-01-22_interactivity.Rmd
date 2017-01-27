@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-The R ecosystem offers a powerful set of packages for geospatial analysis.  However, many geospatial workflows require interactivity for smooth uninterrupted completion.  With new tools, such as htmlwidgets, shiny, and crosstalk, we can now inject this useful interactivity without leaving the R environment.  In the first phase of the project, we have focused on experimenting and creating proof of concepts for the following three objectives:
+The R ecosystem offers a powerful set of packages for geospatial analysis.  However, many geospatial workflows require interactivity for smooth uninterrupted completion.  With new tools, such as htmlwidgets, shiny, and crosstalk, we can now inject this useful interactivity without leaving the R environment.  In the first phase of the [`mapedit`](https://github.com/r-spatial/mapedit) project, we have focused on experimenting and creating proof of concepts for the following three objectives:
 
 1. drawing, editing, and deleting features,
 
@@ -93,4 +93,139 @@ If you played enough with the border example, you might notice a couple of glitc
 
 ## Selecting Regions
 
+The newest version of `leaflet` provides [`crosstalk`](https://rstudio.github.io/crosstalk/) support, but support is currently limited to `addCircleMarkers`.  This functionality is enhanced by the `sf` use of list columns and integration with `dplyr` verbs.  Here is a quick example with the `breweries91` data from `mapview`.
+
+```
+library(crosstalk)
+library(mapview)
+library(sf)
+library(shiny)
+library(dplyr)
+
+# convert breweries91 from mapview into simple features
+#  and add a Century column that we will use for selection
+brew_sf <- st_as_sf(breweries91) %>%
+  mutate(century = floor(founded/100)*100) %>%
+  filter(!is.na(century)) %>%
+  mutate(id=1:n())
+
+pts <- SharedData$new(brew_sf, key = ~id, group = "grp1")
+
+ui <- fluidPage(
+  fluidRow(
+    column(4, filter_slider(id="filterselect", label="Century Founded", sharedData=pts, column=~century, step=50)),
+    column(6, leafletOutput("leaflet1"))
+  ),
+  h4("Selected points"),
+  verbatimTextOutput("selectedpoints")
+)
+
+server <- function(input, output, session) {
+  # unfortunatly create SharedData again for scope
+  pts <- SharedData$new(brew_sf, key = ~id, group = "grp1")
+  lf <- leaflet(pts) %>%
+    addTiles() %>%
+    addMarkers()
+  
+  not_rendered <- TRUE
+  # hack to only draw leaflet once
+  output$leaflet1 <- renderLeaflet({
+    if(req(not_rendered,cancelOutput=TRUE)) {
+      not_rendered <- FALSE
+      lf
+    }
+  })
+  
+  output$selectedpoints <- renderPrint({
+    df <- pts$data(withSelection = TRUE)
+    cat(nrow(df), "observation(s) selected\n\n")
+    str(dplyr::glimpse(df))
+  })
+}
+
+shinyApp(ui, server)
+```
+
+With `mapedit`, we would like to enhance the geospatial `crosstalk` integration to extend beyond `leaflet::addCircleMarkers`.  In addition, we would like to provide an interactive interface to the geometric operations of `sf`, such as `st_intersects()`, `st_difference()`, and `st_contains()`.
+
+### Proof of Concept 3
+
+As a select/query proof of concept, assume we want to interactively select some US states for additional analysis.  We will build off Bhaskar Karambelkar's leaflet projection  [example](https://bhaskarvk.github.io/leaflet/examples/proj4Leaflet.html) using Bob Rudis [`albersusa`](https://github.com/hrbrmstr/albersusa) package.
+
+```
+# use @bhaskarvk USA Albers with leaflet code
+#  https://bhaskarvk.github.io/leaflet/examples/proj4Leaflet.html
+#devtools::install_github("hrbrmstr/albersusa")
+library(albersusa)
+library(sf)
+library(leaflet)
+library(mapedit)
+
+spdf <- usa_composite() %>% st_as_sf()
+pal <- colorNumeric(
+  palette = "Blues",
+  domain = spdf$pop_2014
+)
+
+bounds <- c(-125, 24 ,-75, 45)
+
+(lf <- leaflet(
+  options=
+    leafletOptions(
+      worldCopyJump = FALSE,
+      crs=leafletCRS(
+        crsClass="L.Proj.CRS",
+        code='EPSG:2163',
+        proj4def='+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs',
+        resolutions = c(65536, 32768, 16384, 8192, 4096, 2048,1024, 512, 256, 128)
+      ))) %>%
+  fitBounds(bounds[1], bounds[2], bounds[3], bounds[4]) %>%
+  setMaxBounds(bounds[1], bounds[2], bounds[3], bounds[4]) %>%
+  addPolygons(
+    data=spdf, weight = 1, color = "#000000",
+    # adding group necessary for identification
+    group = ~iso_3166_2,
+    fillColor=~pal(pop_2014),
+    fillOpacity=0.7,
+    label=~stringr::str_c(name,' ', format(pop_2014, big.mark=",")),
+    labelOptions= labelOptions(direction = 'auto')#,
+    #highlightOptions = highlightOptions(
+    #  color='#00ff00', bringToFront = TRUE, sendToBack = TRUE)
+  )
+)
+
+
+# test out select_map with albers example
+select_map(
+  lf,
+  style_false = list(weight = 1),
+  style_true = list(weight = 4)
+)
+```
+
+The `select_map()` function will return a `data.frame` with an `id`/group column and a `selected` column.  `select_map()` will work with nearly all leaflet overlays and offers the ability to customize the styling of selected and unselected features.
+
+
 ## Editing Attributes
+
+A common task in geospatial analysis involves editing or adding feature attributes.  While much of this can be accomplished in the R console, an interactive UI on a reference map can often help perform this task.  Mapbox's [`geojson.io`](https://geojson.io) provides a good reference point for some of the features we would like to provide in `mapedit`.
+
+### Proof of Concept 4
+
+As a proof of concept, we made a Shiny app that thinly wraps a slightly modified [`geojson.io`](https://github.com/timelyportfolio/geojson.io/tree/shiny).  Currently, we will have to pretend that there is a mechanism to load R feature data onto the map, since this functionality does not yet exist.
+
+
+```
+library(shiny)
+edited_features <- runGitHub(
+  "geojson.io", "timelyportfolio", ref="shiny"
+)
+```
+
+
+## Conclusion
+
+`mapedit` hopes to add useful interactivity to your geospatial workflows by leveraging powerful new functionality in R with the interactivity of HTML, JavaScript, and CSS.  `mapedit` will be better with your feedback, requests, bug reports, use cases, and participation.  We will report on progress periodically with blog posts on this site, and we will develop openly on the `mapedit` Github [repo](https://github.com/r-spatial/mapedit).
+
+
+## Citations???
