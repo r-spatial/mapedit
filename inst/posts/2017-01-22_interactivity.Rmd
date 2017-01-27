@@ -1,7 +1,7 @@
 ---
 title: "Interactivity in R Geospatial Workflows"
 author: "Tim Appelhans and Kenton Russell"
-date: "January 22, 2017"
+date: "January 27, 2017"
 output: html_document
 ---
 
@@ -13,7 +13,7 @@ The R ecosystem offers a powerful set of packages for geospatial analysis.  Howe
 
 1. drawing, editing, and deleting features,
 
-2. selection and querying of features and map regions,
+2. selecting and querying of features and map regions,
 
 3. editing attributes.
 
@@ -52,7 +52,31 @@ leaflet() %>%
 
 ### Proof of Concept 2 | Edit and Delete Existing Features
 
+As an extension of the first proof of concept, we might like to edit and/or delete existing features.  Let's play Donald Trump for this exercise and use the border between Mexico and the United States for California and Arizona.  For the sake of the example, let's use a simplified polyline as our border.  As we have promised we want to build a wall, but if we could just move the border a little in some places, we might be able to ease construction.
 
+```
+library(sf)
+
+# simplified border for purpose of exercise
+border <- st_as_sfc(
+"LINESTRING(-109.050197582692 31.3535554844322, -109.050197582692 31.3535554844322, -111.071681957692 31.3723176640684, -111.071681957692 31.3723176640684, -114.807033520192 32.509681296831, -114.807033520192 32.509681296831, -114.741115551442 32.750242384668, -114.741115551442 32.750242384668, -117.158107738942 32.5652527715121, -117.158107738942 32.5652527715121)"
+) %>%
+  st_set_crs(4326)
+
+# plot quickly for visual inspection
+plot(border)
+```
+
+Since we are Trump, we can do what we want, so let's edit the line to our liking.  We will use `mapview` for our interactive map since it by default gives us an OpenTopoMap layer and the `develop` branch includes simple features support.
+
+```
+# use develop branch of mapview with simple features support
+# devtools::install_github("environmentalinformatics-marburg/mapview@develop")
+library(mapview)
+
+mapview(border)@map %>%
+  edit_map("border")
+```
 
 ## Selecting Regions
 
