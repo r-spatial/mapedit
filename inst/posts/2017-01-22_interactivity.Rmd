@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-The R ecosystem offers a powerful set of packages for geospatial analysis.  However, many geospatial workflows require interactivity for smooth uninterrupted completion.  With new tools, such as htmlwidgets, shiny, and crosstalk, we can now inject this useful interactivity without leaving the R environment.  In the first phase of the [`mapedit`](https://github.com/r-spatial/mapedit) project, we have focused on experimenting and creating proof of concepts for the following three objectives:
+The R ecosystem offers a powerful set of packages for geospatial analysis.  For a comprehensive list see the [CRAN Task View: Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html). Yet, many geospatial workflows require interactivity for smooth uninterrupted completion.  With new tools, such as htmlwidgets, shiny, and crosstalk, we can now inject this useful interactivity without leaving the R environment.  In the first phase of the [`mapedit`](https://github.com/r-spatial/mapedit) project, we have focused on experimenting and creating proof of concepts for the following three objectives:
 
 1. drawing, editing, and deleting features,
 
@@ -31,7 +31,7 @@ We would like to set up an easy process for CRUD (create, read, update, and dele
 
 ### Proof of Concept 1 | Draw on Blank Map
 
-To see how we might add some features, let's start with a blank map, and then feel free to draw, edit, and delete with the `Leaflet.Draw` toolbar on the map.
+To see how we might add some features, let's start with a blank map, and then feel free to draw, edit, and delete with the `Leaflet.Draw` toolbar on the map. Once finished drawing simply press "Done".
 
 ```
 library(leaflet)
@@ -42,7 +42,7 @@ what_we_created <- leaflet() %>%
   edit_map()
 ```
 
-`edit_map` returns a `list` with drawn, edited, deleted, and finished features as [`GeoJSON`](https://tools.ietf.org/html/rfc7946).  In this case, if we would like to see our finished creation we can focus on `what_we_created$finished`.  Since this is `GeoJSON`, the easiest way to see what we just created will be to use the `addGeoJSON` function from `leaflet`.  This works well with polylines, polygons, rectangles, and points, but circles will be treated as points without some additional code.
+`edit_map` returns a `list` with drawn, edited, deleted, and finished features as [`GeoJSON`](https://tools.ietf.org/html/rfc7946).  In this case, if we would like to see our finished creation we can focus on `what_we_created$finished`.  Since this is `GeoJSON`, the easiest way to see what we just created will be to use the `addGeoJSON` function from `leaflet`.  This works well with polylines, polygons, rectangles, and points, but circles will be treated as points without some additional code. In future versions of the API it is likely that `mapedit` will return [simple features gemometries](https://github.com/edzer/sfr) rather than geojson by default.
 
 ```
 leaflet() %>%
@@ -67,7 +67,7 @@ border <- st_as_sfc(
 plot(border)
 ```
 
-Since we are Trump, we can do what we want, so let's edit the line to our liking.  We will use `mapview` for our interactive map since it by default gives us an OpenTopoMap layer and the `develop` branch includes simple features support.  With our new border and fence, we will avoid the difficult mountains and get a little extra beachfront.
+Since we are Trump, we can do what we want, so let's edit the line to our liking.  We will use `mapview` for our interactive map since it by default gives us an OpenTopoMap layer and the `develop` branch includes preliminary simple features support.  With our new border and fence, we will avoid the difficult mountains and get a little extra beachfront.
 
 ```
 # use develop branch of mapview with simple features support
@@ -226,6 +226,3 @@ edited_features <- runGitHub(
 ## Conclusion
 
 `mapedit` hopes to add useful interactivity to your geospatial workflows by leveraging powerful new functionality in R with the interactivity of HTML, JavaScript, and CSS.  `mapedit` will be better with your feedback, requests, bug reports, use cases, and participation.  We will report on progress periodically with blog posts on this site, and we will develop openly on the `mapedit` Github [repo](https://github.com/r-spatial/mapedit).
-
-
-## Citations???
