@@ -73,30 +73,10 @@ me_sf2 <- lapply(
 
 # the easiest solution would be to use dplyr
 #   but would require a dependency on dplyr
-props <- lapply(
-  nwy_sf2, function(x) x %>% as.data.frame() %>% select(-feature)
-) %>%
-  dplyr::bind_rows()
-
-nwy_sf3 <- st_sf(
-  props,
-  feature = st_sfc(
-    unlist(lapply(nwy_sf2, function(x) x$feature), recursive=FALSE)
-  )
-)
+nwy_sf3 <- combine_list_of_sf(nwy_sf2)
 leaflet(nwy_sf3) %>% addMarkers(popup=~description) %>% addTiles()
 
-props <- lapply(
-  me_sf2, function(x) x %>% as.data.frame() %>% select(-feature)
-) %>%
-  dplyr::bind_rows()
-
-me_sf3 <- st_sf(
-  props,
-  feature = st_sfc(
-    unlist(lapply(me_sf2, function(x) x$feature), recursive=FALSE)
-  )
-)
+me_sf3 <- combine_list_of_sf(me_sf2)
 leaflet(me_sf3) %>% addPolygons(popup=~feature_type) %>% addTiles()
 
 
@@ -104,19 +84,7 @@ leaflet(me_sf3) %>% addPolygons(popup=~feature_type) %>% addTiles()
 randgeo::geo_point(10) %>%
   {.$features} %>%
   lapply(function(x) st_as_sf.geo_list(x)) %>%
-  {
-    props <- lapply(
-      ., function(x) x %>% as.data.frame() %>% select(-feature)
-    ) %>%
-      dplyr::bind_rows()
-
-    st_sf(
-      props,
-      feature = st_sfc(
-        unlist(lapply(., function(x) x$feature), recursive=FALSE)
-      )
-    )
-  } %>%
+  combine_list_of_sf %>%
   leaflet() %>%
     addMarkers() %>%
     addTiles()
@@ -130,17 +98,5 @@ list(
   {lapply(., function(x) x$features)} %>%
   unlist(recursive = FALSE) %>%
   lapply(function(x) st_as_sf.geo_list(x)) %>%
-  {
-    props <- lapply(
-      ., function(x) x %>% as.data.frame() %>% select(-feature)
-    ) %>%
-      dplyr::bind_rows()
-
-    st_sf(
-      props,
-      feature = st_sfc(
-        unlist(lapply(., function(x) x$feature), recursive=FALSE)
-      )
-    )
-  } %>%
+  combine_list_of_sf() %>%
   plot()

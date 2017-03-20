@@ -78,3 +78,20 @@ convert_geojson_coords <- function(gj) {
     features = do.call(st_sfc, unlist(feats, recursive=FALSE))
   )
 }
+
+# requires dependency on dplyr
+#  need to make a decision here if ok
+#  otherwise will need to make bind_rows equivalent
+combine_list_of_sf <- function(sf_list) {
+  props <- lapply(
+    sf_list, function(x) x %>% as.data.frame() %>% select(-feature)
+  ) %>%
+    dplyr::bind_rows()
+
+  st_sf(
+    props,
+    feature = st_sfc(
+      unlist(lapply(sf_list, function(x) x$feature), recursive=FALSE)
+    )
+  )
+}
