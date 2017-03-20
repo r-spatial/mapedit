@@ -16,13 +16,20 @@ st_as_sfc.geo_list = function(x, ...) {
 }
 
 st_as_sf.geo_list = function(x, ...) {
-  x = switch(x$type,
-             Feature = st_sf(
-               t(unlist(x$properties)),
-               feature = st_as_sfc(x$geometry)
-             ),
-             stop("should be of type 'Feature'")
+  if(x$type != "Feature") stop("should be of type 'Feature'", call.=FALSE)
+
+  x <- fix_geojson_coords(x)
+
+  props <- do.call(
+    data.frame,
+    modifyList(
+      Filter(Negate(is.null), x$properties),
+      list(stringsAsFactors=FALSE)
+    )
   )
+
+  geom_sf <- st_as_sfc.geo_list(x$geometry)
+  st_sf(props, feature=geom_sf)
 }
 
 

@@ -54,9 +54,45 @@ me_sf <- convert_geojson_coords(
 )
 plot(me_sf)
 
-# now try to add in properties
-#  this does not seem critical at this point
-#  but will be necessary to be considered complete
-props <- lapply(me_gj, function(x) do.call(data.frame, list(x$properties, stringsAsFactors=FALSE)))
-sf:::cbind.sf(me_sf, do.call(rbind,props))
+# now let's try to build an st_as_sf.geo_list function
+#  that we can apply to our edit_map return
+#  and other geojson
+nwy_sf2 <- lapply(
+  nwy_map$features,
+  st_as_sf.geo_list
+)
 
+me_sf2 <- lapply(
+  me_gj,
+  st_as_sf.geo_list
+)
+
+# ideally we convert these lists into st_sf
+#   but we have a problem if all of the features
+#   have different columns
+
+# the easiest solution would be to use dplyr
+#   but would require a dependency on dplyr
+props <- lapply(
+  nwy_sf2, function(x) x %>% as.data.frame() %>% select(-feature)
+) %>%
+  dplyr::bind_rows()
+
+nwy_sf3 <- st_sf(
+  props,
+  feature = st_sfc(
+    unlist(lapply(nwy_sf2, function(x) x$feature), recursive=FALSE)
+  )
+)
+
+props <- lapply(
+  me_sf2, function(x) x %>% as.data.frame() %>% select(-feature)
+) %>%
+  dplyr::bind_rows()
+
+me_sf3 <- st_sf(
+  props,
+  feature = st_sfc(
+    unlist(lapply(me_sf2, function(x) x$feature), recursive=FALSE)
+  )
+)
