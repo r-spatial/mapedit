@@ -29,7 +29,12 @@ st_as_sf.geo_list = function(x, ...) {
   )
 
   geom_sf <- st_as_sfc.geo_list(x$geometry)
-  st_sf(props, feature=geom_sf)
+  # if props are empty then we need to handle differently
+  if(nrow(props) == 0 ) {
+    return(st_sf(feature=geom_sf))
+  } else{
+    return(st_sf(props, feature=geom_sf))
+  }
 }
 
 

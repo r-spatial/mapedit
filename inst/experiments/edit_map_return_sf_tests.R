@@ -98,3 +98,9 @@ me_sf3 <- st_sf(
   )
 )
 leaflet(me_sf3) %>% addPolygons(popup=~feature_type) %>% addTiles()
+
+
+# test with randgeo
+randgeo::geo_point(10) %>%
+  {.$features} %>%
+  lapply(function(x) st_as_sf.geo_list(x))
