@@ -103,4 +103,44 @@ leaflet(me_sf3) %>% addPolygons(popup=~feature_type) %>% addTiles()
 # test with randgeo
 randgeo::geo_point(10) %>%
   {.$features} %>%
-  lapply(function(x) st_as_sf.geo_list(x))
+  lapply(function(x) st_as_sf.geo_list(x)) %>%
+  {
+    props <- lapply(
+      ., function(x) x %>% as.data.frame() %>% select(-feature)
+    ) %>%
+      dplyr::bind_rows()
+
+    st_sf(
+      props,
+      feature = st_sfc(
+        unlist(lapply(., function(x) x$feature), recursive=FALSE)
+      )
+    )
+  } %>%
+  leaflet() %>%
+    addMarkers() %>%
+    addTiles()
+
+
+# test with randgeo
+list(
+  randgeo::geo_point(10),
+  randgeo::geo_polygon(10)
+) %>%
+  {lapply(., function(x) x$features)} %>%
+  unlist(recursive = FALSE) %>%
+  lapply(function(x) st_as_sf.geo_list(x)) %>%
+  {
+    props <- lapply(
+      ., function(x) x %>% as.data.frame() %>% select(-feature)
+    ) %>%
+      dplyr::bind_rows()
+
+    st_sf(
+      props,
+      feature = st_sfc(
+        unlist(lapply(., function(x) x$feature), recursive=FALSE)
+      )
+    )
+  } %>%
+  plot()
