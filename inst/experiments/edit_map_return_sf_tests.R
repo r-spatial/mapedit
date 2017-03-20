@@ -57,8 +57,6 @@ plot(me_sf)
 # now try to add in properties
 #  this does not seem critical at this point
 #  but will be necessary to be considered complete
-props <- lapply(me_gj, function(x) do.call(data.frame, list(x$properties)))
-sf:::cbind.sf(me_sf, dplyr::bind_rows(props))
-
-
+props <- lapply(me_gj, function(x) do.call(data.frame, list(x$properties, stringsAsFactors=FALSE)))
+sf:::cbind.sf(me_sf, do.call(rbind,props))
 
