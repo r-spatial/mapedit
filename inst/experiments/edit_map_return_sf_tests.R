@@ -58,7 +58,7 @@ plot(me_sf)
 #  this does not seem critical at this point
 #  but will be necessary to be considered complete
 props <- lapply(me_gj, function(x) do.call(data.frame, list(x$properties)))
-cbind(me_sf, props)
-cbind(me_sf, dplyr::bind_rows(props))
+sf:::cbind.sf(me_sf, dplyr::bind_rows(props))
+
 
 
