@@ -53,3 +53,12 @@ me_sf <- convert_geojson_coords(
   lapply(me_gj,function(x) list(geometry = x$geometry))
 )
 plot(me_sf)
+
+# now try to add in properties
+#  this does not seem critical at this point
+#  but will be necessary to be considered complete
+props <- lapply(me_gj, function(x) do.call(data.frame, list(x$properties)))
+cbind(me_sf, props)
+cbind(me_sf, dplyr::bind_rows(props))
+
+
