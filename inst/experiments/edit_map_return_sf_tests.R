@@ -40,6 +40,7 @@ do.call(rbind, feats)
 
 
 nwy_sf <- convert_geojson_coords(nwy_map$features)
+plot(nwy_sf)
 
 library(leaflet)
 library(mapedit)
@@ -48,6 +49,7 @@ library(mapedit)
 me_gj <- edit_map(leaflet())$finished
 # coordinates from edit_map not in proper form
 #  so added a fix function
-convert_geojson_coords(
+me_sf <- convert_geojson_coords(
   lapply(me_gj,function(x) list(geometry = x$geometry))
 )
+plot(me_sf)
