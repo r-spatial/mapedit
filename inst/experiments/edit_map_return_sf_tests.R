@@ -84,6 +84,7 @@ nwy_sf3 <- st_sf(
     unlist(lapply(nwy_sf2, function(x) x$feature), recursive=FALSE)
   )
 )
+leaflet(nwy_sf3) %>% addMarkers(popup=~description) %>% addTiles()
 
 props <- lapply(
   me_sf2, function(x) x %>% as.data.frame() %>% select(-feature)
@@ -96,3 +97,4 @@ me_sf3 <- st_sf(
     unlist(lapply(me_sf2, function(x) x$feature), recursive=FALSE)
   )
 )
+leaflet(me_sf3) %>% addPolygons(popup=~feature_type) %>% addTiles()
