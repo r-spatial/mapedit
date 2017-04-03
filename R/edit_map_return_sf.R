@@ -67,20 +67,6 @@ fix_geojson_coords <- function(ft) {
   ft
 }
 
-convert_geojson_coords <- function(gj) {
-  feats <- lapply(
-    gj,
-    function(ft) {
-      ft <- fix_geojson_coords(ft)
-      st_as_sfc.geo_list(ft$geometry)
-    }
-  )
-
-  sf::st_sf(
-    features = do.call(sf::st_sfc, unlist(feats, recursive=FALSE))
-  )
-}
-
 #' @keywords internal
 combine_list_of_sf <- function(sf_list) {
   props <- dplyr::bind_rows(
