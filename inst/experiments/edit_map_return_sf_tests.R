@@ -39,6 +39,21 @@ feats <- lapply(
 do.call(rbind, feats)
 
 
+
+convert_geojson_coords <- function(gj) {
+  feats <- lapply(
+    gj,
+    function(ft) {
+      ft <- fix_geojson_coords(ft)
+      st_as_sfc.geo_list(ft$geometry)
+    }
+  )
+
+  sf::st_sf(
+    features = do.call(sf::st_sfc, unlist(feats, recursive=FALSE))
+  )
+}
+
 nwy_sf <- convert_geojson_coords(nwy_map$features)
 plot(nwy_sf)
 
