@@ -1,22 +1,24 @@
-# test geojson conversion functions
-library(sf)
+#' @keywords internal
 st_as_sfc.geo_list = function(x, ...) {
   x = switch(x$type,
-             Point = st_point(x$coordinates),
-             MultiPoint = st_multipoint(x$coordinates),
-             LineString = st_linestring(x$coordinates),
-             MultiLineString = st_multilinestring(x$coordinates),
-             Polygon = st_polygon(x$coordinates),
-             MultiPolygon = st_multipolygon(x$coordinates),
-             GeometryCollection = st_geometrycollection(
+             Point = sf::st_point(x$coordinates),
+             MultiPoint = sf::st_multipoint(x$coordinates),
+             LineString = sf::st_linestring(x$coordinates),
+             MultiLineString = sf::st_multilinestring(x$coordinates),
+             Polygon = sf::st_polygon(x$coordinates),
+             MultiPolygon = sf::st_multipolygon(x$coordinates),
+             GeometryCollection = sf::st_geometrycollection(
                lapply(x$geometries, function(y) st_as_sfc.geo_list(y)[[1]])),
              stop("unknown class")
   )
-  st_sfc(x, crs = st_crs(4326))
+  sf::st_sfc(x, crs = sf::st_crs(4326))
 }
 
+#' @keywords internal
 st_as_sf.geo_list = function(x, ...) {
-  if(x$type != "Feature") stop("should be of type 'Feature'", call.=FALSE)
+  if(x$type != "Feature") {
+    stop("should be of type 'Feature'", call.=FALSE)
+  }
 
   x <- fix_geojson_coords(x)
 
@@ -31,13 +33,13 @@ st_as_sf.geo_list = function(x, ...) {
   geom_sf <- st_as_sfc.geo_list(x$geometry)
   # if props are empty then we need to handle differently
   if(nrow(props) == 0 ) {
-    return(st_sf(feature=geom_sf))
-  } else{
-    return(st_sf(props, feature=geom_sf))
+    return(sf::st_sf(feature=geom_sf))
+  } else {
+    return(sf::st_sf(props, feature=geom_sf))
   }
 }
 
-
+#' @keywords internal
 fix_geojson_coords <- function(ft) {
 
   if(ft$geometry$type == "Point") {
@@ -74,23 +76,28 @@ convert_geojson_coords <- function(gj) {
     }
   )
 
-  st_sf(
-    features = do.call(st_sfc, unlist(feats, recursive=FALSE))
+  sf::st_sf(
+    features = do.call(sf::st_sfc, unlist(feats, recursive=FALSE))
   )
 }
 
-# requires dependency on dplyr
-#  need to make a decision here if ok
-#  otherwise will need to make bind_rows equivalent
+#' @keywords internal
 combine_list_of_sf <- function(sf_list) {
-  props <- lapply(
-    sf_list, function(x) x %>% as.data.frame() %>% select(-feature)
-  ) %>%
-    dplyr::bind_rows()
+  props <- dplyr::bind_rows(
+    lapply(
+      sf_list,
+      function(x) {
+        dplyr::select(
+          as.data.frame(x, stringsAsFactors=FALSE),
+          -feature
+        )
+      }
+    )
+  )
 
-  st_sf(
+  sf::st_sf(
     props,
-    feature = st_sfc(
+    feature = sf::st_sfc(
       unlist(lapply(sf_list, function(x) x$feature), recursive=FALSE)
     )
   )
