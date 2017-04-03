@@ -33,9 +33,9 @@ st_as_sf.geo_list = function(x, ...) {
   geom_sf <- st_as_sfc.geo_list(x$geometry)
   # if props are empty then we need to handle differently
   if(nrow(props) == 0 ) {
-    return(sf::st_sf(feature=geom_sf))
+    return(sf::st_sf(feature=geom_sf, crs = sf::st_crs(4326)))
   } else {
-    return(sf::st_sf(props, feature=geom_sf))
+    return(sf::st_sf(props, feature=geom_sf, crs = sf::st_crs(4326)))
   }
 }
 
@@ -85,6 +85,7 @@ combine_list_of_sf <- function(sf_list) {
     props,
     feature = sf::st_sfc(
       unlist(lapply(sf_list, function(x) x$feature), recursive=FALSE)
-    )
+    ),
+    crs = sf::st_crs(4326)
   )
 }
