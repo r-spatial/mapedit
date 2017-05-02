@@ -50,3 +50,8 @@ leaflet() %>%
   addCircles(data=st_difference(pts_sf, shape_sfc), color = "red") %>%
   addPolygons(data=shape_sfc) %>%
   addTiles()
+
+
+# now do same as above but with mapedit::edit_map
+library(mapedit)
+me_edits <- edit_map(lf)

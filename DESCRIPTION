@@ -1,8 +1,8 @@
 Package: mapedit
 Title: Interactive Editing of Spatial Data in R
 Description: What the package does (one paragraph).
-Version: 0.0.1
-Date: 2017-01-24
+Version: 0.0.2
+Date: 2017-04-03
 Authors@R: c(
     person("Tim", "Appelhans", role = c("aut", "cre"), email = "tim.appelhans@gmail.com"),
     person("Kenton", "Russell", role = c("aut"))
@@ -13,11 +13,13 @@ License: MIT + file LICENSE
 Depends:
     R (>= 3.1.0)
 Imports:
+    dplyr,
     htmltools (>= 0.3),
     jsonlite,
     leaflet,
     leaflet.extras,
     miniUI,
+    sf,
     shiny
 Suggests:
     mapview
