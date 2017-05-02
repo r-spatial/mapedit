@@ -1,4 +1,5 @@
 library(mapedit)
+library(leaflet)
 
 lf <- leaflet() %>%
   addTiles()
@@ -7,18 +8,14 @@ lf <- leaflet() %>%
 drawing <- lf %>%
   edit_map()
 
-# ugly way to add our drawings to a leaflet map
-local({
-  i <- 0
-  Reduce(
-    function(x,y){
-      i <<- i+1
-      x %>% addGeoJSON(y, group = as.character(i))
-    },
-    drawing$finished,
-    init = lf
-  )
-}) %>%
+# little easier now with sf
+Reduce(
+  function(x,i){
+    x %>% addPolygons(data = drawing$finished[i,], group = as.character(i))
+  },
+  seq_len(nrow(drawing$finished)),
+  init = lf
+) %>%
   select_map()
 
 \dontrun{
