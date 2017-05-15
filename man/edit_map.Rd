@@ -49,4 +49,3 @@ edit_map(leaflet() \%>\% addTiles())
   edit_map(lf)
 }
 }
-
