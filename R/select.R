@@ -37,7 +37,7 @@ selectFeatures.sf = function(x, platform = c("mapview", "leaflet"), ...) {
     m = addfun(map = m, data = x, weight = 1, group = ~edit_group)
   }
 
-  ind = select_map(m, ...)
+  ind = selectMap(m, ...)
 
   indx = ind$group[as.logical(ind$selected)]
   # todrop = "edit_group"
