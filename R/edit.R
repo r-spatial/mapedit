@@ -11,12 +11,12 @@
 #'
 #' @example inst/experiments/randgeo_edit.R
 #' @export
-edit_map <- function(x, ...) {
-  UseMethod("edit_map")
+editMap <- function(x, ...) {
+  UseMethod("editMap")
 }
 
 #' @export
-edit_map.leaflet <- function(x = NULL, targetLayerId = NULL, sf = TRUE) {
+editMap.leaflet <- function(x = NULL, targetLayerId = NULL, sf = TRUE) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
   stopifnot(

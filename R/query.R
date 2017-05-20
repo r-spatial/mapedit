@@ -6,12 +6,12 @@
 #'
 #' @example ./inst/examples/examples_select.R
 #' @export
-select_map <- function(x, ...) {
-  UseMethod("select_map")
+selectMap <- function(x, ...) {
+  UseMethod("selectMap")
 }
 
 #' @export
-select_map.leaflet <- function(
+selectMap.leaflet <- function(
   x = NULL,
   style_false = list(fillOpacity = 0.2),
   style_true = list(fillOpacity = 0.7),

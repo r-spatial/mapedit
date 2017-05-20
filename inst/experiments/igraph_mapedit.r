@@ -18,7 +18,7 @@ lf <- leaflet(
   addCircleMarkers(group = "network")
 
 new_layout <- lf %>%
-  edit_map("network")
+  editMap("network")
 
 # this gets real tricky
 #   but we will find a much easier way in mapedit

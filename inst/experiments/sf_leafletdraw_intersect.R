@@ -54,4 +54,4 @@ leaflet() %>%
 
 # now do same as above but with mapedit::edit_map
 library(mapedit)
-me_edits <- edit_map(lf)
+me_edits <- editMap(lf)

@@ -6,7 +6,7 @@ lf <- leaflet() %>%
 
 # draw some polygons that we will select later
 drawing <- lf %>%
-  edit_map()
+  editMap()
 
 # little easier now with sf
 Reduce(
@@ -16,7 +16,7 @@ Reduce(
   seq_len(nrow(drawing$finished)),
   init = lf
 ) %>%
-  select_map()
+  selectMap()
 
 \dontrun{
 # use @bhaskarvk USA Albers with leaflet code
@@ -61,8 +61,8 @@ bounds <- c(-125, 24 ,-75, 45)
 )
 
 
-# test out select_map with albers example
-select_map(
+# test out selectMap with albers example
+selectMap(
   lf,
   style_false = list(weight = 1),
   style_true = list(weight = 4)

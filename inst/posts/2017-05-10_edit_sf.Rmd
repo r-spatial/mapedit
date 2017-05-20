@@ -1,5 +1,5 @@
 ---
-title: "Leveraging sf in edit_map"
+title: "Leveraging sf in editMap"
 author: "Tim Appelhans and Kenton Russell"
 date: "May 10, 2017"
 output: html_document
@@ -21,7 +21,7 @@ To run the code in the following discussion, please install with `devtools::inst
 devtools::install_github("r-spatial/mapedit")
 ```
 
-## edit_map Returns sf
+## editMap Returns sf
 
 ### Challenges
 
