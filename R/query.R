@@ -13,8 +13,8 @@ selectMap <- function(x, ...) {
 #' @export
 selectMap.leaflet <- function(
   x = NULL,
-  style_false = list(fillOpacity = 0.2),
-  style_true = list(fillOpacity = 0.7),
+  style_false = list(fillOpacity = 0.2, weight = 1, opacity = 0.4),
+  style_true = list(fillOpacity = 0.7, weight = 3, opacity = 0.7),
   target_groups = NULL
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
