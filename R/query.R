@@ -13,9 +13,9 @@ selectMap <- function(x, ...) {
 #' @export
 selectMap.leaflet <- function(
   x = NULL,
-  style_false = list(fillOpacity = 0.2, weight = 1, opacity = 0.4),
-  style_true = list(fillOpacity = 0.7, weight = 3, opacity = 0.7),
-  target_groups = NULL
+  styleFalse = list(fillOpacity = 0.2, weight = 1, opacity = 0.4),
+  styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7),
+  targetGroups = NULL
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
@@ -28,9 +28,9 @@ selectMap.leaflet <- function(
   # add the script to handle selection state to leaflet
   x <- add_select_script(
     lf = x,
-    style_false = style_false,
-    style_true = style_true,
-    target_groups = target_groups)
+    styleFalse = styleFalse,
+    styleTrue = styleTrue,
+    targetGroups = targetGroups)
 
   ui <- miniUI::miniPage(
     miniUI::miniContentPanel(x, height=NULL, width=NULL),
@@ -83,7 +83,7 @@ selectMap.leaflet <- function(
 }
 
 #' @keywords internal
-add_select_script <- function(lf, style_false, style_true, target_groups) {
+add_select_script <- function(lf, styleFalse, styleTrue, targetGroups) {
   ## check for existing onRender jsHook?
 
   htmlwidgets::onRender(
@@ -131,8 +131,8 @@ function(el,x) {
   });
 }
 ",
-      jsonlite::toJSON(style_false, auto_unbox=TRUE),
-      jsonlite::toJSON(style_true, auto_unbox=TRUE)
+      jsonlite::toJSON(styleFalse, auto_unbox=TRUE),
+      jsonlite::toJSON(styleTrue, auto_unbox=TRUE)
     )
   )
 }

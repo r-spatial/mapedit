@@ -35,6 +35,9 @@ Reduce(
 ) \%>\%
   selectMap()
 
+# especially easy with selectFeatures
+selectFeatures(drawing$finished)
+
 \dontrun{
 # use @bhaskarvk USA Albers with leaflet code
 #  https://bhaskarvk.github.io/leaflet/examples/proj4Leaflet.html
@@ -81,8 +84,8 @@ bounds <- c(-125, 24 ,-75, 45)
 # test out selectMap with albers example
 selectMap(
   lf,
-  style_false = list(weight = 1),
-  style_true = list(weight = 4)
+  styleFalse = list(weight = 1),
+  styleTrue = list(weight = 4)
 )
 }
 }
