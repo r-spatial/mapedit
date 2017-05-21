@@ -30,7 +30,8 @@ selectMap.leaflet <- function(
     lf = x,
     styleFalse = styleFalse,
     styleTrue = styleTrue,
-    targetGroups = targetGroups)
+    targetGroups = targetGroups
+  )
 
   ui <- miniUI::miniPage(
     miniUI::miniContentPanel(x, height=NULL, width=NULL),
