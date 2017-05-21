@@ -7,7 +7,7 @@
 #' @examples
 #' library(leaflet)
 #' library(mapedit)
-#' edit_map(leaflet() %>% addTiles())
+#' editMap(leaflet() %>% addTiles())
 #'
 #' @example inst/experiments/randgeo_edit.R
 #' @export
