@@ -16,55 +16,61 @@ selectMod <- function(
       leafmap,
       styleFalse = styleFalse,
       styleTrue = styleTrue,
-      targetGroups = targetGroups
+      targetGroups = targetGroups,
+      ns = session$ns(NULL)
     )
   })
 
   id = "mapedit"
   select_evt = paste0(id, "_selected")
 
-  # a container for our selections
-  selections <- reactiveValues(df = data.frame())
-  observe({print(input[[select_evt]])})
+  df <- data.frame()
 
-  observeEvent(input[[select_evt]], {
-    #print(input[[select_evt]])
-    if(nrow(selections$df) == 0) {
-      selections$df <<- data.frame(
+  # a container for our selections
+  selections <- reactive({
+    if(nrow(df) == 0) {
+      df <<- data.frame(
         group = input[[select_evt]]$group,
         selected = input[[select_evt]]$selected,
         stringsAsFactors = FALSE
       )
     } else {
       # see if already exists
-      loc <- which(selections$df$group == input[[select_evt]]$group)
+      loc <- which(df$group == input[[select_evt]]$group)
 
       if(length(loc) > 0) {
-        selections$df[loc, "selected"] <<- input[[select_evt]]$selected
+        df[loc, "selected"] <<- input[[select_evt]]$selected
       } else {
-        selections$df[nrow(selections) + 1, ] <<- c(input[[select_evt]]$group, input[[select_evt]]$selected)
+        df[nrow(df) + 1, ] <<- c(input[[select_evt]]$group, input[[select_evt]]$selected)
       }
     }
+
+    return(df)
   })
 
   return(selections)
+
 }
 
 
 ui <- tagList(
   selectModUI("test-mod"),
-  textOutput("selected")
+  DT::dataTableOutput("selected")
 )
 server <- function(input, output, session) {
   selections <- callModule(selectMod, "test-mod", lf)
-  output$selected <- renderText({str(selections$df)})
-  observe({str(selections$df)})
+  output$selected <- DT::renderDataTable({DT::datatable(selections())})
+  observe({str(selections())})
 }
 shinyApp(ui, server)
 
 
 
 # now try to do selectMap using the  module
+library(shiny)
+library(htmltools)
+library(mapedit)
+
 selectMapModule <- function(
   x = NULL,
   styleFalse = list(fillOpacity = 0.2, weight = 1, opacity = 0.4),
@@ -86,7 +92,7 @@ selectMapModule <- function(
   )
 
   server <- function(input, output, session) {
-    callModule(
+    selections <- callModule(
       selectMod,
       ns,
       x,
@@ -95,10 +101,11 @@ selectMapModule <- function(
       targetGroups = targetGroups
     )
 
+    observe({selections()})
 
     shiny::observeEvent(input$done, {
       shiny::stopApp(
-        selections
+        selections()
       )
     })
 
@@ -113,3 +120,7 @@ selectMapModule <- function(
     stopOnCancel = FALSE
   )
 }
+
+
+sel_df <- selectMapModule(x=lf)
+

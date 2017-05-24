@@ -84,7 +84,7 @@ selectMap.leaflet <- function(
 }
 
 #' @keywords internal
-add_select_script <- function(lf, styleFalse, styleTrue, targetGroups) {
+add_select_script <- function(lf, styleFalse, styleTrue, targetGroups, ns=NULL) {
   ## check for existing onRender jsHook?
 
   htmlwidgets::onRender(
@@ -111,8 +111,7 @@ function(el,x) {
       layer._mapedit_selected = selected;
     }
     if(typeof(Shiny) !== 'undefined' && Shiny.onInputChange) {
-      debugger;
-      Shiny.onInputChange('mapedit_selected', {'group': layer.groupname, 'selected': selected})
+      Shiny.onInputChange('%s-mapedit_selected', {'group': layer.groupname, 'selected': selected})
     }
     return selected;
   };
@@ -133,7 +132,8 @@ function(el,x) {
 }
 ",
       jsonlite::toJSON(styleFalse, auto_unbox=TRUE),
-      jsonlite::toJSON(styleTrue, auto_unbox=TRUE)
+      jsonlite::toJSON(styleTrue, auto_unbox=TRUE),
+      ns
     )
   )
 }

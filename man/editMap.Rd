@@ -17,7 +17,7 @@ Interactively Edit a Map
 \examples{
 library(leaflet)
 library(mapedit)
-edit_map(leaflet() \%>\% addTiles())
+editMap(leaflet() \%>\% addTiles())
 
 \dontrun{
   # demonstrate Leaflet.Draw on a layer
