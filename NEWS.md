@@ -1,3 +1,7 @@
+# mapedit 0.2.0
+
+* add Shiny module functionality
+
 # mapedit 0.1.0
 
 **API breaking change**
