@@ -10,10 +10,6 @@ borders <- usa_sf %>%
   filter(usa_sf$iso_3166_2 %in% c("AZ","CA")) %>%
   leaflet() %>%
   addPolygons() %>%
-  edit_map()
+  editMap()
 
-border_sf <- borders$finished[[1]]$geometry$coordinates %>%
-  unlist() %>%
-  matrix(ncol=2, byrow=TRUE) %>%
-  st_linestring()
-
+plot(borders$finished)

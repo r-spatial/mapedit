@@ -21,26 +21,26 @@ As the CRAN badge above indicates, `mapedit` is a long way from CRAN. To install
 
 ### Examples
 
-We can interactively CRD (create, update, delete) features on a map with `edit_map`.
+We can interactively CRD (create, update, delete) features on a map with `editMap`.
 
     library(mapedit)
     library(leaflet)
     library(mapview)
 
-    edit_map(leaflet() %>% addTiles())
+    editMap(leaflet() %>% addTiles())
 
-    edit_map(
+    editMap(
       mapview(breweries91)@map,
       targetLayerId = "breweries91"
     )
 
-`mapedit` also offers interactive selection of map features with `select_map`.
+`mapedit` also offers interactive selection of map features with `selectMap`.
 
     library(mapedit)
     library(leaflet)
     library(mapview)
 
-    select_map(
+    selectMap(
       leaflet(breweries91) %>%
         addTiles() %>%
         addCircleMarkers(group = ~brewery)

@@ -7,16 +7,16 @@
 #' @examples
 #' library(leaflet)
 #' library(mapedit)
-#' edit_map(leaflet() %>% addTiles())
+#' editMap(leaflet() %>% addTiles())
 #'
 #' @example inst/experiments/randgeo_edit.R
 #' @export
-edit_map <- function(x, ...) {
-  UseMethod("edit_map")
+editMap <- function(x, ...) {
+  UseMethod("editMap")
 }
 
 #' @export
-edit_map.leaflet <- function(x = NULL, targetLayerId = NULL, sf = TRUE) {
+editMap.leaflet <- function(x = NULL, targetLayerId = NULL, sf = TRUE) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
   stopifnot(
@@ -148,3 +148,15 @@ edit_map.leaflet <- function(x = NULL, targetLayerId = NULL, sf = TRUE) {
   )
 }
 
+#' @export
+editMap.mapview <- function(x = NULL, targetLayerId = NULL, sf = TRUE) {
+  stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
+
+  stopifnot(
+    requireNamespace("leaflet.extras"),
+    requireNamespace("shiny"),
+    requireNamespace("miniUI")
+  )
+
+  editMap.leaflet(x@map, targetLayerId = targetLayerId, sf = sf)
+}

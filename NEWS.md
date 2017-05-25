@@ -1,3 +1,9 @@
+# mapedit 0.1.0
+
+**API breaking change**
+
+* camelCase `editMap` and `selectMap`
+
 # mapedit 0.0.2
 
 * add dependency on `dplyr`

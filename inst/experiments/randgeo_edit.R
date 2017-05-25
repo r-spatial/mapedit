@@ -7,7 +7,7 @@
   library(leaflet)
   library(leaflet.extras)
   library(randgeo)  # see install instructions above
-
+# not working now due to error in addGeoJSON :(
   lf <- leaflet() %>%
     addTiles() %>%
     addGeoJSON(
@@ -25,5 +25,5 @@
     fitBounds(48,48,62,62)
 
   library(mapedit)
-  edit_map(lf)
+  editMap(lf)
 }

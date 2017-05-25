@@ -1,0 +1,33 @@
+---
+title: "Leveraging sf in editMap"
+author: "Tim Appelhans and Kenton Russell"
+date: "May 10, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Intro to `sf` and links to posts and other articles.
+
+Other integrations of `sf` - mapview, leaflet, ggplot2, plotly, geojsonio
+
+## Install mapedit
+
+To run the code in the following discussion, please install with `devtools::install_github`.  Please be aware that the current functionality is strictly a proof of concept, and the API will change rapidly and dramatically.
+
+```
+devtools::install_github("r-spatial/mapedit")
+```
+
+## editMap Returns sf
+
+### Challenges
+
+### Benefits
+
+
+
+## Conclusion
+

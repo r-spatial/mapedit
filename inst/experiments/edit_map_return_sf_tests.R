@@ -59,10 +59,10 @@ plot(nwy_sf)
 
 library(leaflet)
 library(mapedit)
-# draw something with mapedit::edit_map
+# draw something with mapedit::editMap
 #   and try to convert to sf
-me_gj <- edit_map(leaflet())$finished
-# coordinates from edit_map not in proper form
+me_gj <- editMap(leaflet())$finished
+# coordinates from editMap not in proper form
 #  so added a fix function
 me_sf <- convert_geojson_coords(
   lapply(me_gj,function(x) list(geometry = x$geometry))
@@ -70,7 +70,7 @@ me_sf <- convert_geojson_coords(
 plot(me_sf)
 
 # now let's try to build an st_as_sf.geo_list function
-#  that we can apply to our edit_map return
+#  that we can apply to our editMap return
 #  and other geojson
 nwy_sf2 <- lapply(
   nwy_map$features,

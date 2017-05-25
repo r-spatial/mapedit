@@ -1,25 +1,25 @@
 library(mapedit)
+library(leaflet)
 
 lf <- leaflet() %>%
   addTiles()
 
 # draw some polygons that we will select later
 drawing <- lf %>%
-  edit_map()
+  editMap()
 
-# ugly way to add our drawings to a leaflet map
-local({
-  i <- 0
-  Reduce(
-    function(x,y){
-      i <<- i+1
-      x %>% addGeoJSON(y, group = as.character(i))
-    },
-    drawing$finished,
-    init = lf
-  )
-}) %>%
-  select_map()
+# little easier now with sf
+Reduce(
+  function(x,i){
+    x %>% addPolygons(data = drawing$finished[i,], group = as.character(i))
+  },
+  seq_len(nrow(drawing$finished)),
+  init = lf
+) %>%
+  selectMap()
+
+# especially easy with selectFeatures
+selectFeatures(drawing$finished)
 
 \dontrun{
 # use @bhaskarvk USA Albers with leaflet code
@@ -64,10 +64,10 @@ bounds <- c(-125, 24 ,-75, 45)
 )
 
 
-# test out select_map with albers example
-select_map(
+# test out selectMap with albers example
+selectMap(
   lf,
-  style_false = list(weight = 1),
-  style_true = list(weight = 4)
+  styleFalse = list(weight = 1),
+  styleTrue = list(weight = 4)
 )
 }
