@@ -6,7 +6,10 @@
   library(mapedit)
 
   # ?sf::sf
-  pol = st_sfc(st_polygon(list(cbind(c(0,3,3,0,0),c(0,0,3,3,0)))))
+  pol = st_sfc(
+    st_polygon(list(cbind(c(0,3,3,0,0),c(0,0,3,3,0)))),
+    crs = 4326
+  )
   mapview(pol) %>%
     editMap(targetLayerId = "pol")
 
