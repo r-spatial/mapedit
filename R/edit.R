@@ -9,7 +9,7 @@
 #' library(mapedit)
 #' editMap(leaflet() %>% addTiles())
 #'
-#' @example inst/experiments/randgeo_edit.R
+#' @example inst/examples/examples_edit.R
 #' @export
 editMap <- function(x, ...) {
   UseMethod("editMap")
