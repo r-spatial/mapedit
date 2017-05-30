@@ -1,5 +1,6 @@
 library(mapedit)
 library(mapview)
+library(shiny)
 
 m = leaflet(breweries91) %>%
   addCircleMarkers(weight = 1, group = ~as.character(1:nrow(breweries91)))

@@ -1,25 +1,25 @@
 #' Shiny Module UI for Geo Selection
 #'
-#' @param id
+#' @param id \code{character} id for the the Shiny namespace
 #' @param ... other arguments to \code{leafletOutput()}
 #'
 #' @return ui for Shiny module
 #' @export
 selectModUI <- function(id, ...) {
-  ns <- NS(id)
+  ns <- shiny::NS(id)
   leafletOutput(ns("map"), ...)
 }
 
 
 #' Shiny Module Server for Geo Selection
 #'
-#' @param input
-#' @param output
-#' @param session
-#' @param leafmap
-#' @param styleFalse
-#' @param styleTrue
-#' @param targetGroups
+#' @param input Shiny server function input
+#' @param output Shiny server function output
+#' @param session Shiny server function session
+#' @param leafmap leaflet map to use for Selection
+#' @param styleFalse named \code{list} of valid \code{CSS} for non-selected features
+#' @param styleTrue named \code{list} of valid \code{CSS} for selected features
+#' @param targetGroups \code{character} for groups to use with selection
 #'
 #' @return server function for Shiny module
 #' @export
