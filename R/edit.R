@@ -38,6 +38,11 @@ editMap.leaflet <- function(x = NULL, targetLayerId = NULL, sf = TRUE) {
     x <- leaflet.extras::addDrawToolbar(
       x,
       targetGroup = targetLayerId,
+      polylineOptions = leaflet.extras::drawPolylineOptions(repeatMode = TRUE),
+      polygonOptions = leaflet.extras::drawPolygonOptions(repeatMode = TRUE),
+      circleOptions = leaflet.extras::drawCircleOptions(repeatMode = TRUE),
+      rectangleOptions = leaflet.extras::drawRectangeOptions(repeatMode = TRUE),
+      markerOptions = leaflet.extras::drawMarkerOptions(repeatMode = TRUE),
       editOptions = leaflet.extras::editToolbarOptions()
     )
   }
