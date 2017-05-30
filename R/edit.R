@@ -152,11 +152,5 @@ editMap.leaflet <- function(x = NULL, targetLayerId = NULL, sf = TRUE) {
 editMap.mapview <- function(x = NULL, targetLayerId = NULL, sf = TRUE) {
   stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
 
-  stopifnot(
-    requireNamespace("leaflet.extras"),
-    requireNamespace("shiny"),
-    requireNamespace("miniUI")
-  )
-
   editMap.leaflet(x@map, targetLayerId = targetLayerId, sf = sf)
 }
