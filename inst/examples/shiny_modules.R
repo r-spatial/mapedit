@@ -40,4 +40,35 @@ server <- function(input, output, session) {
 }
 shinyApp(ui, server)
 
+
+# editMap module can easily be combined to make a selection tool
+#   do selection of breweries with drawn polygons
+library(sf)
+library(mapview)
+library(mapedit)
+library(shiny)
+
+ui <- fluidPage(
+  fluidRow(
+    column(6,editModUI("brew-select")),
+    column(6,leafletOutput("mapout"))
+  )
+)
+server <- function(input,output,session) {
+  m = mapview(breweries91)@map
+  brew_sf <- st_as_sf(breweries91)
+  drawn <- callModule(editMod, "brew-select", m)
+  calc_sf <- reactiveValues()
+  observe({
+    req(drawn()$finished)
+    calc_sf$intersection <- st_intersection(drawn()$finished, brew_sf)
+  })
+  output$mapout <- renderLeaflet({
+    req(calc_sf$intersection)
+    (mapview(calc_sf$intersection) + mapview(drawn()$finished))@map
+  })
 }
+shinyApp(ui,server)
+
+}
+
