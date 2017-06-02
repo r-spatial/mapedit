@@ -59,8 +59,8 @@ editMap.leaflet <- function(x = NULL, targetLayerId = NULL, sf = TRUE, ns = "map
 }
 
 #' @export
-editMap.mapview <- function(x = NULL, targetLayerId = NULL, sf = TRUE) {
+editMap.mapview <- function(x = NULL, targetLayerId = NULL, sf = TRUE, ns = "mapedit-edit") {
   stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
 
-  editMap.leaflet(x@map, targetLayerId = targetLayerId, sf = sf)
+  editMap.leaflet(x@map, targetLayerId = targetLayerId, sf = sf, ns = ns)
 }
