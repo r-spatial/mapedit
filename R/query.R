@@ -21,6 +21,7 @@ selectMap.leaflet <- function(
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
   stopifnot(
+    requireNamespace("leaflet"),
     requireNamespace("leaflet.extras"),
     requireNamespace("shiny"),
     requireNamespace("miniUI")

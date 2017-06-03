@@ -20,6 +20,7 @@ editMap.leaflet <- function(x = NULL, targetLayerId = NULL, sf = TRUE, ns = "map
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
   stopifnot(
+    requireNamespace("leaflet"),
     requireNamespace("leaflet.extras"),
     requireNamespace("shiny"),
     requireNamespace("miniUI")
