@@ -56,7 +56,6 @@ selectMap.leaflet <- function(
   shiny::runGadget(
     ui,
     server,
-    viewer =  shiny::dialogViewer("Select"),
     stopOnCancel = FALSE
   )
 }
@@ -89,6 +88,7 @@ function(el,x) {
       layer._mapedit_selected = selected;
     }
     if(typeof(Shiny) !== 'undefined' && Shiny.onInputChange) {
+debugger;
       Shiny.onInputChange('%s-mapedit_selected', {'group': layer.groupname, 'selected': selected})
     }
     return selected;
