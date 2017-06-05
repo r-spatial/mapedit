@@ -10,6 +10,13 @@ selectFeatures(x, ...)
 \item{x}{map to use}
 
 \item{...}{other arguments}
+
+\item{platform}{one of \code{"leaflet"} or \code{"mapview"} to indicate
+the type of map you would like to use for selection}
+
+\item{index}{\code{logical} with \code{index=TRUE} to indicate return
+the index of selected features rather than the actual
+selected features}
 }
 \description{
 Interactively Select Map Features

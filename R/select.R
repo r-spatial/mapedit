@@ -1,7 +1,11 @@
 #' Interactively Select Map Features
 #'
 #' @param x map to use
-#'
+#' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
+#'          the type of map you would like to use for selection
+#' @param index \code{logical} with \code{index=TRUE} to indicate return
+#'          the index of selected features rather than the actual
+#'          selected features
 #' @param ... other arguments
 #'
 #' @example ./inst/examples/examples_select.R
@@ -11,7 +15,12 @@ selectFeatures = function(x, ...) {
 }
 
 #' @export
-selectFeatures.sf = function(x, platform = c("mapview", "leaflet"), ...) {
+selectFeatures.sf = function(
+  x,
+  platform = c("mapview", "leaflet"),
+  index = FALSE,
+  ...
+) {
 
   if (length(platform) > 1) platform = platform[1]
 
@@ -35,8 +44,15 @@ selectFeatures.sf = function(x, platform = c("mapview", "leaflet"), ...) {
   ind = selectMap(m, ...)
 
   indx = ind$id[as.logical(ind$selected)]
-  # todrop = "edit_group"
-  return(x[as.numeric(indx), !names(x) %in% "edit_group"])
+  # todrop = "edit_id"
+
+  # when index argument is TRUE return index rather than actual features
+  if(index) {
+    return(as.numeric(indx))
+  }
+
+  # return selected features
+  return(x[as.numeric(indx), !names(x) %in% "edit_id"])
 }
 
 #' @export
