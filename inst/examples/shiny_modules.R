@@ -6,7 +6,7 @@ library(shiny)
 
 # select as a module
 m = leaflet(breweries91) %>%
-  addCircleMarkers(weight = 1, group = ~as.character(1:nrow(breweries91)))
+  addCircleMarkers(weight = 1, layerId = 1:nrow(breweries91))
 
 ui <- tagList(
   selectModUI("test-mod"),
