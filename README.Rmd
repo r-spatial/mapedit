@@ -24,42 +24,43 @@ Interactive editing of spatial data in R | an [RConsortium](https://www.r-consor
 
 ### Install
 
-As the CRAN badge above indicates, `mapedit` is a long way from CRAN.  To install, please use `devtools`. `mapedit` requires `leaflet.extras` which is not currently on CRAN and which itself requires a recent development version of `leaflet` (>=1.0.2.9008 as of 13 Feb, 2017).
+As the CRAN badge above indicates, `mapedit` is a long way from CRAN.  To install, please use `devtools`. `mapedit` requires `leaflet.extras` which is not currently on CRAN.  We will also need the development version of `mapview`.
 
 ```
 devtools::install_github("bhaskarvk/leaflet")
 devtools::install_github("bhaskarvk/leaflet.extras")
+devtools::install_github("r-spatial/mapview@develop")
 devtools::install_github("r-spatial/mapedit")
 ```
 
 ### Examples
 
-We can interactively CRD (create, update, delete) features on a map with `edit_map`.
+We can interactively CRD (create, update, delete) features on a map with `editMap`.
 
 ```
 library(mapedit)
 library(leaflet)
 library(mapview)
 
-edit_map(leaflet() %>% addTiles())
+editMap(leaflet() %>% addTiles())
 
-edit_map(
-  mapview(breweries91)@map,
+editMap(
+  mapview(breweries91),
   targetLayerId = "breweries91"
 )
 ```
 
-`mapedit` also offers interactive selection of map features with `select_map`.
+`mapedit` also offers interactive selection of map features with `selectMap`.
 
 ```
 library(mapedit)
 library(leaflet)
 library(mapview)
 
-select_map(
+selectMap(
   leaflet(breweries91) %>%
     addTiles() %>%
-    addCircleMarkers(group = ~brewery)
+    addCircleMarkers(layerId = ~brewery)
 )
 ```
 
