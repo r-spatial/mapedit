@@ -2,7 +2,10 @@
 
 * add Shiny module functionality
 * add selectFeatures function for easy selection of features from simple features (sf)
+* defaults to repeat mode in editMap()
+* removes circle Leaflet.draw tool by default in editMap()
 * promote mapview to Imports
+* uses newly exported mapview::addFeatures()
 
 
 # mapedit 0.1.0
