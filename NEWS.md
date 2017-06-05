@@ -1,6 +1,9 @@
 # mapedit 0.2.0
 
 * add Shiny module functionality
+* add selectFeatures function for easy selection of features from simple features (sf)
+* promote mapview to Imports
+
 
 # mapedit 0.1.0
 
