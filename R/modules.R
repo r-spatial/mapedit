@@ -19,7 +19,6 @@ selectModUI <- function(id, ...) {
 #' @param leafmap leaflet map to use for Selection
 #' @param styleFalse named \code{list} of valid \code{CSS} for non-selected features
 #' @param styleTrue named \code{list} of valid \code{CSS} for selected features
-#' @param targetGroups \code{character} for groups to use with selection
 #'
 #' @return server function for Shiny module
 #' @export
@@ -27,8 +26,7 @@ selectMod <- function(
   input, output, session,
   leafmap,
   styleFalse = list(fillOpacity = 0.2, weight = 1, opacity = 0.4),
-  styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7),
-  targetGroups = NULL
+  styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7)
 ) {
 
   output$map <- renderLeaflet({
@@ -36,7 +34,6 @@ selectMod <- function(
       leafmap,
       styleFalse = styleFalse,
       styleTrue = styleTrue,
-      targetGroups = targetGroups,
       ns = session$ns(NULL)
     )
   })
@@ -48,20 +45,23 @@ selectMod <- function(
 
   # a container for our selections
   selections <- reactive({
-    if(nrow(df) == 0) {
+    # when used in modules, we get an event with blank id
+    #  on initialize so also make sure we have an id
+    id = as.character(input[[select_evt]]$id)
+    if(nrow(df) == 0 && !is.null(id)) {
       df <<- data.frame(
-        group = input[[select_evt]]$group,
+        id = id,
         selected = input[[select_evt]]$selected,
         stringsAsFactors = FALSE
       )
     } else {
       # see if already exists
-      loc <- which(df$group == input[[select_evt]]$group)
+      loc <- which(df$id == id)
 
       if(length(loc) > 0) {
         df[loc, "selected"] <<- input[[select_evt]]$selected
       } else {
-        df[nrow(df) + 1, ] <<- c(input[[select_evt]]$group, input[[select_evt]]$selected)
+        df[nrow(df) + 1, ] <<- c(id, input[[select_evt]]$selected)
       }
     }
 

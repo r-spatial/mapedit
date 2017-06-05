@@ -16,7 +16,7 @@ selectFeatures.sf = function(x, platform = c("mapview", "leaflet"), ...) {
   if (length(platform) > 1) platform = platform[1]
 
   x = mapview:::checkAdjustProjection(x)
-  x$edit_group = as.character(1:nrow(x))
+  x$edit_id = as.character(1:nrow(x))
 
   if (platform == "mapview") {
     m = mapview::mapview()@map
@@ -25,10 +25,10 @@ selectFeatures.sf = function(x, platform = c("mapview", "leaflet"), ...) {
         mapview::addFeatures(
           left,
           x[right,],
-          group = as.character(right)
+          layerId = as.character(right)
         )
       },
-      seq_len(nrow(x)),
+      x$edit_id,
       init = m
     )
     m = leaflet::fitBounds(m,
@@ -44,17 +44,17 @@ selectFeatures.sf = function(x, platform = c("mapview", "leaflet"), ...) {
         mapview::addFeatures(
           left,
           x[right,],
-          group = as.character(right)
+          layerId = as.character(right)
         )
       },
-      seq_len(nrow(x)),
+      seq_len(x$edit_id),
       init = m
     )
   }
 
   ind = selectMap(m, ...)
 
-  indx = ind$group[as.logical(ind$selected)]
+  indx = ind$id[as.logical(ind$selected)]
   # todrop = "edit_group"
   return(x[as.numeric(indx), !names(x) %in% "edit_group"])
 }

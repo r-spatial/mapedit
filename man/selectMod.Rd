@@ -6,7 +6,7 @@
 \usage{
 selectMod(input, output, session, leafmap, styleFalse = list(fillOpacity =
   0.2, weight = 1, opacity = 0.4), styleTrue = list(fillOpacity = 0.7, weight
-  = 3, opacity = 0.7), targetGroups = NULL)
+  = 3, opacity = 0.7))
 }
 \arguments{
 \item{input}{Shiny server function input}
@@ -20,8 +20,6 @@ selectMod(input, output, session, leafmap, styleFalse = list(fillOpacity =
 \item{styleFalse}{named \code{list} of valid \code{CSS} for non-selected features}
 
 \item{styleTrue}{named \code{list} of valid \code{CSS} for selected features}
-
-\item{targetGroups}{\code{character} for groups to use with selection}
 }
 \value{
 server function for Shiny module

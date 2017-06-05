@@ -15,7 +15,6 @@ selectMap.leaflet <- function(
   x = NULL,
   styleFalse = list(fillOpacity = 0.2, weight = 1, opacity = 0.4),
   styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7),
-  targetGroups = NULL,
   ns = "mapedit-select"
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
@@ -38,8 +37,7 @@ selectMap.leaflet <- function(
       ns,
       x,
       styleFalse = styleFalse,
-      styleTrue = styleTrue,
-      targetGroups = targetGroups
+      styleTrue = styleTrue
     )
 
     observe({selections()})
@@ -62,7 +60,7 @@ selectMap.leaflet <- function(
 }
 
 #' @keywords internal
-add_select_script <- function(lf, styleFalse, styleTrue, targetGroups, ns=NULL) {
+add_select_script <- function(lf, styleFalse, styleTrue, ns="") {
   ## check for existing onRender jsHook?
 
   htmlwidgets::onRender(
@@ -81,25 +79,31 @@ function(el,x) {
     layer.setStyle(style_obj);
   };
 
-  function toggle_state(layer, selected) {
+  function toggle_state(layer, selected, init) {
     if(typeof(selected) !== 'undefined') {
       layer._mapedit_selected = selected;
     } else {
       selected = !layer._mapedit_selected;
       layer._mapedit_selected = selected;
     }
-    if(typeof(Shiny) !== 'undefined' && Shiny.onInputChange) {
-debugger;
-      Shiny.onInputChange('%s-mapedit_selected', {'group': layer.groupname, 'selected': selected})
+    if(typeof(Shiny) !== 'undefined' && Shiny.onInputChange && !init) {
+      Shiny.onInputChange(
+        '%s-mapedit_selected',
+        {
+          'group': layer.options.group,
+          'id': layer.options.layerId,
+          'selected': selected
+        }
+      )
     }
     return selected;
   };
 
   // set up click handler on each layer with a group name
   lf.eachLayer(function(lyr){
-    if(lyr.on && lyr.groupname) {
+    if(lyr.on && lyr.options && lyr.options.layerId) {
       // start with all unselected ?
-      toggle_state(lyr, false);
+      toggle_state(lyr, false, init=true);
       toggle_style(lyr, style_obj[lyr._mapedit_selected]);
 
       lyr.on('click',function(e){
