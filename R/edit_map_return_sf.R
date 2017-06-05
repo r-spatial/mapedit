@@ -1,17 +1,21 @@
 #' @keywords internal
-st_as_sfc.geo_list = function(x, ...) {
-  x = switch(x$type,
-             Point = sf::st_point(x$coordinates),
-             MultiPoint = sf::st_multipoint(x$coordinates),
-             LineString = sf::st_linestring(x$coordinates),
-             MultiLineString = sf::st_multilinestring(x$coordinates),
-             Polygon = sf::st_polygon(x$coordinates),
-             MultiPolygon = sf::st_multipolygon(x$coordinates),
-             GeometryCollection = sf::st_geometrycollection(
-               lapply(x$geometries, function(y) st_as_sfc.geo_list(y)[[1]])),
-             stop("unknown class")
+geojson_to_sf = function(x) {
+  do.call(
+    rbind,
+    lapply(x, function(x) {
+      x <- lapply(x, fix_geojso)
+      sf::read_sf(
+        jsonlite::toJSON(x, force=TRUE, auto_unbox=TRUE)
+      )
+    })
   )
-  sf::st_sfc(x, crs = sf::st_crs(4326))
+}
+
+#' @keywords internal
+st_as_sfc.geo_list = function(x, ...) {
+  sf::read_sf(
+    jsonlite::toJSON(x, auto_unbox=TRUE, force=TRUE)
+  )
 }
 
 #' @keywords internal
@@ -22,21 +26,21 @@ st_as_sf.geo_list = function(x, ...) {
 
   x <- fix_geojson_coords(x)
 
-  props <- do.call(
-    data.frame,
-    modifyList(
-      Filter(Negate(is.null), x$properties),
-      list(stringsAsFactors=FALSE)
-    )
-  )
+  #props <- do.call(
+  #  data.frame,
+  #  modifyList(
+  #    Filter(Negate(is.null), x$properties),
+  #    list(stringsAsFactors=FALSE)
+  #  )
+  #)
 
-  geom_sf <- st_as_sfc.geo_list(x$geometry)
+  geom_sf <- st_as_sfc.geo_list(x)
   # if props are empty then we need to handle differently
-  if(nrow(props) == 0 ) {
-    return(sf::st_sf(feature=geom_sf, crs = sf::st_crs(4326)))
-  } else {
-    return(sf::st_sf(props, feature=geom_sf, crs = sf::st_crs(4326)))
-  }
+  #if(nrow(props) == 0 ) {
+  #  return(sf::st_sf(feature=geom_sf, crs = sf::st_crs(4326)))
+  #} else {
+  #  return(sf::st_sf(props, feature=geom_sf, crs = sf::st_crs(4326)))
+  #}
 }
 
 #' @keywords internal
@@ -73,9 +77,9 @@ combine_list_of_sf <- function(sf_list) {
     lapply(
       sf_list,
       function(x) {
-        dplyr::select(
+        dplyr::select_(
           as.data.frame(x, stringsAsFactors=FALSE),
-          -feature
+          paste0("-",attr(x, "sf_column", exact=TRUE))
         )
       }
     )
@@ -84,7 +88,7 @@ combine_list_of_sf <- function(sf_list) {
   sf::st_sf(
     props,
     feature = sf::st_sfc(
-      unlist(lapply(sf_list, function(x) x$feature), recursive=FALSE)
+      unlist(lapply(sf_list, function(x) sf::st_geometry(x)), recursive=FALSE)
     ),
     crs = sf::st_crs(4326)
   )

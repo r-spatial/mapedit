@@ -13,10 +13,11 @@ Interactive editing of spatial data in R | an [RConsortium](https://www.r-consor
 
 ### Install
 
-As the CRAN badge above indicates, `mapedit` is a long way from CRAN. To install, please use `devtools`. `mapedit` requires `leaflet.extras` which is not currently on CRAN and which itself requires a recent development version of `leaflet` (&gt;=1.0.2.9008 as of 13 Feb, 2017).
+As the CRAN badge above indicates, `mapedit` is a long way from CRAN. To install, please use `devtools`. `mapedit` requires `leaflet.extras` which is not currently on CRAN. We will also need the development version of `mapview`.
 
     devtools::install_github("bhaskarvk/leaflet")
     devtools::install_github("bhaskarvk/leaflet.extras")
+    devtools::install_github("r-spatial/mapview@develop")
     devtools::install_github("r-spatial/mapedit")
 
 ### Examples
@@ -30,7 +31,7 @@ We can interactively CRD (create, update, delete) features on a map with `editMa
     editMap(leaflet() %>% addTiles())
 
     editMap(
-      mapview(breweries91)@map,
+      mapview(breweries91),
       targetLayerId = "breweries91"
     )
 
@@ -43,7 +44,7 @@ We can interactively CRD (create, update, delete) features on a map with `editMa
     selectMap(
       leaflet(breweries91) %>%
         addTiles() %>%
-        addCircleMarkers(group = ~brewery)
+        addCircleMarkers(layerId = ~brewery)
     )
 
 ### Code of Conduct

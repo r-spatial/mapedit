@@ -15,76 +15,52 @@ selectMap.leaflet <- function(
   x = NULL,
   styleFalse = list(fillOpacity = 0.2, weight = 1, opacity = 0.4),
   styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7),
-  targetGroups = NULL
+  ns = "mapedit-select"
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
   stopifnot(
+    requireNamespace("leaflet"),
     requireNamespace("leaflet.extras"),
     requireNamespace("shiny"),
     requireNamespace("miniUI")
   )
 
-  # add the script to handle selection state to leaflet
-  x <- add_select_script(
-    lf = x,
-    styleFalse = styleFalse,
-    styleTrue = styleTrue,
-    targetGroups = targetGroups
-  )
-
   ui <- miniUI::miniPage(
-    miniUI::miniContentPanel(x, height=NULL, width=NULL),
+    miniUI::miniContentPanel(selectModUI(ns), height=NULL, width=NULL),
     miniUI::gadgetTitleBar("Select Features on Map", right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE))
   )
 
   server <- function(input, output, session) {
-    id = "mapedit"
-    select_evt = paste0(id, "_selected")
+    selections <- callModule(
+      selectMod,
+      ns,
+      x,
+      styleFalse = styleFalse,
+      styleTrue = styleTrue
+    )
 
-    # a container for our selections
-    selections <- data.frame()
-
-    observeEvent(input[[select_evt]], {
-      #print(input[[select_evt]])
-      if(nrow(selections) == 0) {
-        selections <<- data.frame(
-          group = input[[select_evt]]$group,
-          selected = input[[select_evt]]$selected,
-          stringsAsFactors = FALSE
-        )
-      } else {
-        # see if already exists
-        loc <- which(selections$group == input[[select_evt]]$group)
-
-        if(length(loc) > 0) {
-          selections[loc, "selected"] <<- input[[select_evt]]$selected
-        } else {
-          selections[nrow(selections) + 1, ] <<- c(input[[select_evt]]$group, input[[select_evt]]$selected)
-        }
-      }
-    })
-
+    observe({selections()})
 
     shiny::observeEvent(input$done, {
       shiny::stopApp(
-        selections
+        selections()
       )
     })
 
     shiny::observeEvent(input$cancel, { shiny::stopApp (NULL) })
   }
 
+
   shiny::runGadget(
     ui,
     server,
-    viewer =  shiny::dialogViewer("Select"),
     stopOnCancel = FALSE
   )
 }
 
 #' @keywords internal
-add_select_script <- function(lf, styleFalse, styleTrue, targetGroups) {
+add_select_script <- function(lf, styleFalse, styleTrue, ns="") {
   ## check for existing onRender jsHook?
 
   htmlwidgets::onRender(
@@ -103,25 +79,31 @@ function(el,x) {
     layer.setStyle(style_obj);
   };
 
-  function toggle_state(layer, selected) {
+  function toggle_state(layer, selected, init) {
     if(typeof(selected) !== 'undefined') {
       layer._mapedit_selected = selected;
     } else {
       selected = !layer._mapedit_selected;
       layer._mapedit_selected = selected;
     }
-    if(typeof(Shiny) !== 'undefined' && Shiny.onInputChange) {
-      debugger;
-      Shiny.onInputChange('mapedit_selected', {'group': layer.groupname, 'selected': selected})
+    if(typeof(Shiny) !== 'undefined' && Shiny.onInputChange && !init) {
+      Shiny.onInputChange(
+        '%s-mapedit_selected',
+        {
+          'group': layer.options.group,
+          'id': layer.options.layerId,
+          'selected': selected
+        }
+      )
     }
     return selected;
   };
 
   // set up click handler on each layer with a group name
   lf.eachLayer(function(lyr){
-    if(lyr.on && lyr.groupname) {
+    if(lyr.on && lyr.options && lyr.options.layerId) {
       // start with all unselected ?
-      toggle_state(lyr, false);
+      toggle_state(lyr, false, init=true);
       toggle_style(lyr, style_obj[lyr._mapedit_selected]);
 
       lyr.on('click',function(e){
@@ -133,7 +115,8 @@ function(el,x) {
 }
 ",
       jsonlite::toJSON(styleFalse, auto_unbox=TRUE),
-      jsonlite::toJSON(styleTrue, auto_unbox=TRUE)
+      jsonlite::toJSON(styleTrue, auto_unbox=TRUE),
+      ns
     )
   )
 }

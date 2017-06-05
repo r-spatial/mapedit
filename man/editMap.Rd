@@ -17,35 +17,24 @@ Interactively Edit a Map
 \examples{
 library(leaflet)
 library(mapedit)
-edit_map(leaflet() \%>\% addTiles())
+editMap(leaflet() \%>\% addTiles())
 
 \dontrun{
   # demonstrate Leaflet.Draw on a layer
-
-  # will use the very new randgeo
-  # devtools::install_github("ropensci/randgeo")
-
-  library(leaflet)
+  library(sf)
+  library(mapview)
   library(leaflet.extras)
-  library(randgeo)  # see install instructions above
-# not working now due to error in addGeoJSON :(
-  lf <- leaflet() \%>\%
-    addTiles() \%>\%
-    addGeoJSON(
-      geo_polygon(
-        count = 10,
-        bbox = c(50,50,60,60),
-        max_radial_length = 2
-      ),
-      layerId = "randgeo"
-    ) \%>\%
-    addDrawToolbar(
-      targetLayer = "randgeo",
-      editOptions = editToolbarOptions()
-    ) \%>\%
-    fitBounds(48,48,62,62)
-
   library(mapedit)
-  editMap(lf)
+
+  # ?sf::sf
+  pol = st_sfc(
+    st_polygon(list(cbind(c(0,3,3,0,0),c(0,0,3,3,0)))),
+    crs = 4326
+  )
+  mapview(pol) \%>\%
+    editMap(targetLayerId = "pol")
+
+  mapview(franconia[1:2,]) \%>\%
+    editMap(targetLayerId = "franconia[1:2, ]")
 }
 }
