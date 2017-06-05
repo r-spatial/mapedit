@@ -18,22 +18,14 @@ Interactively Select Map Features
 library(mapedit)
 library(leaflet)
 
-lf <- leaflet() \%>\%
-  addTiles()
+lf <- mapview()
 
 # draw some polygons that we will select later
 drawing <- lf \%>\%
   editMap()
 
 # little easier now with sf
-Reduce(
-  function(x,i){
-    x \%>\% addPolygons(data = drawing$finished[i,], group = as.character(i))
-  },
-  seq_len(nrow(drawing$finished)),
-  init = lf
-) \%>\%
-  selectMap()
+mapview(drawing$finished)
 
 # especially easy with selectFeatures
 selectFeatures(drawing$finished)
@@ -67,10 +59,10 @@ bounds <- c(-125, 24 ,-75, 45)
       ))) \%>\%
   fitBounds(bounds[1], bounds[2], bounds[3], bounds[4]) \%>\%
   setMaxBounds(bounds[1], bounds[2], bounds[3], bounds[4]) \%>\%
-  addPolygons(
+  mapview::addFeatures(
     data=spdf, weight = 1, color = "#000000",
     # adding group necessary for identification
-    group = ~iso_3166_2,
+    layerId = ~iso_3166_2,
     fillColor=~pal(pop_2014),
     fillOpacity=0.7,
     label=~stringr::str_c(name,' ', format(pop_2014, big.mark=",")),

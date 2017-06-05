@@ -20,17 +20,7 @@ selectFeatures.sf = function(x, platform = c("mapview", "leaflet"), ...) {
 
   if (platform == "mapview") {
     m = mapview::mapview()@map
-    m = Reduce(
-      function(left, right) {
-        mapview::addFeatures(
-          left,
-          x[right,],
-          layerId = as.character(right)
-        )
-      },
-      x$edit_id,
-      init = m
-    )
+    m = mapview::addFeatures(m, data=x, layerId=~x$edit_id)
     m = leaflet::fitBounds(m,
                            lng1 = as.numeric(sf::st_bbox(x)[1]),
                            lat1 = as.numeric(sf::st_bbox(x)[2]),
@@ -39,17 +29,7 @@ selectFeatures.sf = function(x, platform = c("mapview", "leaflet"), ...) {
     m = mapview::addHomeButton(map = m, ext = mapview:::createExtent(x))
   } else {
     m = leaflet::addTiles(leaflet::leaflet())
-    m = Reduce(
-      function(left, right) {
-        mapview::addFeatures(
-          left,
-          x[right,],
-          layerId = as.character(right)
-        )
-      },
-      seq_len(x$edit_id),
-      init = m
-    )
+    m = mapview::addFeatures(m, data=x, layerId=~x$edit_id)
   }
 
   ind = selectMap(m, ...)
