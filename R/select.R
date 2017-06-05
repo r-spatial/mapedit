@@ -18,11 +18,6 @@ selectFeatures.sf = function(x, platform = c("mapview", "leaflet"), ...) {
   x = mapview:::checkAdjustProjection(x)
   x$edit_group = as.character(1:nrow(x))
 
-  addfun = switch(as.character(sf::st_dimension(sf::st_geometry(x)))[1],
-                  "0" = leaflet::addCircleMarkers,
-                  "1" = leaflet::addPolylines,
-                  "2" = leaflet::addPolygons)
-
   if (platform == "mapview") {
     m = mapview::mapview()@map
     m = Reduce(
@@ -36,7 +31,6 @@ selectFeatures.sf = function(x, platform = c("mapview", "leaflet"), ...) {
       seq_len(nrow(x)),
       init = m
     )
-    #addfun(map = m, data = x, weight = 1, group = ~edit_group)
     m = leaflet::fitBounds(m,
                            lng1 = as.numeric(sf::st_bbox(x)[1]),
                            lat1 = as.numeric(sf::st_bbox(x)[2]),
@@ -45,7 +39,17 @@ selectFeatures.sf = function(x, platform = c("mapview", "leaflet"), ...) {
     m = mapview::addHomeButton(map = m, ext = mapview:::createExtent(x))
   } else {
     m = leaflet::addTiles(leaflet::leaflet())
-    m = addfun(map = m, data = x, weight = 1, group = ~edit_group)
+    m = Reduce(
+      function(left, right) {
+        mapview::addFeatures(
+          left,
+          x[right,],
+          group = as.character(right)
+        )
+      },
+      seq_len(nrow(x)),
+      init = m
+    )
   }
 
   ind = selectMap(m, ...)
