@@ -7,7 +7,7 @@
 #' @export
 selectModUI <- function(id, ...) {
   ns <- shiny::NS(id)
-  leafletOutput(ns("map"), ...)
+  leaflet::leafletOutput(ns("map"), ...)
 }
 
 
@@ -29,7 +29,7 @@ selectMod <- function(
   styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7)
 ) {
 
-  output$map <- renderLeaflet({
+  output$map <- leaflet::renderLeaflet({
     mapedit:::add_select_script(
       leafmap,
       styleFalse = styleFalse,
@@ -82,7 +82,7 @@ selectMod <- function(
 #' @export
 editModUI <- function(id, ...) {
   ns <- shiny::NS(id)
-  leafletOutput(ns("map"), ...)
+  leaflet::leafletOutput(ns("map"), ...)
 }
 
 #' Shiny Module Server for Geo Create, Edit, Delete
@@ -125,7 +125,7 @@ editMod <- function(
     )
   }
 
-  output$map <- renderLeaflet({leafmap})
+  output$map <- leaflet::renderLeaflet({leafmap})
 
   featurelist <- reactiveValues(
     drawn = list(),
