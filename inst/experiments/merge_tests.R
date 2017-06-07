@@ -1,29 +1,8 @@
-merge_delete <- function(orig = NULL, deletes = NULL, by = c("id" = "layerId")) {
-  if(is.null(deletes)) {
-    return(orig)
-  }
+library(mapview)
+library(mapedit)
+library(sf)
 
-  orig_ids = orig[,names(by)[1], drop = TRUE]
-  del_ids = deletes[,by[[1]], drop=TRUE]
-
-  orig[which(!(orig_ids %in% del_ids)),]
-}
-
-merge_add <- function(orig = NULL, drawn = NULL) {
-  if(is.null(drawn)) {
-    return(orig)
-  }
-
-  if(is.null(orig)) {
-    return(drawn)
-  }
-
-  mapedit:::combine_list_of_sf(
-    list(orig, drawn)
-  )
-}
-
-# for reproducibility
+# for reproducibility and testing
 #   a sample edit to test_sf
 test_sf <- structure(list(feature_type = c("polygon", "rectangle", "rectangle"
 ), id = c(77L, 89L, 94L), feature = structure(list(structure(list(
