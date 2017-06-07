@@ -64,6 +64,28 @@ NA_integer_), class = "factor", .Label = c("constant", "aggregate",
 "identity"), .Names = c("X_leaflet_id", "feature_type")), class = c("sf",
 "data.frame"))
 
-merge_delete(test_sf, del)
-merge_add(test_sf, drwn)
-mapview(merge_add(test_sf,drwn))
+
+# for reproducibility
+#   a sample edit to test_sf
+ed <- structure(list(X_leaflet_id = 33L, layerId = 77L, feature = structure(list(
+structure(list(structure(c(8.7702, 8.7701, 8.7702, 8.7704,
+8.7702, 50.8151, 50.815, 50.8149, 50.8149, 50.8151), .Dim = c(5L,
+2L))), class = c("XY", "POLYGON", "sfg"))), n_empty = 0L, class = c("sfc_POLYGON",
+"sfc"), precision = 0, crs = structure(list(epsg = 4326L, proj4string = "+proj=longlat +datum=WGS84 +no_defs"), .Names = c("epsg",
+"proj4string"), class = "crs"), bbox = structure(c(8.7701, 50.8149,
+8.7704, 50.8151), .Names = c("xmin", "ymin", "xmax", "ymax")))), .Names = c("X_leaflet_id",
+"layerId", "feature"), row.names = 1L, sf_column = "feature", agr = structure(c(NA_integer_,
+NA_integer_), class = "factor", .Label = c("constant", "aggregate",
+"identity"), .Names = c("X_leaflet_id", "layerId")), class = c("sf",
+"data.frame"))
+
+mapedit:::merge_delete(test_sf, del)
+mapedit:::merge_add(test_sf, drwn)
+mapedit:::merge_edit(test_sf, ed)
+
+test_sf %>%
+  mapedit:::merge_add(drwn) %>%
+  mapedit:::merge_edit(ed) %>%
+  mapedit:::merge_delete(del)
+
+mapview(mapedit:::merge_add(test_sf,drwn))
