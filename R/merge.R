@@ -78,9 +78,11 @@ merge_delete <- function(
 #' @param orig \code{sf} with the original or source data to which
 #'          adds should apply
 #' @param drawn \code{sf} with sf data to add to orig
+#' @param by not used in merge_add.  This argument only exists
+#'          for symmetry with the other merge functions.
 #'
 #' @keywords internal
-merge_add <- function(orig = NULL, drawn = NULL) {
+merge_add <- function(orig = NULL, drawn = NULL, by = NULL) {
 
   # if drawn is empty return orig sf
   if(is.null(drawn)) {

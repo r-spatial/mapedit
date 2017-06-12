@@ -65,3 +65,73 @@ editMap.mapview <- function(x = NULL, targetLayerId = NULL, sf = TRUE, ns = "map
 
   editMap.leaflet(x@map, targetLayerId = targetLayerId, sf = sf, ns = ns)
 }
+
+
+#' Interactively Edit Map Features
+#'
+#' @param x features to edit
+#' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
+#'          the type of map you would like to use for editing
+#' @param \code{vector} or \code{character} arguments to specify the order
+#'          of merge operations.  By default, merges will proceed in the order
+#'          of add, edit, delete.
+#' @param ... other arguments
+#'
+#' @example ./inst/examples/examples_select.R
+#' @export
+editFeatures = function(x, ...) {
+  UseMethod("editFeatures")
+}
+
+#' @export
+editFeatures.sf = function(
+  x,
+  platform = c("mapview", "leaflet"),
+  mergeOrder = c("add", "edit", "delete"),
+  ...
+) {
+
+  if (length(platform) > 1) platform = platform[1]
+
+  x = mapview:::checkAdjustProjection(x)
+  x$edit_id = as.character(1:nrow(x))
+
+  if (platform == "mapview") {
+    m = mapview::mapview()@map
+    m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
+    m = leaflet::fitBounds(m,
+                           lng1 = as.numeric(sf::st_bbox(x)[1]),
+                           lat1 = as.numeric(sf::st_bbox(x)[2]),
+                           lng2 = as.numeric(sf::st_bbox(x)[3]),
+                           lat2 = as.numeric(sf::st_bbox(x)[4]))
+    m = mapview::addHomeButton(map = m, ext = mapview:::createExtent(x))
+  } else {
+    m = leaflet::addTiles(leaflet::leaflet())
+    m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
+  }
+
+  crud = editMap(m, targetLayerId = "toedit", ...)
+
+  merged <- Reduce(
+    function(left_sf, op) {
+      op <- tolower(op)
+      if(op == "add") sf_merge <- crud$drawn
+      if(op == "edit") sf_merge <- crud$edited
+      if(op == "delete") sf_merge <- crud$deleted
+
+      if(is.null(sf_merge)) return(left_sf)
+
+      eval(call(paste0("merge_", op), left_sf, sf_merge, c("edit_id" = "layerId")))
+    },
+    mergeOrder,
+    init = x
+  )
+
+  # return merged features
+  return(merged)
+}
+
+#' @export
+editFeatures.Spatial = function(x, ...) {
+  editFeatures(sf::st_as_sf(x), ...)
+}

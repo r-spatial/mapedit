@@ -4,13 +4,16 @@
 \alias{merge_add}
 \title{Merge 'sf' Adds}
 \usage{
-merge_add(orig = NULL, drawn = NULL)
+merge_add(orig = NULL, drawn = NULL, by = NULL)
 }
 \arguments{
 \item{orig}{\code{sf} with the original or source data to which
 adds should apply}
 
 \item{drawn}{\code{sf} with sf data to add to orig}
+
+\item{by}{not used in merge_add.  This argument only exists
+for symmetry with the other merge functions.}
 }
 \description{
 Internal function used with \code{editFeatures} to apply adds or drawn
