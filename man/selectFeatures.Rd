@@ -7,7 +7,7 @@
 selectFeatures(x, ...)
 }
 \arguments{
-\item{x}{map to use}
+\item{x}{features to select}
 
 \item{...}{other arguments}
 

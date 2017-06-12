@@ -1,6 +1,6 @@
 #' Interactively Select Map Features
 #'
-#' @param x map to use
+#' @param x features to select
 #' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
 #'          the type of map you would like to use for selection
 #' @param index \code{logical} with \code{index=TRUE} to indicate return
@@ -16,7 +16,7 @@ selectFeatures = function(x, ...) {
 
 #' @export
 selectFeatures.sf = function(
-  x,
+  x = NULL,
   platform = c("mapview", "leaflet"),
   index = FALSE,
   ...
