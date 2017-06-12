@@ -1,7 +1,10 @@
 #' Interactively Select Map Features
 #'
-#' @param x map to use
-#'
+#' @param x \code{leaflet} or \code{mapview} map to use for selection
+#' @param styleFalse,styleTrue names \code{list} of CSS styles used
+#'          for selected (\code{styleTrue}) and deselected (\code{styleFalse})
+#' @param ns \code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
+#'          is unlikely to require a change.
 #' @param ... other arguments
 #'
 #' @example ./inst/examples/examples_select.R

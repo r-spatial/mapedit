@@ -2,11 +2,11 @@
 #'
 #' @param x features to select
 #' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
-#'          the type of map you would like to use for selection
-#' @param index \code{logical} with \code{index=TRUE} to indicate return
+#'          the type of map to use for selection
+#' @param index \code{logical} with \code{index=TRUE} indicating return
 #'          the index of selected features rather than the actual
 #'          selected features
-#' @param ... other arguments
+#' @param ... other arguments passed to \code{selectMap()}
 #'
 #' @example ./inst/examples/examples_select.R
 #' @export

@@ -7,9 +7,15 @@
 selectMap(x, ...)
 }
 \arguments{
-\item{x}{map to use}
+\item{x}{\code{leaflet} or \code{mapview} map to use for selection}
 
 \item{...}{other arguments}
+
+\item{styleFalse, styleTrue}{names \code{list} of CSS styles used
+for selected (\code{styleTrue}) and deselected (\code{styleFalse})}
+
+\item{ns}{\code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
+is unlikely to require a change.}
 }
 \description{
 Interactively Select Map Features

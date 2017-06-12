@@ -7,9 +7,20 @@
 editMap(x, ...)
 }
 \arguments{
-\item{x}{map to edit}
+\item{x}{\code{leaflet} or \code{mapview} map to edit}
 
 \item{...}{other arguments}
+
+\item{targetLayerId}{\code{string} name of the map layer group to use with edit}
+
+\item{sf}{\code{logical} return simple features.  The default is \code{TRUE}.
+If \code{sf = FALSE}, \code{GeoJSON} will be returned.}
+
+\item{ns}{\code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
+is unlikely to require a change.}
+}
+\value{
+\code{sf} simple features or \code{GeoJSON}
 }
 \description{
 Interactively Edit a Map
