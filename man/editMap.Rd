@@ -2,9 +2,19 @@
 % Please edit documentation in R/edit.R
 \name{editMap}
 \alias{editMap}
+\alias{editMap}
+\alias{editMap.leaflet}
+\alias{editMap}
+\alias{editMap.mapview}
 \title{Interactively Edit a Map}
 \usage{
 editMap(x, ...)
+
+\method{editMap}{leaflet}(x = NULL, targetLayerId = NULL, sf = TRUE,
+  ns = "mapedit-edit", ...)
+
+\method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
+  ns = "mapedit-edit", ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}
@@ -26,10 +36,11 @@ is unlikely to require a change.}
 Interactively Edit a Map
 }
 \examples{
+\dontrun{
 library(leaflet)
 library(mapedit)
 editMap(leaflet() \%>\% addTiles())
-
+}
 \dontrun{
   # demonstrate Leaflet.Draw on a layer
   library(sf)

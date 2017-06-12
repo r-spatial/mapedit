@@ -1,28 +1,32 @@
 #' Interactively Edit a Map
 #'
 #' @param x \code{leaflet} or \code{mapview} map to edit
-#' @param targetLayerId \code{string} name of the map layer group to use with edit
-#' @param sf \code{logical} return simple features.  The default is \code{TRUE}.
-#'          If \code{sf = FALSE}, \code{GeoJSON} will be returned.
-#' @param ns \code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
-#'          is unlikely to require a change.
 #' @param ... other arguments
 #'
 #' @return \code{sf} simple features or \code{GeoJSON}
 #'
 #' @examples
+#' \dontrun{
 #' library(leaflet)
 #' library(mapedit)
 #' editMap(leaflet() %>% addTiles())
-#'
+#' }
 #' @example inst/examples/examples_edit.R
 #' @export
 editMap <- function(x, ...) {
   UseMethod("editMap")
 }
 
+#' @name editMap
+#' @param targetLayerId \code{string} name of the map layer group to use with edit
+#' @param sf \code{logical} return simple features.  The default is \code{TRUE}.
+#'          If \code{sf = FALSE}, \code{GeoJSON} will be returned.
+#' @param ns \code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
+#'          is unlikely to require a change.
 #' @export
-editMap.leaflet <- function(x = NULL, targetLayerId = NULL, sf = TRUE, ns = "mapedit-edit") {
+editMap.leaflet <- function(
+  x = NULL, targetLayerId = NULL, sf = TRUE, ns = "mapedit-edit", ...
+) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
   stopifnot(
@@ -65,8 +69,11 @@ editMap.leaflet <- function(x = NULL, targetLayerId = NULL, sf = TRUE, ns = "map
   )
 }
 
+#' @name editMap
 #' @export
-editMap.mapview <- function(x = NULL, targetLayerId = NULL, sf = TRUE, ns = "mapedit-edit") {
+editMap.mapview <- function(
+  x = NULL, targetLayerId = NULL, sf = TRUE, ns = "mapedit-edit", ...
+) {
   stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
 
   editMap.leaflet(x@map, targetLayerId = targetLayerId, sf = sf, ns = ns)
@@ -76,11 +83,6 @@ editMap.mapview <- function(x = NULL, targetLayerId = NULL, sf = TRUE, ns = "map
 #' Interactively Edit Map Features
 #'
 #' @param x features to edit
-#' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
-#'          the type of map you would like to use for editing
-#' @param \code{vector} or \code{character} arguments to specify the order
-#'          of merge operations.  By default, merges will proceed in the order
-#'          of add, edit, delete.
 #' @param ... other arguments
 #'
 #' @example ./inst/examples/examples_select.R
@@ -89,6 +91,13 @@ editFeatures = function(x, ...) {
   UseMethod("editFeatures")
 }
 
+#' @name editFeatures
+#'
+#' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
+#'          the type of map you would like to use for editing
+#' @param mergeOrder \code{vector} or \code{character} arguments to specify the order
+#'          of merge operations.  By default, merges will proceed in the order
+#'          of add, edit, delete.
 #' @export
 editFeatures.sf = function(
   x,
@@ -155,6 +164,7 @@ editFeatures.sf = function(
   return(merged)
 }
 
+#' @name editFeatures
 #' @export
 editFeatures.Spatial = function(x, ...) {
   editFeatures(sf::st_as_sf(x), ...)

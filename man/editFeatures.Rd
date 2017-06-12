@@ -2,9 +2,18 @@
 % Please edit documentation in R/edit.R
 \name{editFeatures}
 \alias{editFeatures}
+\alias{editFeatures}
+\alias{editFeatures.sf}
+\alias{editFeatures}
+\alias{editFeatures.Spatial}
 \title{Interactively Edit Map Features}
 \usage{
 editFeatures(x, ...)
+
+\method{editFeatures}{sf}(x, platform = c("mapview", "leaflet"),
+  mergeOrder = c("add", "edit", "delete"), ...)
+
+\method{editFeatures}{Spatial}(x, ...)
 }
 \arguments{
 \item{x}{features to edit}
@@ -14,7 +23,7 @@ editFeatures(x, ...)
 \item{platform}{one of \code{"leaflet"} or \code{"mapview"} to indicate
 the type of map you would like to use for editing}
 
-\item{\code{vector}}{or \code{character} arguments to specify the order
+\item{mergeOrder}{\code{vector} or \code{character} arguments to specify the order
 of merge operations.  By default, merges will proceed in the order
 of add, edit, delete.}
 }
@@ -22,8 +31,9 @@ of add, edit, delete.}
 Interactively Edit Map Features
 }
 \examples{
+\dontrun{
 library(mapedit)
-library(leaflet)
+library(mapview)
 
 lf <- mapview()
 
@@ -37,7 +47,7 @@ mapview(drawing$finished)
 # especially easy with selectFeatures
 selectFeatures(drawing$finished)
 
-\dontrun{
+
 # use @bhaskarvk USA Albers with leaflet code
 #  https://bhaskarvk.github.io/leaflet/examples/proj4Leaflet.html
 #devtools::install_github("hrbrmstr/albersusa")
@@ -61,7 +71,10 @@ bounds <- c(-125, 24 ,-75, 45)
       crs=leafletCRS(
         crsClass="L.Proj.CRS",
         code='EPSG:2163',
-        proj4def='+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs',
+        proj4def=paste0(
+          '+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 ',
+          '+b=6370997 +units=m +no_defs'
+        ),
         resolutions = c(65536, 32768, 16384, 8192, 4096, 2048,1024, 512, 256, 128)
       ))) \%>\%
   fitBounds(bounds[1], bounds[2], bounds[3], bounds[4]) \%>\%

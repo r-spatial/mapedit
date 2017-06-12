@@ -1,24 +1,25 @@
 #' Interactively Select Map Features
 #'
 #' @param x \code{leaflet} or \code{mapview} map to use for selection
-#' @param styleFalse,styleTrue names \code{list} of CSS styles used
-#'          for selected (\code{styleTrue}) and deselected (\code{styleFalse})
-#' @param ns \code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
-#'          is unlikely to require a change.
 #' @param ... other arguments
-#'
 #' @example ./inst/examples/examples_select.R
 #' @export
 selectMap <- function(x, ...) {
   UseMethod("selectMap")
 }
 
+#' @name selectMap
+#' @param styleFalse,styleTrue names \code{list} of CSS styles used
+#'          for selected (\code{styleTrue}) and deselected (\code{styleFalse})
+#' @param ns \code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
+#'          is unlikely to require a change.
 #' @export
 selectMap.leaflet <- function(
   x = NULL,
   styleFalse = list(fillOpacity = 0.2, weight = 1, opacity = 0.4),
   styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7),
-  ns = "mapedit-select"
+  ns = "mapedit-select",
+  ...
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 

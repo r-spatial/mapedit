@@ -2,9 +2,15 @@
 % Please edit documentation in R/query.R
 \name{selectMap}
 \alias{selectMap}
+\alias{selectMap}
+\alias{selectMap.leaflet}
 \title{Interactively Select Map Features}
 \usage{
 selectMap(x, ...)
+
+\method{selectMap}{leaflet}(x = NULL, styleFalse = list(fillOpacity = 0.2,
+  weight = 1, opacity = 0.4), styleTrue = list(fillOpacity = 0.7, weight = 3,
+  opacity = 0.7), ns = "mapedit-select", ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to use for selection}
@@ -21,8 +27,9 @@ is unlikely to require a change.}
 Interactively Select Map Features
 }
 \examples{
+\dontrun{
 library(mapedit)
-library(leaflet)
+library(mapview)
 
 lf <- mapview()
 
@@ -36,7 +43,7 @@ mapview(drawing$finished)
 # especially easy with selectFeatures
 selectFeatures(drawing$finished)
 
-\dontrun{
+
 # use @bhaskarvk USA Albers with leaflet code
 #  https://bhaskarvk.github.io/leaflet/examples/proj4Leaflet.html
 #devtools::install_github("hrbrmstr/albersusa")
@@ -60,7 +67,10 @@ bounds <- c(-125, 24 ,-75, 45)
       crs=leafletCRS(
         crsClass="L.Proj.CRS",
         code='EPSG:2163',
-        proj4def='+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs',
+        proj4def=paste0(
+          '+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 ',
+          '+b=6370997 +units=m +no_defs'
+        ),
         resolutions = c(65536, 32768, 16384, 8192, 4096, 2048,1024, 512, 256, 128)
       ))) \%>\%
   fitBounds(bounds[1], bounds[2], bounds[3], bounds[4]) \%>\%

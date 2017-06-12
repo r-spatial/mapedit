@@ -1,12 +1,7 @@
 #' Interactively Select Map Features
 #'
 #' @param x features to select
-#' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
-#'          the type of map to use for selection
-#' @param index \code{logical} with \code{index=TRUE} indicating return
-#'          the index of selected features rather than the actual
-#'          selected features
-#' @param ... other arguments passed to \code{selectMap()}
+#' @param ... other arguments
 #'
 #' @example ./inst/examples/examples_select.R
 #' @export
@@ -14,6 +9,13 @@ selectFeatures = function(x, ...) {
   UseMethod("selectFeatures")
 }
 
+
+#' @name selectFeatures
+#' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
+#'          the type of map to use for selection
+#' @param index \code{logical} with \code{index=TRUE} indicating return
+#'          the index of selected features rather than the actual
+#'          selected features
 #' @export
 selectFeatures.sf = function(
   x = NULL,
@@ -55,7 +57,13 @@ selectFeatures.sf = function(
   return(x[as.numeric(indx), !names(x) %in% "edit_id"])
 }
 
+#' @name selectFeatures
 #' @export
-selectFeatures.Spatial = function(x, ...) {
+selectFeatures.Spatial = function(
+  x = NULL,
+  platform = c("mapview", "leaflet"),
+  index = FALSE,
+  ...
+) {
   selectFeatures(sf::st_as_sf(x), ...)
 }

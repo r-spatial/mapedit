@@ -16,6 +16,7 @@ Depends:
 Imports:
     dplyr,
     htmltools (>= 0.3),
+    htmlwidgets,
     jsonlite,
     leaflet,
     leaflet.extras,
@@ -23,6 +24,7 @@ Imports:
     miniUI,
     sf,
     shiny
+Remotes: bhaskarvk/leaflet.extras
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
