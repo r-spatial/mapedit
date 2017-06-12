@@ -21,6 +21,7 @@ selectModUI <- function(id, ...) {
 #' @param styleTrue named \code{list} of valid \code{CSS} for selected features
 #'
 #' @return server function for Shiny module
+#' @import shiny
 #' @export
 selectMod <- function(
   input, output, session,
@@ -30,7 +31,7 @@ selectMod <- function(
 ) {
 
   output$map <- leaflet::renderLeaflet({
-    mapedit:::add_select_script(
+    add_select_script(
       leafmap,
       styleFalse = styleFalse,
       styleTrue = styleTrue,
@@ -79,6 +80,7 @@ selectMod <- function(
 #' @param ... other arguments to \code{leafletOutput()}
 #'
 #' @return ui for Shiny module
+#' @import shiny
 #' @export
 editModUI <- function(id, ...) {
   ns <- shiny::NS(id)
@@ -96,6 +98,7 @@ editModUI <- function(id, ...) {
 #'          \code{GeoJSON}.
 #'
 #' @return server function for Shiny module
+#' @import shiny
 #' @export
 editMod <- function(
   input, output, session,
