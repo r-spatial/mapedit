@@ -22,6 +22,14 @@ Interactive editing of spatial data in R | an [RConsortium](https://www.r-consor
 
 `mapedit` is in a very alpha state right now.  We would very much appreciate feedback, ideas, and use cases.  The API is very likely to change dramatically and rapidly over the next couple of months.  We will use semantic versioning to track changes and progress.
 
+### Blog Posts
+
+[Introduction to mapedit](http://r-spatial.org/r/2017/01/30/mapedit_intro.html) - January 30, 2017
+
+
+[mapedit updates in 0.2.0](http://r-spatial.org/r/2017/06/09/mapedit_0-2-0.html) - June 12, 2017
+
+
 ### Install
 
 As the CRAN badge above indicates, `mapedit` is a long way from CRAN.  To install, please use `devtools`. `mapedit` requires `leaflet.extras` which is not currently on CRAN.  We will also need the development version of `mapview`.
@@ -67,3 +75,12 @@ selectMap(
 ### Code of Conduct
 
 Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+
+
+### Acknowledgment
+
+This project has been realized with financial [support](https://www.r-consortium.org/projects) from the
+
+<a href="https://www.r-consortium.org/projects/awarded-projects">
+<img src="http://pebesma.staff.ifgi.de/RConsortium_Horizontal_Pantone.png" width="400">
+</a>
