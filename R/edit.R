@@ -115,11 +115,29 @@ editFeatures.sf = function(
   merged <- Reduce(
     function(left_sf, op) {
       op <- tolower(op)
-      if(op == "add") sf_merge <- crud$drawn
+      if(op == "add") sf_merge <- crud$finished
       if(op == "edit") sf_merge <- crud$edited
       if(op == "delete") sf_merge <- crud$deleted
 
       if(is.null(sf_merge)) return(left_sf)
+
+      # will need to rethink this but for now
+      #   since we use finished above
+      #   only apply edit and delete
+      #   where an edit_id is available
+      #   meaning only to a feature in the original sf
+      if(op %in% c("edit", "delete")) {
+        # if layerId column does not exist then all are new features
+        #   and should already be handled in finished
+        if(!("layerId" %in% colnames(sf_merge))) {
+          return(left_sf)
+        }
+        # ignore any with NA as layerId since these will also be
+        #  handled in finished
+        sf_merge <- sf_merge[which(!is.na(sf_merge$layerId)),]
+      }
+
+      if(nrow(sf_merge) == 0) return(left_sf)
 
       eval(call(paste0("merge_", op), left_sf, sf_merge, c("edit_id" = "layerId")))
     },
