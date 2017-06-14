@@ -56,7 +56,7 @@ library(sf)
 library(leaflet)
 library(mapedit)
 
-spdf <- usa_composite() \%>\% st_as_sf()
+spdf <- usa_sf()
 pal <- colorNumeric(
   palette = "Blues",
   domain = spdf$pop_2014
@@ -76,7 +76,9 @@ bounds <- c(-125, 24 ,-75, 45)
           '+b=6370997 +units=m +no_defs'
         ),
         resolutions = c(65536, 32768, 16384, 8192, 4096, 2048,1024, 512, 256, 128)
-      ))) \%>\%
+      )
+    )
+  ) \%>\%
   fitBounds(bounds[1], bounds[2], bounds[3], bounds[4]) \%>\%
   setMaxBounds(bounds[1], bounds[2], bounds[3], bounds[4]) \%>\%
   mapview::addFeatures(
@@ -86,9 +88,7 @@ bounds <- c(-125, 24 ,-75, 45)
     fillColor=~pal(pop_2014),
     fillOpacity=0.7,
     label=~stringr::str_c(name,' ', format(pop_2014, big.mark=",")),
-    labelOptions= labelOptions(direction = 'auto')#,
-    #highlightOptions = highlightOptions(
-    #  color='#00ff00', bringToFront = TRUE, sendToBack = TRUE)
+    labelOptions= labelOptions(direction = 'auto')
   )
 )
 
