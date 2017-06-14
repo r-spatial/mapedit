@@ -193,6 +193,7 @@ editMod <- function(
             list(
               list(
                 event = evt,
+                timestamp = Sys.time(),
                 feature = input[[evt]]
               )
             )
