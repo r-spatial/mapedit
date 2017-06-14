@@ -177,7 +177,7 @@ editFeatures.sf = function(
   # return merged features
   if(record==TRUE) {
     return(list(
-      merged = merged,
+      features = merged,
       recorder = recorder
     ))
   }
