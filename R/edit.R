@@ -24,10 +24,11 @@ editMap <- function(x, viewer, ...) {
 #'          If \code{sf = FALSE}, \code{GeoJSON} will be returned.
 #' @param ns \code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
 #'          is unlikely to require a change.
+#' @param record \code{logical} to record all edits for future playback.
 #' @export
 editMap.leaflet <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", viewer = shiny::paneViewer(), ...
+  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
@@ -49,7 +50,8 @@ editMap.leaflet <- function(
       ns,
       x,
       targetLayerId = targetLayerId,
-      sf = sf
+      sf = sf,
+      record = record
     )
 
     observe({crud()})
@@ -75,14 +77,13 @@ editMap.leaflet <- function(
 #' @export
 editMap.mapview <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", viewer = shiny::paneViewer(), ...
+  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...
 ) {
   stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
 
   editMap.leaflet(
     x@map, targetLayerId = targetLayerId, sf = sf,
-    ns = ns, viewer = viewer
-  )
+    ns = ns, viewer = viewer, record = TRUE)
 }
 
 
@@ -104,11 +105,13 @@ editFeatures = function(x, ...) {
 #' @param mergeOrder \code{vector} or \code{character} arguments to specify the order
 #'          of merge operations.  By default, merges will proceed in the order
 #'          of add, edit, delete.
+#' @param record \code{logical} to record all edits for future playback.
 #' @export
 editFeatures.sf = function(
   x,
   platform = c("mapview", "leaflet"),
   mergeOrder = c("add", "edit", "delete"),
+  record = FALSE,
   ...
 ) {
 
@@ -131,7 +134,12 @@ editFeatures.sf = function(
     m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
   }
 
-  crud = editMap(m, targetLayerId = "toedit", ...)
+  crud = editMap(m, targetLayerId = "toedit", record = record, ...)
+
+  if(record == TRUE) {
+    recorder = crud$recorder
+    crud = crud$features
+  }
 
   merged <- Reduce(
     function(left_sf, op) {
@@ -167,6 +175,12 @@ editFeatures.sf = function(
   )
 
   # return merged features
+  if(record==TRUE) {
+    return(list(
+      merged = merged,
+      recorder = recorder
+    ))
+  }
   return(merged)
 }
 

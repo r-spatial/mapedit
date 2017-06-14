@@ -11,7 +11,7 @@
 editFeatures(x, ...)
 
 \method{editFeatures}{sf}(x, platform = c("mapview", "leaflet"),
-  mergeOrder = c("add", "edit", "delete"), ...)
+  mergeOrder = c("add", "edit", "delete"), record = FALSE, ...)
 
 \method{editFeatures}{Spatial}(x, ...)
 }
@@ -26,6 +26,8 @@ the type of map you would like to use for editing}
 \item{mergeOrder}{\code{vector} or \code{character} arguments to specify the order
 of merge operations.  By default, merges will proceed in the order
 of add, edit, delete.}
+
+\item{record}{\code{logical} to record all edits for future playback.}
 }
 \description{
 Interactively Edit Map Features
