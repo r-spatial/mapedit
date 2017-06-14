@@ -249,8 +249,9 @@ editMod <- function(
         }
       )
     }
-    if(record == TRUE) {
-      return(list(features=workinglist, recorder=recorder))
+    # return merged features
+    if(record==TRUE) {
+      attr(workinglist, "recorder") <- recorder
     }
     return(workinglist)
   })

@@ -82,8 +82,13 @@ editMap.mapview <- function(
   stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
 
   editMap.leaflet(
+<<<<<<< HEAD
     x@map, targetLayerId = targetLayerId, sf = sf,
     ns = ns, viewer = viewer, record = TRUE)
+=======
+    x@map, targetLayerId = targetLayerId, sf = sf, ns = ns, record = record
+  )
+>>>>>>> change record to add attribute for return value consistency
 }
 
 
@@ -136,11 +141,6 @@ editFeatures.sf = function(
 
   crud = editMap(m, targetLayerId = "toedit", record = record, ...)
 
-  if(record == TRUE) {
-    recorder = crud$recorder
-    crud = crud$features
-  }
-
   merged <- Reduce(
     function(left_sf, op) {
       op <- tolower(op)
@@ -176,10 +176,7 @@ editFeatures.sf = function(
 
   # return merged features
   if(record==TRUE) {
-    return(list(
-      features = merged,
-      recorder = recorder
-    ))
+    attr(merged, "recorder") <- attr(crud, "recorder", exact=TRUE)
   }
   return(merged)
 }
