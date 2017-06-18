@@ -1,10 +1,11 @@
 #' Interactively Select Map Features
 #'
 #' @param x \code{leaflet} or \code{mapview} map to use for selection
+#' @param viewer \code{function} for the viewer.  See \code{\link[shiny]{viewer}}.
 #' @param ... other arguments
 #' @example ./inst/examples/examples_select.R
 #' @export
-selectMap <- function(x, ...) {
+selectMap <- function(x, viewer, ...) {
   UseMethod("selectMap")
 }
 
@@ -19,6 +20,7 @@ selectMap.leaflet <- function(
   styleFalse = list(fillOpacity = 0.2, weight = 1, opacity = 0.4),
   styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7),
   ns = "mapedit-select",
+  viewer = shiny::paneViewer(),
   ...
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
@@ -59,6 +61,7 @@ selectMap.leaflet <- function(
   shiny::runGadget(
     ui,
     server,
+    viewer = viewer,
     stopOnCancel = FALSE
   )
 }

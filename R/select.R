@@ -1,11 +1,12 @@
 #' Interactively Select Map Features
 #'
 #' @param x features to select
+#' @param viewer \code{function} for the viewer.  See \code{\link[shiny]{viewer}}.
 #' @param ... other arguments
 #'
 #' @example ./inst/examples/examples_select.R
 #' @export
-selectFeatures = function(x, ...) {
+selectFeatures = function(x, viewer, ...) {
   UseMethod("selectFeatures")
 }
 
@@ -21,6 +22,7 @@ selectFeatures.sf = function(
   x = NULL,
   platform = c("mapview", "leaflet"),
   index = FALSE,
+  viewer = shiny::paneViewer(),
   ...
 ) {
 
@@ -43,7 +45,7 @@ selectFeatures.sf = function(
     m = mapview::addFeatures(m, data=x, layerId=~x$edit_id)
   }
 
-  ind = selectMap(m, ...)
+  ind = selectMap(m, viewer=viewer, ...)
 
   indx = ind$id[as.logical(ind$selected)]
   # todrop = "edit_id"
@@ -63,6 +65,7 @@ selectFeatures.Spatial = function(
   x = NULL,
   platform = c("mapview", "leaflet"),
   index = FALSE,
+  viewer = shiny::paneViewer(),
   ...
 ) {
   selectFeatures(sf::st_as_sf(x), ...)

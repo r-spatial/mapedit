@@ -6,14 +6,16 @@
 \alias{selectMap.leaflet}
 \title{Interactively Select Map Features}
 \usage{
-selectMap(x, ...)
+selectMap(x, viewer, ...)
 
 \method{selectMap}{leaflet}(x = NULL, styleFalse = list(fillOpacity = 0.2,
   weight = 1, opacity = 0.4), styleTrue = list(fillOpacity = 0.7, weight = 3,
-  opacity = 0.7), ns = "mapedit-select", ...)
+  opacity = 0.7), ns = "mapedit-select", viewer = shiny::paneViewer(), ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to use for selection}
+
+\item{viewer}{\code{function} for the viewer.  See \code{\link[shiny]{viewer}}.}
 
 \item{...}{other arguments}
 

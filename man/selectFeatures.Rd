@@ -8,16 +8,18 @@
 \alias{selectFeatures.Spatial}
 \title{Interactively Select Map Features}
 \usage{
-selectFeatures(x, ...)
+selectFeatures(x, viewer, ...)
 
 \method{selectFeatures}{sf}(x = NULL, platform = c("mapview", "leaflet"),
-  index = FALSE, ...)
+  index = FALSE, viewer = shiny::paneViewer(), ...)
 
 \method{selectFeatures}{Spatial}(x = NULL, platform = c("mapview",
-  "leaflet"), index = FALSE, ...)
+  "leaflet"), index = FALSE, viewer = shiny::paneViewer(), ...)
 }
 \arguments{
 \item{x}{features to select}
+
+\item{viewer}{\code{function} for the viewer.  See \code{\link[shiny]{viewer}}.}
 
 \item{...}{other arguments}
 
