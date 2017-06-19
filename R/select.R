@@ -1,12 +1,11 @@
 #' Interactively Select Map Features
 #'
 #' @param x features to select
-#' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @param ... other arguments
 #'
 #' @example ./inst/examples/examples_select.R
 #' @export
-selectFeatures = function(x, viewer, ...) {
+selectFeatures = function(x, ...) {
   UseMethod("selectFeatures")
 }
 
@@ -17,6 +16,7 @@ selectFeatures = function(x, viewer, ...) {
 #' @param index \code{logical} with \code{index=TRUE} indicating return
 #'          the index of selected features rather than the actual
 #'          selected features
+#' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @export
 selectFeatures.sf = function(
   x = NULL,
@@ -61,12 +61,6 @@ selectFeatures.sf = function(
 
 #' @name selectFeatures
 #' @export
-selectFeatures.Spatial = function(
-  x = NULL,
-  platform = c("mapview", "leaflet"),
-  index = FALSE,
-  viewer = shiny::paneViewer(),
-  ...
-) {
-  selectFeatures(sf::st_as_sf(x), ...)
+selectFeatures.Spatial = function(x, ...) {
+  selectFeatures(x=sf::st_as_sf(x), ...)
 }

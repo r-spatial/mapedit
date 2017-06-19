@@ -8,7 +8,7 @@
 \alias{editMap.mapview}
 \title{Interactively Edit a Map}
 \usage{
-editMap(x, viewer, ...)
+editMap(x, ...)
 
 \method{editMap}{leaflet}(x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...)
@@ -18,8 +18,6 @@ editMap(x, viewer, ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}
-
-\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
 
 \item{...}{other arguments}
 
@@ -32,6 +30,8 @@ If \code{sf = FALSE}, \code{GeoJSON} will be returned.}
 is unlikely to require a change.}
 
 \item{record}{\code{logical} to record all edits for future playback.}
+
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
 }
 \value{
 \code{sf} simple features or \code{GeoJSON}

@@ -6,7 +6,7 @@
 \alias{selectMap.leaflet}
 \title{Interactively Select Map Features}
 \usage{
-selectMap(x, viewer, ...)
+selectMap(x, ...)
 
 \method{selectMap}{leaflet}(x = NULL, styleFalse = list(fillOpacity = 0.2,
   weight = 1, opacity = 0.4), styleTrue = list(fillOpacity = 0.7, weight = 3,
@@ -15,8 +15,6 @@ selectMap(x, viewer, ...)
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to use for selection}
 
-\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
-
 \item{...}{other arguments}
 
 \item{styleFalse, styleTrue}{names \code{list} of CSS styles used
@@ -24,6 +22,8 @@ for selected (\code{styleTrue}) and deselected (\code{styleFalse})}
 
 \item{ns}{\code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
 is unlikely to require a change.}
+
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
 }
 \description{
 Interactively Select Map Features

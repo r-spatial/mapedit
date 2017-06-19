@@ -11,7 +11,8 @@
 editFeatures(x, ...)
 
 \method{editFeatures}{sf}(x, platform = c("mapview", "leaflet"),
-  mergeOrder = c("add", "edit", "delete"), record = FALSE, ...)
+  mergeOrder = c("add", "edit", "delete"), record = FALSE,
+  viewer = shiny::paneViewer(), ...)
 
 \method{editFeatures}{Spatial}(x, ...)
 }
@@ -28,6 +29,8 @@ of merge operations.  By default, merges will proceed in the order
 of add, edit, delete.}
 
 \item{record}{\code{logical} to record all edits for future playback.}
+
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
 }
 \description{
 Interactively Edit Map Features
