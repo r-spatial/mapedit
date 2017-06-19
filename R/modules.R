@@ -96,6 +96,7 @@ editModUI <- function(id, ...) {
 #' @param targetLayerId \code{character} identifier of layer to edit, delete
 #' @param sf \code{logical} to return simple features.  \code{sf=FALSE} will return
 #'          \code{GeoJSON}.
+#' @param record \code{logical} to record all edits for future playback.
 #'
 #' @return server function for Shiny module
 #' @import shiny
@@ -104,7 +105,8 @@ editMod <- function(
   input, output, session,
   leafmap,
   targetLayerId = NULL,
-  sf = TRUE
+  sf = TRUE,
+  record = FALSE
 ) {
   # check to see if addDrawToolbar has been already added to the map
   if(is.null(
@@ -136,6 +138,8 @@ editMod <- function(
     deleted_all = list(),
     finished = list()
   )
+
+  recorder <- list()
 
   EVT_DRAW <- "map_draw_new_feature"
   EVT_EDIT <- "map_draw_edited_features"
@@ -178,6 +182,27 @@ editMod <- function(
     featurelist$deleted_all <- c(featurelist$deleted_all, list(deleted))
   })
 
+  # record events if record = TRUE
+  if(record == TRUE) {
+    lapply(
+      c(EVT_DRAW, EVT_EDIT, EVT_DELETE),
+      function(evt) {
+        observeEvent(input[[evt]], {
+          recorder <<- c(
+            recorder,
+            list(
+              list(
+                event = evt,
+                timestamp = Sys.time(),
+                feature = input[[evt]]
+              )
+            )
+          )
+        })
+      }
+    )
+  }
+
 
   # collect all of the the features into a list
   #  by action
@@ -217,6 +242,17 @@ editMod <- function(
           )
         }
       )
+      recorder <- lapply(
+        recorder,
+        function(evt) {
+          feature = st_as_sfc.geo_list(evt$feature)
+          list(evt = evt$event, timestamp = evt$timestamp, feature = feature)
+        }
+      )
+    }
+    # return merged features
+    if(record==TRUE) {
+      attr(workinglist, "recorder") <- recorder
     }
     return(workinglist)
   })

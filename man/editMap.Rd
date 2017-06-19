@@ -11,10 +11,10 @@
 editMap(x, viewer, ...)
 
 \method{editMap}{leaflet}(x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", viewer = shiny::paneViewer(), ...)
+  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...)
 
 \method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", viewer = shiny::paneViewer(), ...)
+  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}
@@ -30,6 +30,8 @@ If \code{sf = FALSE}, \code{GeoJSON} will be returned.}
 
 \item{ns}{\code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
 is unlikely to require a change.}
+
+\item{record}{\code{logical} to record all edits for future playback.}
 }
 \value{
 \code{sf} simple features or \code{GeoJSON}
