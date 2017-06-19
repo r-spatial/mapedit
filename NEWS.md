@@ -1,6 +1,13 @@
 # mapedit 0.2.1
 
 * add editFeatures function for easy add, edit, delete with existing simple features (sf)
+* add record argument to edit* functions to preserve the series
+of actions from an editing session.  If `record = TRUE` then a `"recorder"` attribute will be added to the returned object for
+full reproducibility.
+* add viewer argument to select and edit functions to allow
+user the flexibility to adjust the viewer experience.  Default
+will be paneViewer() in an attempt to keep the workflow
+within one RStudio window/context.
 * document more thoroughly
 * pass trial CRAN check
 
