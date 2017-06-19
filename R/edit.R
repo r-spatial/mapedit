@@ -82,13 +82,9 @@ editMap.mapview <- function(
   stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
 
   editMap.leaflet(
-<<<<<<< HEAD
     x@map, targetLayerId = targetLayerId, sf = sf,
-    ns = ns, viewer = viewer, record = TRUE)
-=======
-    x@map, targetLayerId = targetLayerId, sf = sf, ns = ns, record = record
+    ns = ns, viewer = viewer, record = TRUE
   )
->>>>>>> change record to add attribute for return value consistency
 }
 
 
