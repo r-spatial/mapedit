@@ -8,18 +8,15 @@
 \alias{selectFeatures.Spatial}
 \title{Interactively Select Map Features}
 \usage{
-selectFeatures(x, viewer, ...)
+selectFeatures(x, ...)
 
 \method{selectFeatures}{sf}(x = NULL, platform = c("mapview", "leaflet"),
   index = FALSE, viewer = shiny::paneViewer(), ...)
 
-\method{selectFeatures}{Spatial}(x = NULL, platform = c("mapview",
-  "leaflet"), index = FALSE, viewer = shiny::paneViewer(), ...)
+\method{selectFeatures}{Spatial}(x, ...)
 }
 \arguments{
 \item{x}{features to select}
-
-\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
 
 \item{...}{other arguments}
 
@@ -29,6 +26,8 @@ the type of map to use for selection}
 \item{index}{\code{logical} with \code{index=TRUE} indicating return
 the index of selected features rather than the actual
 selected features}
+
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
 }
 \description{
 Interactively Select Map Features

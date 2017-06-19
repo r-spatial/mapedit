@@ -1,11 +1,10 @@
 #' Interactively Select Map Features
 #'
 #' @param x \code{leaflet} or \code{mapview} map to use for selection
-#' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @param ... other arguments
 #' @example ./inst/examples/examples_select.R
 #' @export
-selectMap <- function(x, viewer, ...) {
+selectMap <- function(x, ...) {
   UseMethod("selectMap")
 }
 
@@ -14,6 +13,7 @@ selectMap <- function(x, viewer, ...) {
 #'          for selected (\code{styleTrue}) and deselected (\code{styleFalse})
 #' @param ns \code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
 #'          is unlikely to require a change.
+#' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @export
 selectMap.leaflet <- function(
   x = NULL,

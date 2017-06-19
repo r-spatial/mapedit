@@ -1,7 +1,6 @@
 #' Interactively Edit a Map
 #'
 #' @param x \code{leaflet} or \code{mapview} map to edit
-#' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @param ... other arguments
 #'
 #' @return \code{sf} simple features or \code{GeoJSON}
@@ -14,7 +13,7 @@
 #' }
 #' @example inst/examples/examples_edit.R
 #' @export
-editMap <- function(x, viewer, ...) {
+editMap <- function(x, ...) {
   UseMethod("editMap")
 }
 
@@ -25,6 +24,7 @@ editMap <- function(x, viewer, ...) {
 #' @param ns \code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
 #'          is unlikely to require a change.
 #' @param record \code{logical} to record all edits for future playback.
+#' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @export
 editMap.leaflet <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
@@ -107,12 +107,14 @@ editFeatures = function(x, ...) {
 #'          of merge operations.  By default, merges will proceed in the order
 #'          of add, edit, delete.
 #' @param record \code{logical} to record all edits for future playback.
+#' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @export
 editFeatures.sf = function(
   x,
   platform = c("mapview", "leaflet"),
   mergeOrder = c("add", "edit", "delete"),
   record = FALSE,
+  viewer = shiny::paneViewer(),
   ...
 ) {
 
@@ -124,18 +126,23 @@ editFeatures.sf = function(
   if (platform == "mapview") {
     m = mapview::mapview()@map
     m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
-    m = leaflet::fitBounds(m,
-                           lng1 = as.numeric(sf::st_bbox(x)[1]),
-                           lat1 = as.numeric(sf::st_bbox(x)[2]),
-                           lng2 = as.numeric(sf::st_bbox(x)[3]),
-                           lat2 = as.numeric(sf::st_bbox(x)[4]))
+    m = leaflet::fitBounds(
+      m,
+      lng1 = as.numeric(sf::st_bbox(x)[1]),
+      lat1 = as.numeric(sf::st_bbox(x)[2]),
+      lng2 = as.numeric(sf::st_bbox(x)[3]),
+      lat2 = as.numeric(sf::st_bbox(x)[4])
+    )
     m = mapview::addHomeButton(map = m, ext = mapview:::createExtent(x))
   } else {
     m = leaflet::addTiles(leaflet::leaflet())
     m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
   }
 
-  crud = editMap(m, targetLayerId = "toedit", record = record, ...)
+  crud = editMap(
+    m, targetLayerId = "toedit",
+    viewer = viewer, record = record, ...
+  )
 
   merged <- Reduce(
     function(left_sf, op) {
