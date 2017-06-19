@@ -36,7 +36,7 @@ merge_edit <- function(
 
   matched_id_rows = which(orig_ids %in% edit_ids)
 
-  sf::st_geometry(orig2[matched_id_rows,]) <- sf::st_geometry(edits)
+  sf::st_geometry(orig2)[matched_id_rows] <- sf::st_geometry(edits)
   orig2
 }
 
