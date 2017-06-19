@@ -28,13 +28,16 @@ merge_edit <- function(
     return(edits)
   }
 
-  orig_ids = orig[,names(by)[1], drop = TRUE]
+  # make a copy
+  orig2 <- orig
+
+  orig_ids = orig2[[names(by)[1]]]
   edit_ids = edits[,by[[1]], drop=TRUE]
 
   matched_id_rows = which(orig_ids %in% edit_ids)
 
-  sf::st_geometry(orig[matched_id_rows,]) <- sf::st_geometry(edits)
-  orig
+  sf::st_geometry(orig2[matched_id_rows,]) <- sf::st_geometry(edits)
+  orig2
 }
 
 
