@@ -15,7 +15,7 @@ selectMap(x, viewer, ...)
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to use for selection}
 
-\item{viewer}{\code{function} for the viewer.  See \code{\link[shiny]{viewer}}.}
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
 
 \item{...}{other arguments}
 

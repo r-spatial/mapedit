@@ -1,6 +1,7 @@
 #' Interactively Edit a Map
 #'
 #' @param x \code{leaflet} or \code{mapview} map to edit
+#' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @param ... other arguments
 #'
 #' @return \code{sf} simple features or \code{GeoJSON}
@@ -13,7 +14,7 @@
 #' }
 #' @example inst/examples/examples_edit.R
 #' @export
-editMap <- function(x, ...) {
+editMap <- function(x, viewer, ...) {
   UseMethod("editMap")
 }
 
@@ -25,7 +26,8 @@ editMap <- function(x, ...) {
 #'          is unlikely to require a change.
 #' @export
 editMap.leaflet <- function(
-  x = NULL, targetLayerId = NULL, sf = TRUE, ns = "mapedit-edit", ...
+  x = NULL, targetLayerId = NULL, sf = TRUE,
+  ns = "mapedit-edit", viewer = shiny::paneViewer(), ...
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
@@ -64,7 +66,7 @@ editMap.leaflet <- function(
   shiny::runGadget(
     ui,
     server,
-    viewer =  shiny::dialogViewer("Draw and Edit"),
+    viewer =  viewer,
     stopOnCancel = FALSE
   )
 }
@@ -72,11 +74,15 @@ editMap.leaflet <- function(
 #' @name editMap
 #' @export
 editMap.mapview <- function(
-  x = NULL, targetLayerId = NULL, sf = TRUE, ns = "mapedit-edit", ...
+  x = NULL, targetLayerId = NULL, sf = TRUE,
+  ns = "mapedit-edit", viewer = shiny::paneViewer(), ...
 ) {
   stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
 
-  editMap.leaflet(x@map, targetLayerId = targetLayerId, sf = sf, ns = ns)
+  editMap.leaflet(
+    x@map, targetLayerId = targetLayerId, sf = sf,
+    ns = ns, viewer = viewer
+  )
 }
 
 

@@ -1,7 +1,7 @@
 #' Interactively Select Map Features
 #'
 #' @param x \code{leaflet} or \code{mapview} map to use for selection
-#' @param viewer \code{function} for the viewer.  See \code{\link[shiny]{viewer}}.
+#' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @param ... other arguments
 #' @example ./inst/examples/examples_select.R
 #' @export

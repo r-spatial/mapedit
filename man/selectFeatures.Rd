@@ -19,7 +19,7 @@ selectFeatures(x, viewer, ...)
 \arguments{
 \item{x}{features to select}
 
-\item{viewer}{\code{function} for the viewer.  See \code{\link[shiny]{viewer}}.}
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
 
 \item{...}{other arguments}
 

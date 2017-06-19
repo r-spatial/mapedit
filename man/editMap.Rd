@@ -8,16 +8,18 @@
 \alias{editMap.mapview}
 \title{Interactively Edit a Map}
 \usage{
-editMap(x, ...)
+editMap(x, viewer, ...)
 
 \method{editMap}{leaflet}(x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", ...)
+  ns = "mapedit-edit", viewer = shiny::paneViewer(), ...)
 
 \method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", ...)
+  ns = "mapedit-edit", viewer = shiny::paneViewer(), ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}
+
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
 
 \item{...}{other arguments}
 
