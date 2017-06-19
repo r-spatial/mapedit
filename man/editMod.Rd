@@ -4,7 +4,8 @@
 \alias{editMod}
 \title{Shiny Module Server for Geo Create, Edit, Delete}
 \usage{
-editMod(input, output, session, leafmap, targetLayerId = NULL, sf = TRUE)
+editMod(input, output, session, leafmap, targetLayerId = NULL, sf = TRUE,
+  record = FALSE)
 }
 \arguments{
 \item{input}{Shiny server function input}
@@ -19,6 +20,8 @@ editMod(input, output, session, leafmap, targetLayerId = NULL, sf = TRUE)
 
 \item{sf}{\code{logical} to return simple features.  \code{sf=FALSE} will return
 \code{GeoJSON}.}
+
+\item{record}{\code{logical} to record all edits for future playback.}
 }
 \value{
 server function for Shiny module

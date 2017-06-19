@@ -1,8 +1,9 @@
 Package: mapedit
 Title: Interactive Editing of Spatial Data in R
-Description: What the package does (one paragraph).
-Version: 0.2.0
-Date: 2017-06-05
+Description: Suite of interactive functions and helpers for selecting and editing
+    geospatial data.
+Version: 0.2.1
+Date: 2017-06-19
 Authors@R: c(
     person("Tim", "Appelhans", role = c("aut", "cre"), email = "tim.appelhans@gmail.com"),
     person("Kenton", "Russell", role = c("aut"))
@@ -15,6 +16,7 @@ Depends:
 Imports:
     dplyr,
     htmltools (>= 0.3),
+    htmlwidgets,
     jsonlite,
     leaflet,
     leaflet.extras,
@@ -22,6 +24,7 @@ Imports:
     miniUI,
     sf,
     shiny
+Remotes: bhaskarvk/leaflet.extras
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1

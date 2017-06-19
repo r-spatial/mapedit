@@ -2,23 +2,49 @@
 % Please edit documentation in R/edit.R
 \name{editMap}
 \alias{editMap}
+\alias{editMap}
+\alias{editMap.leaflet}
+\alias{editMap}
+\alias{editMap.mapview}
 \title{Interactively Edit a Map}
 \usage{
 editMap(x, ...)
+
+\method{editMap}{leaflet}(x = NULL, targetLayerId = NULL, sf = TRUE,
+  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...)
+
+\method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
+  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...)
 }
 \arguments{
-\item{x}{map to edit}
+\item{x}{\code{leaflet} or \code{mapview} map to edit}
 
 \item{...}{other arguments}
+
+\item{targetLayerId}{\code{string} name of the map layer group to use with edit}
+
+\item{sf}{\code{logical} return simple features.  The default is \code{TRUE}.
+If \code{sf = FALSE}, \code{GeoJSON} will be returned.}
+
+\item{ns}{\code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
+is unlikely to require a change.}
+
+\item{record}{\code{logical} to record all edits for future playback.}
+
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
+}
+\value{
+\code{sf} simple features or \code{GeoJSON}
 }
 \description{
 Interactively Edit a Map
 }
 \examples{
+\dontrun{
 library(leaflet)
 library(mapedit)
 editMap(leaflet() \%>\% addTiles())
-
+}
 \dontrun{
   # demonstrate Leaflet.Draw on a layer
   library(sf)

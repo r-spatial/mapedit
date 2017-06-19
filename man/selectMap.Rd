@@ -2,21 +2,36 @@
 % Please edit documentation in R/query.R
 \name{selectMap}
 \alias{selectMap}
+\alias{selectMap}
+\alias{selectMap.leaflet}
 \title{Interactively Select Map Features}
 \usage{
 selectMap(x, ...)
+
+\method{selectMap}{leaflet}(x = NULL, styleFalse = list(fillOpacity = 0.2,
+  weight = 1, opacity = 0.4), styleTrue = list(fillOpacity = 0.7, weight = 3,
+  opacity = 0.7), ns = "mapedit-select", viewer = shiny::paneViewer(), ...)
 }
 \arguments{
-\item{x}{map to use}
+\item{x}{\code{leaflet} or \code{mapview} map to use for selection}
 
 \item{...}{other arguments}
+
+\item{styleFalse, styleTrue}{names \code{list} of CSS styles used
+for selected (\code{styleTrue}) and deselected (\code{styleFalse})}
+
+\item{ns}{\code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
+is unlikely to require a change.}
+
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
 }
 \description{
 Interactively Select Map Features
 }
 \examples{
+\dontrun{
 library(mapedit)
-library(leaflet)
+library(mapview)
 
 lf <- mapview()
 
@@ -30,7 +45,7 @@ mapview(drawing$finished)
 # especially easy with selectFeatures
 selectFeatures(drawing$finished)
 
-\dontrun{
+
 # use @bhaskarvk USA Albers with leaflet code
 #  https://bhaskarvk.github.io/leaflet/examples/proj4Leaflet.html
 #devtools::install_github("hrbrmstr/albersusa")
@@ -39,7 +54,7 @@ library(sf)
 library(leaflet)
 library(mapedit)
 
-spdf <- usa_composite() \%>\% st_as_sf()
+spdf <- usa_sf()
 pal <- colorNumeric(
   palette = "Blues",
   domain = spdf$pop_2014
@@ -54,9 +69,14 @@ bounds <- c(-125, 24 ,-75, 45)
       crs=leafletCRS(
         crsClass="L.Proj.CRS",
         code='EPSG:2163',
-        proj4def='+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs',
+        proj4def=paste0(
+          '+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 ',
+          '+b=6370997 +units=m +no_defs'
+        ),
         resolutions = c(65536, 32768, 16384, 8192, 4096, 2048,1024, 512, 256, 128)
-      ))) \%>\%
+      )
+    )
+  ) \%>\%
   fitBounds(bounds[1], bounds[2], bounds[3], bounds[4]) \%>\%
   setMaxBounds(bounds[1], bounds[2], bounds[3], bounds[4]) \%>\%
   mapview::addFeatures(
@@ -66,9 +86,7 @@ bounds <- c(-125, 24 ,-75, 45)
     fillColor=~pal(pop_2014),
     fillOpacity=0.7,
     label=~stringr::str_c(name,' ', format(pop_2014, big.mark=",")),
-    labelOptions= labelOptions(direction = 'auto')#,
-    #highlightOptions = highlightOptions(
-    #  color='#00ff00', bringToFront = TRUE, sendToBack = TRUE)
+    labelOptions= labelOptions(direction = 'auto')
   )
 )
 

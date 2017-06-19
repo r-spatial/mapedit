@@ -1,11 +1,6 @@
 #' Interactively Select Map Features
 #'
-#' @param x map to use
-#' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
-#'          the type of map you would like to use for selection
-#' @param index \code{logical} with \code{index=TRUE} to indicate return
-#'          the index of selected features rather than the actual
-#'          selected features
+#' @param x features to select
 #' @param ... other arguments
 #'
 #' @example ./inst/examples/examples_select.R
@@ -14,11 +9,20 @@ selectFeatures = function(x, ...) {
   UseMethod("selectFeatures")
 }
 
+
+#' @name selectFeatures
+#' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
+#'          the type of map to use for selection
+#' @param index \code{logical} with \code{index=TRUE} indicating return
+#'          the index of selected features rather than the actual
+#'          selected features
+#' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @export
 selectFeatures.sf = function(
-  x,
+  x = NULL,
   platform = c("mapview", "leaflet"),
   index = FALSE,
+  viewer = shiny::paneViewer(),
   ...
 ) {
 
@@ -41,7 +45,7 @@ selectFeatures.sf = function(
     m = mapview::addFeatures(m, data=x, layerId=~x$edit_id)
   }
 
-  ind = selectMap(m, ...)
+  ind = selectMap(m, viewer=viewer, ...)
 
   indx = ind$id[as.logical(ind$selected)]
   # todrop = "edit_id"
@@ -55,7 +59,8 @@ selectFeatures.sf = function(
   return(x[as.numeric(indx), !names(x) %in% "edit_id"])
 }
 
+#' @name selectFeatures
 #' @export
 selectFeatures.Spatial = function(x, ...) {
-  selectFeatures(sf::st_as_sf(x), ...)
+  selectFeatures(x=sf::st_as_sf(x), ...)
 }

@@ -3,7 +3,7 @@ geojson_to_sf = function(x) {
   do.call(
     rbind,
     lapply(x, function(x) {
-      x <- lapply(x, fix_geojso)
+      x <- lapply(x, fix_geojson_coords)
       sf::read_sf(
         jsonlite::toJSON(x, force=TRUE, auto_unbox=TRUE)
       )
