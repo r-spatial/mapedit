@@ -40,7 +40,10 @@ editMap.leaflet <- function(
   )
 
   ui <- miniUI::miniPage(
-    miniUI::miniContentPanel(editModUI(ns), height=NULL, width=NULL),
+    miniUI::miniContentPanel(
+      editModUI(id = ns, height="97%"),
+      height=NULL, width=NULL
+    ),
     miniUI::gadgetTitleBar("Edit Map", right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE))
   )
 

@@ -33,7 +33,10 @@ selectMap.leaflet <- function(
   )
 
   ui <- miniUI::miniPage(
-    miniUI::miniContentPanel(selectModUI(ns), height=NULL, width=NULL),
+    miniUI::miniContentPanel(
+      selectModUI(id = ns, height = "97%"),
+      height=NULL, width=NULL
+    ),
     miniUI::gadgetTitleBar("Select Features on Map", right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE))
   )
 

@@ -8,6 +8,7 @@ full reproducibility.
 user the flexibility to adjust the viewer experience.  Default
 will be paneViewer() in an attempt to keep the workflow
 within one RStudio window/context.
+* change height to 97% to fill viewer
 * document more thoroughly
 * pass trial CRAN check
 
