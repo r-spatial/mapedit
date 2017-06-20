@@ -73,6 +73,7 @@ fix_geojson_coords <- function(ft) {
 
 #' @keywords internal
 combine_list_of_sf <- function(sf_list) {
+  if(length(sf_list) == 0) {return(NULL)}
   props <- dplyr::bind_rows(
     lapply(
       sf_list,
