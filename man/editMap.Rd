@@ -18,7 +18,7 @@ editMap(x, ...)
 \method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...)
 
-\method{editMap}{NULL}(...)
+\method{editMap}{NULL}(x, ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}
