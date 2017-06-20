@@ -90,6 +90,20 @@ editMap.mapview <- function(
   )
 }
 
+#' @name editMap
+#' @export
+editMap.NULL = function() {
+  m = mapview::mapview()@map
+  m = leaflet::fitBounds(
+    m,
+    lng1 = -180, #as.numeric(sf::st_bbox(x)[1]),
+    lat1 = -90, #as.numeric(sf::st_bbox(x)[2]),
+    lng2 = 180, #as.numeric(sf::st_bbox(x)[3]),
+    lat2 = 90 #as.numeric(sf::st_bbox(x)[4])
+  )
+  editMap(m, record = TRUE)$finished
+}
+
 
 #' Interactively Edit Map Features
 #'

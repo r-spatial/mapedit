@@ -2,6 +2,7 @@
 
 S3method(editFeatures,Spatial)
 S3method(editFeatures,sf)
+S3method(editMap,"NULL")
 S3method(editMap,leaflet)
 S3method(editMap,mapview)
 S3method(selectFeatures,Spatial)

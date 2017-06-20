@@ -6,6 +6,8 @@
 \alias{editMap.leaflet}
 \alias{editMap}
 \alias{editMap.mapview}
+\alias{editMap}
+\alias{editMap.NULL}
 \title{Interactively Edit a Map}
 \usage{
 editMap(x, ...)
@@ -15,6 +17,8 @@ editMap(x, ...)
 
 \method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...)
+
+\method{editMap}{NULL}(...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}
