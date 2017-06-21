@@ -146,14 +146,15 @@ editFeatures.sf = function(
   if (platform == "mapview") {
     m = mapview::mapview()@map
     m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
+    ext = mapview:::createExtent(x)
     m = leaflet::fitBounds(
       m,
-      lng1 = as.numeric(sf::st_bbox(x)[1]),
-      lat1 = as.numeric(sf::st_bbox(x)[2]),
-      lng2 = as.numeric(sf::st_bbox(x)[3]),
-      lat2 = as.numeric(sf::st_bbox(x)[4])
+      lng1 = ext[1], #as.numeric(sf::st_bbox(x)[1]),
+      lat1 = ext[3], #as.numeric(sf::st_bbox(x)[2]),
+      lng2 = ext[2], #as.numeric(sf::st_bbox(x)[3]),
+      lat2 = ext[4] #as.numeric(sf::st_bbox(x)[4])
     )
-    m = mapview::addHomeButton(map = m, ext = mapview:::createExtent(x))
+    m = mapview::addHomeButton(map = m, ext = ext)
   } else {
     m = leaflet::addTiles(leaflet::leaflet())
     m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
