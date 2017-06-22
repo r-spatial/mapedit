@@ -10,9 +10,8 @@
 \usage{
 editFeatures(x, ...)
 
-\method{editFeatures}{sf}(x, platform = c("mapview", "leaflet"),
-  mergeOrder = c("add", "edit", "delete"), record = FALSE,
-  viewer = shiny::paneViewer(), ...)
+\method{editFeatures}{sf}(x, map = NULL, mergeOrder = c("add", "edit",
+  "delete"), record = FALSE, viewer = shiny::paneViewer(), ...)
 
 \method{editFeatures}{Spatial}(x, ...)
 }
@@ -21,8 +20,8 @@ editFeatures(x, ...)
 
 \item{...}{other arguments}
 
-\item{platform}{one of \code{"leaflet"} or \code{"mapview"} to indicate
-the type of map you would like to use for editing}
+\item{map}{a background map to be used for editing. If \code{NULL} a blank
+map canvas will b used.}
 
 \item{mergeOrder}{\code{vector} or \code{character} arguments to specify the order
 of merge operations.  By default, merges will proceed in the order

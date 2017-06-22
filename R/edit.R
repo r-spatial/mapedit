@@ -121,8 +121,8 @@ editFeatures = function(x, ...) {
 
 #' @name editFeatures
 #'
-#' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
-#'          the type of map you would like to use for editing
+#' @param map a background map to be used for editing. If \code{NULL} a blank
+#'          map canvas will b used.
 #' @param mergeOrder \code{vector} or \code{character} arguments to specify the order
 #'          of merge operations.  By default, merges will proceed in the order
 #'          of add, edit, delete.
@@ -131,19 +131,19 @@ editFeatures = function(x, ...) {
 #' @export
 editFeatures.sf = function(
   x,
-  platform = c("mapview", "leaflet"),
+  map = NULL, #platform = c("mapview", "leaflet"),
   mergeOrder = c("add", "edit", "delete"),
   record = FALSE,
   viewer = shiny::paneViewer(),
   ...
 ) {
 
-  if (length(platform) > 1) platform = platform[1]
+  #if (length(platform) > 1) platform = platform[1]
 
   x = mapview:::checkAdjustProjection(x)
   x$edit_id = as.character(1:nrow(x))
 
-  if (platform == "mapview") {
+  if (is.null(map)) { #if (platform == "mapview") {
     m = mapview::mapview()@map
     m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
     ext = mapview:::createExtent(x)
@@ -156,8 +156,9 @@ editFeatures.sf = function(
     )
     m = mapview::addHomeButton(map = m, ext = ext)
   } else {
-    m = leaflet::addTiles(leaflet::leaflet())
-    m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
+    m = mapview::addFeatures(map, data=x, layerId=~x$edit_id, group = "toedit")
+    # m = leaflet::addTiles(leaflet::leaflet())
+    # m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
   }
 
   crud = editMap(
