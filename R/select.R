@@ -11,8 +11,9 @@ selectFeatures = function(x, ...) {
 
 
 #' @name selectFeatures
-#' @param platform one of \code{"leaflet"} or \code{"mapview"} to indicate
-#'          the type of map to use for selection
+#' @param map a background \code{leaflet} or \code{mapview} map
+#'          to be used for editing. If \code{NULL} a blank
+#'          mapview canvas will be provided.
 #' @param index \code{logical} with \code{index=TRUE} indicating return
 #'          the index of selected features rather than the actual
 #'          selected features
@@ -20,32 +21,35 @@ selectFeatures = function(x, ...) {
 #' @export
 selectFeatures.sf = function(
   x = NULL,
-  platform = c("mapview", "leaflet"),
+  map = NULL,
   index = FALSE,
   viewer = shiny::paneViewer(),
   ...
 ) {
 
-  if (length(platform) > 1) platform = platform[1]
-
   x = mapview:::checkAdjustProjection(x)
   x$edit_id = as.character(1:nrow(x))
 
-  if (platform == "mapview") {
-    m = mapview::mapview()@map
-    m = mapview::addFeatures(m, data=x, layerId=~x$edit_id)
-    m = leaflet::fitBounds(m,
-                           lng1 = as.numeric(sf::st_bbox(x)[1]),
-                           lat1 = as.numeric(sf::st_bbox(x)[2]),
-                           lng2 = as.numeric(sf::st_bbox(x)[3]),
-                           lat2 = as.numeric(sf::st_bbox(x)[4]))
-    m = mapview::addHomeButton(map = m, ext = mapview:::createExtent(x))
+  if (is.null(map)) {
+    map = mapview::mapview()@map
+    map = mapview::addFeatures(map, data=x, layerId=~x$edit_id)
+    ext = mapview:::createExtent(x)
+    map = leaflet::fitBounds(
+      map,
+      lng1 = ext[1],
+      lat1 = ext[3],
+      lng2 = ext[2],
+      lat2 = ext[4]
+    )
+    map = mapview::addHomeButton(map = map, ext = ext)
   } else {
-    m = leaflet::addTiles(leaflet::leaflet())
-    m = mapview::addFeatures(m, data=x, layerId=~x$edit_id)
+    if(inherits(map, "mapview")) {
+      map = map@map
+    }
+    map = mapview::addFeatures(map, data=x, layerId=~x$edit_id)
   }
 
-  ind = selectMap(m, viewer=viewer, ...)
+  ind = selectMap(map, viewer=viewer, ...)
 
   indx = ind$id[as.logical(ind$selected)]
   # todrop = "edit_id"
