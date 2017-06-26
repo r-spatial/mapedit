@@ -144,6 +144,8 @@ playback <- function(x) {
 #' @keywords internal
 
 playback_lf <- function(x) {
+  rec <- attr(x, "recorder")
+
   sf_all <- combine_list_of_sf(
     lapply(rec,function(x){x$feature})
   )
@@ -208,6 +210,8 @@ function(el, x) {
       .transition(2000)
       .delay(delay * 1000)
       .attrTween('d', function(d) {return interpolator});
+
+    path_f.pathd = path_f.pathfun(ed.feature);
   };
 
   function del(ed, delay) {
