@@ -20,8 +20,9 @@ editFeatures(x, ...)
 
 \item{...}{other arguments}
 
-\item{map}{a background map to be used for editing. If \code{NULL} a blank
-map canvas will b used.}
+\item{map}{a background \code{leaflet} or \code{mapview} map
+to be used for editing. If \code{NULL} a blank
+mapview canvas will be provided.}
 
 \item{mergeOrder}{\code{vector} or \code{character} arguments to specify the order
 of merge operations.  By default, merges will proceed in the order

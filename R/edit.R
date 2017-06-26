@@ -121,8 +121,9 @@ editFeatures = function(x, ...) {
 
 #' @name editFeatures
 #'
-#' @param map a background map to be used for editing. If \code{NULL} a blank
-#'          map canvas will b used.
+#' @param map a background \code{leaflet} or \code{mapview} map
+#'          to be used for editing. If \code{NULL} a blank
+#'          mapview canvas will be provided.
 #' @param mergeOrder \code{vector} or \code{character} arguments to specify the order
 #'          of merge operations.  By default, merges will proceed in the order
 #'          of add, edit, delete.
@@ -131,38 +132,40 @@ editFeatures = function(x, ...) {
 #' @export
 editFeatures.sf = function(
   x,
-  map = NULL, #platform = c("mapview", "leaflet"),
+  map = NULL,
   mergeOrder = c("add", "edit", "delete"),
   record = FALSE,
   viewer = shiny::paneViewer(),
   ...
 ) {
 
-  #if (length(platform) > 1) platform = platform[1]
-
   x = mapview:::checkAdjustProjection(x)
   x$edit_id = as.character(1:nrow(x))
 
-  if (is.null(map)) { #if (platform == "mapview") {
-    m = mapview::mapview()@map
-    m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
+  if (is.null(map)) {
+    map = mapview::mapview()@map
+    map = mapview::addFeatures(map, data=x, layerId=~x$edit_id, group = "toedit")
     ext = mapview:::createExtent(x)
-    m = leaflet::fitBounds(
-      m,
-      lng1 = ext[1], #as.numeric(sf::st_bbox(x)[1]),
-      lat1 = ext[3], #as.numeric(sf::st_bbox(x)[2]),
-      lng2 = ext[2], #as.numeric(sf::st_bbox(x)[3]),
-      lat2 = ext[4] #as.numeric(sf::st_bbox(x)[4])
+    map = leaflet::fitBounds(
+      map,
+      lng1 = ext[1],
+      lat1 = ext[3],
+      lng2 = ext[2],
+      lat2 = ext[4]
     )
-    m = mapview::addHomeButton(map = m, ext = ext)
+    map = mapview::addHomeButton(map = map, ext = ext)
   } else {
-    m = mapview::addFeatures(map, data=x, layerId=~x$edit_id, group = "toedit")
-    # m = leaflet::addTiles(leaflet::leaflet())
-    # m = mapview::addFeatures(m, data=x, layerId=~x$edit_id, group = "toedit")
+    if(inherits(map, "mapview")) {
+      map = map@map
+    }
+    map = mapview::addFeatures(
+      map, data=x, layerId=~x$edit_id,
+      group = "toedit"
+    )
   }
 
   crud = editMap(
-    m, targetLayerId = "toedit",
+    map, targetLayerId = "toedit",
     viewer = viewer, record = record, ...
   )
 

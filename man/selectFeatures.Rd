@@ -10,8 +10,8 @@
 \usage{
 selectFeatures(x, ...)
 
-\method{selectFeatures}{sf}(x = NULL, platform = c("mapview", "leaflet"),
-  index = FALSE, viewer = shiny::paneViewer(), ...)
+\method{selectFeatures}{sf}(x = NULL, map = NULL, index = FALSE,
+  viewer = shiny::paneViewer(), ...)
 
 \method{selectFeatures}{Spatial}(x, ...)
 }
@@ -20,8 +20,9 @@ selectFeatures(x, ...)
 
 \item{...}{other arguments}
 
-\item{platform}{one of \code{"leaflet"} or \code{"mapview"} to indicate
-the type of map to use for selection}
+\item{map}{a background \code{leaflet} or \code{mapview} map
+to be used for editing. If \code{NULL} a blank
+mapview canvas will be provided.}
 
 \item{index}{\code{logical} with \code{index=TRUE} indicating return
 the index of selected features rather than the actual
