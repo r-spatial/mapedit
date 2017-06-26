@@ -9,6 +9,10 @@ playback <- function(x) {
     stop("Playback requires geojsonio.  Please install.packages('geojsonio') and try again.", .call = FALSE)
   }
 
+  view_orig <- getOption("viewer")
+  on.exit(options(viewer=view_orig))
+  options(viewer = NULL)
+
   rec <- attr(x, "recorder")
 
   # will evntually move this to JavaScript
@@ -132,7 +136,7 @@ playback <- function(x) {
     ))
     )
 
-  htmltools::browsable(tl)
+  print(htmltools::browsable(tl))
 }
 
 
@@ -144,6 +148,11 @@ playback <- function(x) {
 #' @keywords internal
 
 playback_lf <- function(x) {
+
+  view_orig <- getOption("viewer")
+  on.exit(options(viewer=view_orig))
+  options(viewer = NULL)
+
   rec <- attr(x, "recorder")
 
   sf_all <- combine_list_of_sf(
@@ -249,21 +258,20 @@ feat.forEach(function(ed, i) {
       )
   )
 
-  browsable(
-    tagList(
-      tags$head(
-        tags$script(src="https://unpkg.com/d3"),
-        tags$script(src="https://unpkg.com/flubber@0.3.0"),
-        tags$script(src="https://cdn.rawgit.com/manubb/Leaflet.D3SvgOverlay/patch/L.D3SvgOverlay.js")
-      ),
-      tags$script(HTML("d3.selectAll('html,body').style('height','100%')")),
-      tags$div(
-        style="height:100%;",
-        htmlwidgets::onRender(
-          map,
-          scr
-        )
+  print(browsable(tagList(
+    tags$head(
+      tags$script(src="https://unpkg.com/d3"),
+      tags$script(src="https://unpkg.com/flubber@0.3.0"),
+      tags$script(src="https://cdn.rawgit.com/manubb/Leaflet.D3SvgOverlay/patch/L.D3SvgOverlay.js")
+    ),
+    tags$script(HTML("d3.selectAll('html,body').style('height','100%')")),
+    tags$div(
+      style="height:100%;",
+      htmlwidgets::onRender(
+        map,
+        scr
       )
     )
+  ))
   )
 }
