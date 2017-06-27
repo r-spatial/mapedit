@@ -22,7 +22,16 @@ playback <- function(x, origsf = NULL) {
 
   x = mapview:::checkAdjustProjection(sf_all)
 
-  map = mapview::mapview()@map
+  if(!is.null(origsf)) {
+    map = mapview::mapview(
+      origsf,
+      alpha.regions=0.4,
+      dashArray="5,5"
+    )@map
+  } else {
+    map = mapview::mapview()@map
+  }
+
   map$height = "100%"
   ext = mapview:::createExtent(sf_all)
   map = leaflet::fitBounds(
