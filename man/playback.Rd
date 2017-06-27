@@ -2,14 +2,14 @@
 % Please edit documentation in R/playback.R
 \name{playback}
 \alias{playback}
-\title{Playback a Recorded 'mapedit' Session}
+\title{Playback a Recorded 'mapedit' Session on Leaflet Map}
 \usage{
-playback(x)
+playback(x, origsf = NULL)
 }
 \arguments{
 \item{x}{a recorded mapedit session from \code{editFeatures(..., record=TRUE)}}
 }
 \description{
-Playback a Recorded 'mapedit' Session
+Playback a Recorded 'mapedit' Session on Leaflet Map
 }
 \keyword{internal}

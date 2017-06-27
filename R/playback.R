@@ -1,153 +1,14 @@
-#' Playback a Recorded 'mapedit' Session
-#'
-#' @param x a recorded mapedit session from \code{editFeatures(..., record=TRUE)}
-#' @keywords internal
-
-playback <- function(x) {
-
-  if(!requireNamespace("geojsonio")) {
-    stop("Playback requires geojsonio.  Please install.packages('geojsonio') and try again.", .call = FALSE)
-  }
-
-  view_orig <- getOption("viewer")
-  on.exit(options(viewer=view_orig))
-  options(viewer = NULL)
-
-  rec <- attr(x, "recorder")
-
-  # will evntually move this to JavaScript
-  bbox <- unclass(
-    sf::st_bbox(
-      combine_list_of_sf(
-        lapply(rec,function(x){x$feature})
-      )
-    )
-  )
-
-  bbox_rect <- geojsonio::geojson_json(
-    sf::st_polygon(
-      list(matrix(
-        c(
-          c(bbox[1], bbox[4]),
-          c(bbox[3], bbox[4]),
-          c(bbox[3], bbox[2]),
-          c(bbox[1], bbox[2]),
-          c(bbox[1], bbox[4])
-        ),
-        ncol=2,
-        byrow=TRUE
-      ))
-    )
-  )
-
-  tl <- htmltools::tagList(
-    htmltools::tags$head(
-      htmltools::tags$script(src="https://unpkg.com/d3@4.9.1/build/d3.min.js"),
-      htmltools::tags$script(src="https://unpkg.com/flubber@0.3.0")
-    ),
-    htmltools::tags$script(htmltools::HTML(
-  sprintf(
-  "
-  var feat = %s;
-  var bbox = %s;
-  var feat_lookup = {};
-
-  d3.selectAll('body,html').style('height', '100%%');
-
-  var width = document.body.getBoundingClientRect().width;
-  var height = document.body.getBoundingClientRect().height;
-
-  var proj = d3.geoMercator().fitSize(
-    [width, height],
-    bbox
-  );
-  var path = d3.geoPath().projection(proj);
-
-  var svg = d3.select('body').append('svg')
-    .style('height', '100%%')
-    .style('width', '100%%')
-    .attr('viewBox', '0,0,' + width + ',' + height)
-    .classed('map', true);
-
-  function draw(ed, delay) {
-    var path_f = svg
-      .append('path')
-      .datum(ed)
-      .style('fill', 'none')
-      .style('stroke', 'black')
-      .style('opacity', 0.0001)
-      .transition(2000)
-      .delay(delay * 1000)
-      .style('opacity', 1)
-      .attr('d', path(ed.feature));
-    feat_lookup[ed.feature.features[0].properties.X_leaflet_id] = {
-      pathd : path(ed.feature),
-      pathsvg: path_f.node(0)
-    }
-  };
-
-  function edit(ed, delay) {
-    var path_f = feat_lookup[ed.feature.features[0].properties.X_leaflet_id];
-    var interpolator = flubber.interpolate(
-      path_f.pathd,
-      path(ed.feature)
-    );
-
-    d3.select(path_f.pathsvg)
-      .transition(2000)
-      .delay(delay * 1000)
-      .attrTween('d', function(d) {return interpolator});
-  };
-
-  function del(ed, delay) {
-    var path_f = feat_lookup[ed.feature.features[0].properties.X_leaflet_id];
-    d3.select(path_f.pathsvg)
-      .transition(2000)
-      .delay(delay * 1000)
-      .style('opacity', 0.0001)
-      .remove();
-
-    delete feat_lookup[ed.feature.features[0].properties.X_leaflet_id];
-  };
-
-  var actions = {
-    'map_draw_new_feature' : draw,
-    'map_draw_edited_features': edit,
-    'map_draw_deleted_features': del
-  };
-
-  feat.forEach(function(ed, i) {
-    actions[ed.evt](ed, i)
-  });
-  ",
-  jsonlite::toJSON(
-    Map(
-      function(x){
-        x$feature <- geojsonio::geojson_list(x$feature);
-        x
-      },
-      rec
-    ),
-    auto_unbox=TRUE,
-    force=TRUE
-  ),
-  bbox_rect
-      )
-    ))
-    )
-
-  print(htmltools::browsable(tl))
-}
-
-
-
 #' Playback a Recorded 'mapedit' Session on Leaflet Map
 #'
 #' @param x a recorded mapedit session from \code{editFeatures(..., record=TRUE)}
 #' @import htmltools
 #' @keywords internal
 
-playback_lf <- function(x) {
+playback <- function(x, origsf = NULL) {
+
+  if(!requireNamespace("geojsonio")) {
+    stop("Playback requires geojsonio.  Please install.packages('geojsonio') and try again.", .call = FALSE)
+  }
 
   view_orig <- getOption("viewer")
   on.exit(options(viewer=view_orig))
@@ -161,7 +22,16 @@ playback_lf <- function(x) {
 
   x = mapview:::checkAdjustProjection(sf_all)
 
-  map = mapview::mapview()@map
+  if(!is.null(origsf)) {
+    map = mapview::mapview(
+      origsf,
+      alpha.regions=0.4,
+      dashArray="5,5"
+    )@map
+  } else {
+    map = mapview::mapview()@map
+  }
+
   map$height = "100%"
   ext = mapview:::createExtent(sf_all)
   map = leaflet::fitBounds(
@@ -172,6 +42,13 @@ playback_lf <- function(x) {
     lat2 = ext[4]
   )
 
+  orig_gj <- NULL
+  if(!is.null(origsf)) {
+    origsf = mapview:::checkAdjustProjection(origsf)
+    origsf$edit_id = as.character(1:nrow(origsf))
+    orig_gj <- geojsonio::geojson_list(origsf)
+  }
+
   scr <-  sprintf(
 "
 function(el, x) {
@@ -179,83 +56,116 @@ function(el, x) {
   var map = this;
   var feat = %s;
   var feat_lookup = {};
+  var orig = %s;
 
-  function draw(ed, delay) {
-    function featOverlay(feature) {
-      return L.d3SvgOverlay(function(sel, proj) {
-        var upd = sel.selectAll('path').data(feature.features);
-        upd_new = upd.enter()
-          .append('path')
-          .attr('d', proj.pathFromGeojson)
-          .style('fill', 'none')
-          .style('stroke', 'black')
-          .style('opacity', 0.0001)
-        upd_new
-          .transition(2000)
-          .delay(delay * 1000)
-          .style('opacity', 1)
-        upd = upd.merge(upd_new)
-        upd.attr('stroke-width', 1 / proj.scale);
+  function get_id(feature) {
+    if(feature.properties.edit_id) {
+      return 'edit' + feature.properties.edit_id;
+    }
 
-        feat_lookup[ed.feature.features[0].properties.X_leaflet_id] = {
-          pathd: proj.pathFromGeojson(feature.features[0]),
-          pathsvg: upd.node(0),
+    if(feature.properties.layerId) {
+      return 'edit' + feature.properties.layerId
+    }
+
+    if(feature.properties.X_leaflet_id) {
+      return 'leaf' + feature.properties.X_leaflet_id;
+    }
+  }
+
+  function feat_overlay(feature, delay, trans) {
+    return L.d3SvgOverlay(function(sel, proj) {
+      var upd = sel.selectAll('path').data(feature.features);
+      upd_new = upd.enter()
+        .append('path')
+        .attr('d', proj.pathFromGeojson)
+        .style('fill', 'none')
+        .style('stroke', 'black')
+        .style('opacity', 0.0001)
+      upd_new
+        .transition(trans)
+        .delay(delay)
+        .style('opacity', 1)
+      upd = upd.merge(upd_new)
+      upd.attr('stroke-width', 1 / proj.scale);
+
+      upd.each(function(f) {
+        feat_lookup[get_id(f)] = {
+          pathd: proj.pathFromGeojson(f),
+          pathsvg: d3.select(this).node(),
           pathfun: proj.pathFromGeojson
         }
       });
-    }
+    });
+  }
 
-    featOverlay(ed.feature).addTo(map);
+  function draw(ed, delay) {
+    feat_overlay(ed.feature, delay, 2000).addTo(map);
   };
 
   function edit(ed, delay) {
-    var path_f = feat_lookup[ed.feature.features[0].properties.X_leaflet_id];
-    var interpolator = flubber.interpolate(
-      path_f.pathd,
-      path_f.pathfun(ed.feature)
-    );
+    ed.feature.features.forEach(function(f) {
+      var path_f = feat_lookup[get_id(f)];
+      var interpolator = flubber.interpolate(
+        path_f.pathd,
+        path_f.pathfun(f)
+      );
 
-    d3.select(path_f.pathsvg)
-      .transition(2000)
-      .delay(delay * 1000)
-      .attrTween('d', function(d) {return interpolator});
+      d3.select(path_f.pathsvg)
+        .transition(2000)
+        .delay(delay)
+        .attrTween('d', function(d) {return interpolator});
 
-    path_f.pathd = path_f.pathfun(ed.feature);
+      path_f.pathd = path_f.pathfun(f);
+    })
   };
 
   function del(ed, delay) {
-    var path_f = feat_lookup[ed.feature.features[0].properties.X_leaflet_id];
-    d3.select(path_f.pathsvg)
-      .transition(2000)
-      .delay(delay * 1000)
-      .style('opacity', 0.0001)
-      .remove();
+    ed.feature.features.forEach(function(f) {
+      var path_f = feat_lookup[get_id(f)];
+      d3.select(path_f.pathsvg)
+        .transition(2000)
+        .delay(delay)
+        .style('opacity', 0.0001)
+        .remove();
 
-    delete feat_lookup[ed.feature.features[0].properties.X_leaflet_id];
+      delete feat_lookup[get_id(f)];
+    });
   };
 
-var actions = {
-  'map_draw_new_feature' : draw,
-  'map_draw_edited_features': edit,
-  'map_draw_deleted_features': del
-};
+  // add original features
+  if(orig !== null) {
+    feat_overlay(orig, 0, 0).addTo(map);
+  }
 
-feat.forEach(function(ed, i) {
-  actions[ed.evt](ed, i)
-});
+  var actions = {
+    'map_draw_new_feature' : draw,
+    'map_draw_edited_features': edit,
+    'map_draw_deleted_features': del
+  };
+
+  feat.forEach(function(ed, i) {
+    if(orig !== null) { i = i + 1 }
+    actions[ed.evt](ed, i * 1000)
+  });
 }
-    ",
-      jsonlite::toJSON(
-        Map(
-          function(x){
-            x$feature <- geojsonio::geojson_list(x$feature);
-            x
-          },
-          rec
-        ),
-        auto_unbox=TRUE,
-        force=TRUE
-      )
+",
+jsonlite::toJSON(
+  Map(
+    function(x){
+      x$feature <- geojsonio::geojson_list(x$feature);
+      x
+    },
+    rec
+  ),
+  auto_unbox=TRUE,
+  force=TRUE
+),
+jsonlite::toJSON(
+  orig_gj,
+  auto_unbox=TRUE,
+  force=TRUE,
+  null="null"
+)
   )
 
   print(browsable(tagList(
