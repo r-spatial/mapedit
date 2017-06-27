@@ -124,7 +124,7 @@ editMod <- function(
       polylineOptions = leaflet.extras::drawPolylineOptions(repeatMode = TRUE),
       polygonOptions = leaflet.extras::drawPolygonOptions(repeatMode = TRUE),
       circleOptions = FALSE,
-      rectangleOptions = leaflet.extras::drawRectangeOptions(repeatMode = TRUE),
+      rectangleOptions = leaflet.extras::drawRectangleOptions(repeatMode = TRUE),
       markerOptions = leaflet.extras::drawMarkerOptions(repeatMode = TRUE),
       editOptions = leaflet.extras::editToolbarOptions()
     )
