@@ -5,6 +5,9 @@
 #' @keywords internal
 
 playback <- function(x, origsf = NULL) {
+  if(is.null(x)) {
+    stop("x is NULL.  Please provide x for playback.", call. =  FALSE)
+  }
 
   if(!requireNamespace("geojsonio")) {
     stop("Playback requires geojsonio.  Please install.packages('geojsonio') and try again.", .call = FALSE)
@@ -14,13 +17,15 @@ playback <- function(x, origsf = NULL) {
   on.exit(options(viewer=view_orig))
   options(viewer = NULL)
 
-  rec <- attr(x, "recorder")
-
-  sf_all <- combine_list_of_sf(
-    lapply(rec,function(x){x$feature})
-  )
-
-  x = mapview:::checkAdjustProjection(sf_all)
+  rec <- attr(x, "recorder", exact=TRUE)
+  if(is.null(rec)) {
+    stop("Did not find recorder.  Please use record=TRUE with edit functions.", call. = FALSE)
+  }
+  # check for original in recorder
+  #  and use that if origsf not provided
+  if(is.null(origsf)) {
+    origsf <- attr(x, "original", exact=TRUE)
+  }
 
   if(!is.null(origsf)) {
     map = mapview::mapview(
@@ -33,6 +38,20 @@ playback <- function(x, origsf = NULL) {
   }
 
   map$height = "100%"
+
+  sf_all <- sf::st_geometry(combine_list_of_sf(
+    lapply(rec,function(x){x$feature})
+  ))
+
+  x = mapview:::checkAdjustProjection(sf_all)
+
+  if(!is.null(origsf)) {
+    sf_all = c(
+      sf::st_geometry(sf_all),
+      sf::st_geometry(origsf)
+    )
+  }
+
   ext = mapview:::createExtent(sf_all)
   map = leaflet::fitBounds(
     map,
@@ -46,7 +65,7 @@ playback <- function(x, origsf = NULL) {
   if(!is.null(origsf)) {
     origsf = mapview:::checkAdjustProjection(origsf)
     origsf$edit_id = as.character(1:nrow(origsf))
-    orig_gj <- geojsonio::geojson_list(origsf)
+    orig_gj = geojsonio::geojson_list(origsf)
   }
 
   scr <-  sprintf(
@@ -102,20 +121,40 @@ function(el, x) {
     feat_overlay(ed.feature, delay, 2000).addTo(map);
   };
 
+  function edit_polygon(f, path_f, ed, delay) {
+    var interpolator = flubber.interpolate(
+      path_f.pathd,
+      path_f.pathfun(f)
+    );
+
+    d3.select(path_f.pathsvg)
+      .transition(2000)
+      .delay(delay)
+      .attrTween('d', function(d) {return interpolator});
+
+    path_f.pathd = path_f.pathfun(f);
+    return f;
+  }
+
+  function edit_point(f, path_f, ed, delay) {
+    d3.select(path_f.pathsvg)
+      .transition(2000)
+      .delay(delay)
+      .attr('d', path_f.pathfun(f));
+
+    path_f.pathd = path_f.pathfun(f);
+    return f;
+  }
+
   function edit(ed, delay) {
     ed.feature.features.forEach(function(f) {
       var path_f = feat_lookup[get_id(f)];
-      var interpolator = flubber.interpolate(
-        path_f.pathd,
-        path_f.pathfun(f)
-      );
 
-      d3.select(path_f.pathsvg)
-        .transition(2000)
-        .delay(delay)
-        .attrTween('d', function(d) {return interpolator});
+      if(f.geometry.type.toLowerCase() === 'point') {
+        return edit_point(f, path_f, ed, delay);
+      }
 
-      path_f.pathd = path_f.pathfun(f);
+      return edit_polygon(f, path_f, ed, delay);
     })
   };
 
