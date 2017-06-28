@@ -88,7 +88,7 @@ combine_list_of_sf <- function(sf_list) {
 
   sf::st_sf(
     props,
-    feature = sf::st_sfc(
+    geometry = sf::st_sfc(
       unlist(lapply(sf_list, function(x) sf::st_geometry(x)), recursive=FALSE)
     ),
     crs = sf::st_crs(4326)
