@@ -205,6 +205,7 @@ editFeatures.sf = function(
   # return merged features
   if(record==TRUE) {
     attr(merged, "recorder") <- attr(crud, "recorder", exact=TRUE)
+    attr(merged, "original") <- x
   }
   return(merged)
 }
