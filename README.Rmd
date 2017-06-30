@@ -20,7 +20,7 @@ Interactive editing of spatial data in R | an [RConsortium](https://www.r-consor
 
 ### Status
 
-`mapedit` is in a very alpha state right now.  We would very much appreciate feedback, ideas, and use cases.  The API is very likely to change dramatically and rapidly over the next couple of months.  We will use semantic versioning to track changes and progress.
+`mapedit` is still in active development.  We would very much appreciate feedback, ideas, and use cases.  The API has stabilized, but please be aware that the API might change over the next couple of months.  We will use semantic versioning with Github tagged releases to track changes and progress.  All changes will also be documented in NEWS.md.
 
 ### Blog Posts
 
@@ -32,13 +32,12 @@ Interactive editing of spatial data in R | an [RConsortium](https://www.r-consor
 
 ### Install
 
-As the CRAN badge above indicates, `mapedit` is a long way from CRAN.  To install, please use `devtools`. `mapedit` requires `leaflet.extras` which is not currently on CRAN.  We will also need the development version of `mapview`.
+As the CRAN badge above indicates, `mapedit` has achieved CRAN status.  To install, please use `install.packages`, or for the cutting edge, use `devtools::install_github`.
 
 ```
-devtools::install_github("bhaskarvk/leaflet")
-devtools::install_github("bhaskarvk/leaflet.extras")
-devtools::install_github("r-spatial/mapview@develop")
-devtools::install_github("r-spatial/mapedit")
+install.packages("mapedit")
+# cutting edge
+#  devtools::install_github(r-spatial/mapedit")
 ```
 
 ### Examples
