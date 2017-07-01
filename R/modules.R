@@ -217,31 +217,32 @@ editMod <- function(
     if(sf) {
       workinglist <- lapply(
         workinglist,
-        function(gj) {
+        function(action) {
           # ignore empty action types to prevent error
           #   handle in the helper functions?
-          if(length(gj) == 0) { return() }
+          if(length(action) == 0) { return() }
 
-          # deleted is often a FeatureCollection
-          #  which requires special treatment
-          if(gj[[1]]$type == "FeatureCollection") {
-            return(
-              combine_list_of_sf(
-                lapply(
-                  gj[[1]]$features,
-                  function(feature) {
-                    st_as_sf.geo_list(feature)
-                  }
-                )
-              )
-            )
-          }
+          # FeatureCollection requires special treatment
+          #  and we need to extract features
+          features <- Reduce(
+            function(left,right) {
+              if(right$type == "FeatureCollection") {
+                right <- lapply(right$features, identity)
+              } else {
+                right <- list(right)
+              }
+              c(left,right)
+            },
+            action,
+            init = NULL
+          )
 
           combine_list_of_sf(
-            lapply(gj, st_as_sf.geo_list)
+            lapply(features, st_as_sf.geo_list)
           )
         }
       )
+
       recorder <- lapply(
         recorder,
         function(evt) {
