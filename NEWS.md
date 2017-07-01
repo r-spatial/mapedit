@@ -1,3 +1,9 @@
+# mapedit 0.3.1
+
+### Bug Fix
+
+* multiple edits and deletes resulting in multiple FeatureCollections not handled properly causing some actions to not be considered when converting to `sf`; thanks @tim-salabim for identifying
+
 # mapedit 0.3.0
 
 ### API Changes
