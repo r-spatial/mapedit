@@ -37,7 +37,7 @@ As the CRAN badge above indicates, `mapedit` has achieved CRAN status.  To insta
 ```
 install.packages("mapedit")
 # cutting edge
-#  devtools::install_github(r-spatial/mapedit")
+#  devtools::install_github("r-spatial/mapedit")
 ```
 
 ### Examples
