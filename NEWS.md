@@ -4,6 +4,10 @@
 
 * polygons of `length > 1` not handled correctly.  See [discussion](https://github.com/r-spatial/mapedit/issues/48).
 
+* remove internally added `edit_id` column in editFeatures return
+
+* cast edits back to their original type
+
 # mapedit 0.3.1
 
 ### Bug Fix
