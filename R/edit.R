@@ -207,7 +207,7 @@ editFeatures.sf = function(
     attr(merged, "recorder") <- attr(crud, "recorder", exact=TRUE)
     attr(merged, "original") <- x
   }
-  return(merged)
+  return(dplyr::select(merged, -edit_id))
 }
 
 #' @name editFeatures
