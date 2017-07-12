@@ -4,8 +4,6 @@ mapedit
 =======
 
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/mapedit)](https://cran.r-project.org/package=mapedit)
-[![monthly](http://cranlogs.r-pkg.org/badges/mapedit)](https://www.rpackages.io/package/mapedit) 
-[![total](http://cranlogs.r-pkg.org/badges/grand-total/mapedit)](https://www.rpackages.io/package/mapedit)
 
 Interactive editing of spatial data in R | an [RConsortium](https://www.r-consortium.org/) funded [project](https://www.r-consortium.org/projects/awarded-projects). For additional detail, please see the original [proposal](https://github.com/environmentalinformatics-marburg/mapview_toolchain/blob/master/mapview_interactive_data_manipulation.Rmd).
 
@@ -25,7 +23,7 @@ As the CRAN badge above indicates, `mapedit` has achieved CRAN status. To instal
 
     install.packages("mapedit")
     # cutting edge
-    #  devtools::install_github(r-spatial/mapedit")
+    #  devtools::install_github("r-spatial/mapedit")
 
 ### Examples
 
