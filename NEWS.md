@@ -1,3 +1,9 @@
+# mapedit 0.3.2
+
+### Bug Fix
+
+* polygons of `length > 1` not handled correctly.  See [discussion](https://github.com/r-spatial/mapedit/issues/48).
+
 # mapedit 0.3.1
 
 ### Bug Fix
