@@ -202,12 +202,15 @@ editFeatures.sf = function(
     init = x
   )
 
+  merged <- dplyr::select_(merged, "-edit_id")
+
   # return merged features
   if(record==TRUE) {
     attr(merged, "recorder") <- attr(crud, "recorder", exact=TRUE)
     attr(merged, "original") <- x
   }
-  return(dplyr::select_(merged, "-edit_id"))
+
+  merged
 }
 
 #' @name editFeatures

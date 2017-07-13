@@ -32,6 +32,16 @@ merge_edit <- function(
   orig2 <- orig
 
   orig_ids = orig2[[names(by)[1]]]
+
+  # only get last edit for each layer id since
+  #   intermediate edits are not important for the final result
+  edits <- aggregate(
+    x = edits,
+    by = list(edits$layerId),
+    FUN = function(x){tail(x,1)},
+    do_union = FALSE
+  )
+
   edit_ids = edits[,by[[1]], drop=TRUE]
 
   matched_id_rows = which(orig_ids %in% edit_ids)

@@ -6,7 +6,9 @@
 
 * remove internally added `edit_id` column in editFeatures return
 
-* cast edits back to their original type
+* cast edits back to their original type.  See [discussion](https://github.com/r-spatial/mapedit/issues/48)
+
+* fix merge_edit to only consider last edit when there are multiple edits per layerId
 
 # mapedit 0.3.1
 
