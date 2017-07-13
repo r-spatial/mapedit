@@ -29,6 +29,9 @@ Interactive editing of spatial data in R | an [RConsortium](https://www.r-consor
 
 [mapedit updates in 0.2.0](http://r-spatial.org/r/2017/06/09/mapedit_0-2-0.html) - June 12, 2017
 
+### Talks
+
+[Tim Appelhans at useR 2017](https://channel9.msdn.com/events/useR-international-R-User-conferences/useR-International-R-User-2017-Conference/mapedit-interactive-manipulation-of-spatial-objects?term=tim%20appelhans) -  July 2017
 
 ### Install
 
