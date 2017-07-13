@@ -24,23 +24,7 @@ st_as_sf.geo_list = function(x, ...) {
     stop("should be of type 'Feature'", call.=FALSE)
   }
 
-  x <- fix_geojson_coords(x)
-
-  #props <- do.call(
-  #  data.frame,
-  #  modifyList(
-  #    Filter(Negate(is.null), x$properties),
-  #    list(stringsAsFactors=FALSE)
-  #  )
-  #)
-
   geom_sf <- st_as_sfc.geo_list(x)
-  # if props are empty then we need to handle differently
-  #if(nrow(props) == 0 ) {
-  #  return(sf::st_sf(feature=geom_sf, crs = sf::st_crs(4326)))
-  #} else {
-  #  return(sf::st_sf(props, feature=geom_sf, crs = sf::st_crs(4326)))
-  #}
 }
 
 #' @keywords internal
@@ -59,12 +43,15 @@ fix_geojson_coords <- function(ft) {
   }
 
   if(!(ft$geometry$type %in% c("Point", "LineString"))) {
-    ft$geometry$coordinates <- list(
-      matrix(
-        unlist(ft$geometry$coordinates),
-        ncol = 2,
-        byrow = TRUE
-      )
+    ft$geometry$coordinates <- lapply(
+      ft$geometry$coordinates,
+      function(coords) {
+        matrix(
+          unlist(ft$geometry$coordinates),
+          ncol = 2,
+          byrow = TRUE
+        )
+      }
     )
   }
 
