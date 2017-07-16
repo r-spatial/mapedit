@@ -106,7 +106,8 @@ editMod <- function(
   leafmap,
   targetLayerId = NULL,
   sf = TRUE,
-  record = FALSE
+  record = FALSE,
+  crs = 4326
 ) {
   # check to see if addDrawToolbar has been already added to the map
   if(is.null(
@@ -238,7 +239,7 @@ editMod <- function(
           )
 
           combine_list_of_sf(
-            lapply(features, st_as_sf.geo_list)
+            lapply(features, st_as_sf.geo_list, crs = crs)
           )
         }
       )

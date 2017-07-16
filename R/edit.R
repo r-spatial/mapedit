@@ -28,7 +28,8 @@ editMap <- function(x, ...) {
 #' @export
 editMap.leaflet <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...
+  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
+  crs = 4326, ...
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
@@ -54,7 +55,8 @@ editMap.leaflet <- function(
       x,
       targetLayerId = targetLayerId,
       sf = sf,
-      record = record
+      record = record,
+      crs = crs
     )
 
     observe({crud()})
@@ -80,13 +82,14 @@ editMap.leaflet <- function(
 #' @export
 editMap.mapview <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...
+  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
+  crs = 4326, ...
 ) {
   stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
 
   editMap.leaflet(
     x@map, targetLayerId = targetLayerId, sf = sf,
-    ns = ns, viewer = viewer, record = TRUE
+    ns = ns, viewer = viewer, record = TRUE, crs = crs
   )
 }
 
@@ -136,13 +139,14 @@ editFeatures.sf = function(
   mergeOrder = c("add", "edit", "delete"),
   record = FALSE,
   viewer = shiny::paneViewer(),
+  crs = 4326,
   ...
 ) {
 
-  x = mapview:::checkAdjustProjection(x)
   x$edit_id = as.character(1:nrow(x))
 
   if (is.null(map)) {
+    x = mapview:::checkAdjustProjection(x)
     map = mapview::mapview()@map
     map = mapview::addFeatures(map, data=x, layerId=~x$edit_id, group = "toedit")
     ext = mapview:::createExtent(x)
@@ -166,7 +170,8 @@ editFeatures.sf = function(
 
   crud = editMap(
     map, targetLayerId = "toedit",
-    viewer = viewer, record = record, ...
+    viewer = viewer, record = record,
+    crs = crs, ...
   )
 
   merged <- Reduce(

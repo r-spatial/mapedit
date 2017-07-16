@@ -12,19 +12,27 @@ geojson_to_sf = function(x) {
 }
 
 #' @keywords internal
-st_as_sfc.geo_list = function(x, ...) {
-  sf::read_sf(
+st_as_sfc.geo_list = function(x, crs = 4326, ...) {
+  geom_sf = sf::read_sf(
     jsonlite::toJSON(x, auto_unbox=TRUE, force=TRUE)
   )
+  suppressWarnings({
+    sf::st_crs(geom_sf) = crs
+  })
+  return(geom_sf)
 }
 
 #' @keywords internal
-st_as_sf.geo_list = function(x, ...) {
+st_as_sf.geo_list = function(x, crs = 4326, ...) {
   if(x$type != "Feature") {
     stop("should be of type 'Feature'", call.=FALSE)
   }
 
   geom_sf <- st_as_sfc.geo_list(x)
+  suppressWarnings({
+    sf::st_crs(geom_sf) = crs
+  })
+  return(geom_sf)
 }
 
 #' @keywords internal
@@ -59,7 +67,7 @@ fix_geojson_coords <- function(ft) {
 }
 
 #' @keywords internal
-combine_list_of_sf <- function(sf_list) {
+combine_list_of_sf <- function(sf_list, crs = sf::st_crs(sf_list[[1]])) {
   if(length(sf_list) == 0) {return(NULL)}
   props <- dplyr::bind_rows(
     lapply(
@@ -78,6 +86,6 @@ combine_list_of_sf <- function(sf_list) {
     geometry = sf::st_sfc(
       unlist(lapply(sf_list, function(x) sf::st_geometry(x)), recursive=FALSE)
     ),
-    crs = sf::st_crs(4326)
+    crs = sf::st_crs(crs)
   )
 }
