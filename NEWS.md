@@ -1,3 +1,9 @@
+# mapedit 0.3.3
+
+### New Features
+
+* add `CRS` in `edit*` functions; thx @tim-salabim 
+
 # mapedit 0.3.2
 
 ### Bug Fix
