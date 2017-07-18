@@ -247,7 +247,7 @@ editMod <- function(
       recorder <- lapply(
         recorder,
         function(evt) {
-          feature = st_as_sfc.geo_list(evt$feature)
+          feature = st_as_sfc.geo_list(evt$feature, crs = crs)
           list(evt = evt$event, timestamp = evt$timestamp, feature = feature)
         }
       )
