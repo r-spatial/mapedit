@@ -5,7 +5,7 @@
 \title{Shiny Module Server for Geo Create, Edit, Delete}
 \usage{
 editMod(input, output, session, leafmap, targetLayerId = NULL, sf = TRUE,
-  record = FALSE)
+  record = FALSE, crs = 4326)
 }
 \arguments{
 \item{input}{Shiny server function input}

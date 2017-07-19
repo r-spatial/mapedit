@@ -13,10 +13,12 @@
 editMap(x, ...)
 
 \method{editMap}{leaflet}(x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...)
+  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
+  crs = 4326, ...)
 
 \method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(), ...)
+  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
+  crs = 4326, ...)
 
 \method{editMap}{NULL}(x, ...)
 }

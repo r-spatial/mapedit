@@ -11,7 +11,7 @@
 selectFeatures(x, ...)
 
 \method{selectFeatures}{sf}(x = NULL, map = NULL, index = FALSE,
-  viewer = shiny::paneViewer(), ...)
+  viewer = shiny::paneViewer(), label = NULL, ...)
 
 \method{selectFeatures}{Spatial}(x, ...)
 }
@@ -29,6 +29,9 @@ the index of selected features rather than the actual
 selected features}
 
 \item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
+
+\item{label}{\code{character} vector or \code{formula} for the
+content that will appear in label/tooltip.}
 }
 \description{
 Interactively Select Map Features

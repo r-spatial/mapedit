@@ -11,7 +11,8 @@
 editFeatures(x, ...)
 
 \method{editFeatures}{sf}(x, map = NULL, mergeOrder = c("add", "edit",
-  "delete"), record = FALSE, viewer = shiny::paneViewer(), ...)
+  "delete"), record = FALSE, viewer = shiny::paneViewer(), crs = 4326,
+  ...)
 
 \method{editFeatures}{Spatial}(x, ...)
 }
