@@ -51,7 +51,9 @@ selectFeatures.sf = function(
     if(inherits(map, "mapview")) {
       map = map@map
     }
-    map = mapview::addFeatures(map, data=x, layerId=~x$edit_id)
+    map = mapview::addFeatures(
+      map, data=x, layerId=~x$edit_id, label=label
+    )
   }
 
   ind = selectMap(map, viewer=viewer, ...)
