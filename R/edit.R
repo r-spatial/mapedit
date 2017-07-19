@@ -132,6 +132,8 @@ editFeatures = function(x, ...) {
 #'          of add, edit, delete.
 #' @param record \code{logical} to record all edits for future playback.
 #' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
+#' @param label \code{character} vector or \code{formula} for the
+#'          content that will appear in label/tooltip.
 #' @export
 editFeatures.sf = function(
   x,
@@ -140,6 +142,7 @@ editFeatures.sf = function(
   record = FALSE,
   viewer = shiny::paneViewer(),
   crs = 4326,
+  label = NULL,
   ...
 ) {
 
@@ -148,7 +151,10 @@ editFeatures.sf = function(
   if (is.null(map)) {
     x = mapview:::checkAdjustProjection(x)
     map = mapview::mapview()@map
-    map = mapview::addFeatures(map, data=x, layerId=~x$edit_id, group = "toedit")
+    map = mapview::addFeatures(
+      map, data=x, layerId=~x$edit_id, label=label,
+      group = "toedit"
+    )
     ext = mapview:::createExtent(x)
     map = leaflet::fitBounds(
       map,
@@ -163,7 +169,7 @@ editFeatures.sf = function(
       map = map@map
     }
     map = mapview::addFeatures(
-      map, data=x, layerId=~x$edit_id,
+      map, data=x, layerId=~x$edit_id, label = label,
       group = "toedit"
     )
   }
