@@ -11,7 +11,8 @@
 editFeatures(x, ...)
 
 \method{editFeatures}{sf}(x, map = NULL, mergeOrder = c("add", "edit",
-  "delete"), record = FALSE, viewer = shiny::paneViewer(), ...)
+  "delete"), record = FALSE, viewer = shiny::paneViewer(), crs = 4326,
+  label = NULL, ...)
 
 \method{editFeatures}{Spatial}(x, ...)
 }
@@ -31,6 +32,9 @@ of add, edit, delete.}
 \item{record}{\code{logical} to record all edits for future playback.}
 
 \item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
+
+\item{label}{\code{character} vector or \code{formula} for the
+content that will appear in label/tooltip.}
 }
 \description{
 Interactively Edit Map Features

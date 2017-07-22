@@ -18,12 +18,15 @@ selectFeatures = function(x, ...) {
 #'          the index of selected features rather than the actual
 #'          selected features
 #' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
+#' @param label \code{character} vector or \code{formula} for the
+#'          content that will appear in label/tooltip.
 #' @export
 selectFeatures.sf = function(
   x = NULL,
   map = NULL,
   index = FALSE,
   viewer = shiny::paneViewer(),
+  label = NULL,
   ...
 ) {
 
@@ -32,7 +35,9 @@ selectFeatures.sf = function(
 
   if (is.null(map)) {
     map = mapview::mapview()@map
-    map = mapview::addFeatures(map, data=x, layerId=~x$edit_id)
+    map = mapview::addFeatures(
+      map, data=x, layerId=~x$edit_id, label=label
+    )
     ext = mapview:::createExtent(x)
     map = leaflet::fitBounds(
       map,
@@ -46,7 +51,9 @@ selectFeatures.sf = function(
     if(inherits(map, "mapview")) {
       map = map@map
     }
-    map = mapview::addFeatures(map, data=x, layerId=~x$edit_id)
+    map = mapview::addFeatures(
+      map, data=x, layerId=~x$edit_id, label=label
+    )
   }
 
   ind = selectMap(map, viewer=viewer, ...)

@@ -2,7 +2,9 @@
 
 ### New Features
 
-* add `CRS` in `edit*` functions; thx @tim-salabim 
+* add `CRS` in `edit*` functions; thx @tim-salabim
+
+* add label for reference in `edit*` and `select*`
 
 # mapedit 0.3.2
 
