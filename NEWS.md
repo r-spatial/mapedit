@@ -1,5 +1,9 @@
 # mapedit 0.3.3
 
+### Bug Fix
+
+* fix `edit` module lookup for already added `Leaflet.draw
+
 ### New Features
 
 * add `CRS` in `edit*` functions; thx @tim-salabim
