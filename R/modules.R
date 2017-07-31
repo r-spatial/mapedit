@@ -115,7 +115,7 @@ editMod <- function(
       function(cl) {
         cl$method == "addDrawToolbar"
       },
-      leafmap$leafmap$calls
+      leafmap$x$calls
     )
   )) {
     # add draw toolbar if not found
