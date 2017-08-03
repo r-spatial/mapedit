@@ -10,7 +10,8 @@
 \usage{
 selectFeatures(x, ...)
 
-\method{selectFeatures}{sf}(x = NULL, map = NULL, index = FALSE,
+\method{selectFeatures}{sf}(x = NULL, mode = c("click", "draw"),
+  op = sf::st_intersects, map = NULL, index = FALSE,
   viewer = shiny::paneViewer(), label = NULL, ...)
 
 \method{selectFeatures}{Spatial}(x, ...)
@@ -19,6 +20,13 @@ selectFeatures(x, ...)
 \item{x}{features to select}
 
 \item{...}{other arguments}
+
+\item{mode}{one of "click" or "draw".}
+
+\item{op}{the geometric binary predicate to use for the selection.
+Can be any of \code{\link{geos_binary_pred}}. In the spatial
+operation the drawn features will be evaluated as x and the supplied
+feature as y. Ignored if \code{mode = "click"}.}
 
 \item{map}{a background \code{leaflet} or \code{mapview} map
 to be used for editing. If \code{NULL} a blank

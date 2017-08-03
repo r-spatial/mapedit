@@ -11,6 +11,11 @@ selectFeatures = function(x, ...) {
 
 
 #' @name selectFeatures
+#' @param mode one of "click" or "draw".
+#' @param op the geometric binary predicate to use for the selection.
+#'           Can be any of \code{\link{geos_binary_pred}}. In the spatial
+#'           operation the drawn features will be evaluated as x and the supplied
+#'           feature as y. Ignored if \code{mode = "click"}.
 #' @param map a background \code{leaflet} or \code{mapview} map
 #'          to be used for editing. If \code{NULL} a blank
 #'          mapview canvas will be provided.
@@ -23,6 +28,8 @@ selectFeatures = function(x, ...) {
 #' @export
 selectFeatures.sf = function(
   x = NULL,
+  mode = c("click", "draw"),
+  op = sf::st_intersects,
   map = NULL,
   index = FALSE,
   viewer = shiny::paneViewer(),
@@ -30,6 +37,7 @@ selectFeatures.sf = function(
   ...
 ) {
 
+  nm = deparse(substitute(x))
   x = mapview:::checkAdjustProjection(x)
   x$edit_id = as.character(1:nrow(x))
 
@@ -56,18 +64,35 @@ selectFeatures.sf = function(
     )
   }
 
-  ind = selectMap(map, viewer=viewer, ...)
+  if (mode[1] == "click") {
 
-  indx = ind$id[as.logical(ind$selected)]
-  # todrop = "edit_id"
+    ind = selectMap(map, viewer=viewer, ...)
 
-  # when index argument is TRUE return index rather than actual features
-  if(index) {
-    return(as.numeric(indx))
+    indx = ind$id[as.logical(ind$selected)]
+    # todrop = "edit_id"
+
+    # when index argument is TRUE return index rather than actual features
+    if(index) {
+      return(as.numeric(indx))
+    }
+
+    # return selected features
+    return(x[as.numeric(indx), !names(x) %in% "edit_id"])
+
+  } else {
+
+    stopifnot(requireNamespace("sf"))
+
+    drawn = editMap(mapview::mapview(x, layer.name = nm))
+    indx = unique(unlist(suppressMessages(op(drawn$finished, x))))
+
+    if(index) {
+      return(as.numeric(indx))
+    }
+
+    return(x[indx, ])
+
   }
-
-  # return selected features
-  return(x[as.numeric(indx), !names(x) %in% "edit_id"])
 }
 
 #' @name selectFeatures
