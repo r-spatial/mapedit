@@ -84,6 +84,9 @@ selectFeatures.sf = function(
     stopifnot(requireNamespace("sf"))
 
     drawn = editMap(mapview::mapview(x, layer.name = nm))
+
+    if (is.null(drawn)) invisible(return(NULL))
+
     indx = unique(unlist(suppressMessages(op(drawn$finished, x))))
 
     if(index) {
