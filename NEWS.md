@@ -1,4 +1,4 @@
-## mapedit 0.3.4
+## mapedit 0.3.5
 
 ### New Features
 
