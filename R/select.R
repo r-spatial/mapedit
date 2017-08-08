@@ -41,30 +41,31 @@ selectFeatures.sf = function(
   x = mapview:::checkAdjustProjection(x)
   x$edit_id = as.character(1:nrow(x))
 
-  if (is.null(map)) {
-    map = mapview::mapview()@map
-    map = mapview::addFeatures(
-      map, data=x, layerId=~x$edit_id, label=label
-    )
-    ext = mapview:::createExtent(x)
-    map = leaflet::fitBounds(
-      map,
-      lng1 = ext[1],
-      lat1 = ext[3],
-      lng2 = ext[2],
-      lat2 = ext[4]
-    )
-    map = mapview::addHomeButton(map = map, ext = ext)
-  } else {
-    if(inherits(map, "mapview")) {
-      map = map@map
-    }
-    map = mapview::addFeatures(
-      map, data=x, layerId=~x$edit_id, label=label
-    )
-  }
 
   if (mode[1] == "click") {
+
+    if (is.null(map)) {
+      map = mapview::mapview()@map
+      map = mapview::addFeatures(
+        map, data=x, layerId=~x$edit_id, label=label
+      )
+      ext = mapview:::createExtent(x)
+      map = leaflet::fitBounds(
+        map,
+        lng1 = ext[1],
+        lat1 = ext[3],
+        lng2 = ext[2],
+        lat2 = ext[4]
+      )
+      map = mapview::addHomeButton(map = map, ext = ext)
+    } else {
+      if(inherits(map, "mapview")) {
+        map = map@map
+      }
+      map = mapview::addFeatures(
+        map, data=x, layerId=~x$edit_id, label=label
+      )
+    }
 
     ind = selectMap(map, viewer=viewer, ...)
 
@@ -83,7 +84,7 @@ selectFeatures.sf = function(
 
     stopifnot(requireNamespace("sf"))
 
-    drawn = editMap(mapview::mapview(x, layer.name = nm))
+    drawn = editMap(mapview::mapview(x, map = map, layer.name = nm))
 
     if (is.null(drawn)) invisible(return(NULL))
 
