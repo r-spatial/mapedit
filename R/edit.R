@@ -154,7 +154,7 @@ editFeatures.sf = function(
     map = mapview::addFeatures(
       map, data=x, layerId=~x$edit_id,
       label=label,
-      labelOptions=labelOptions(direction="top", offset=c(0,-40)),
+      labelOptions = leaflet::labelOptions(direction="top", offset=c(0,-40)),
       group = "toedit"
     )
     ext = mapview:::createExtent(x)
@@ -173,7 +173,7 @@ editFeatures.sf = function(
     map = mapview::addFeatures(
       map, data=x, layerId=~x$edit_id,
       label=label,
-      labelOptions=labelOptions(direction="top", offset=c(0,-40)),
+      labelOptions = leaflet::labelOptions(direction="top", offset=c(0,-40)),
       group = "toedit"
     )
   }

@@ -1,16 +1,12 @@
-## mapedit 0.3.5
+mapedit 0.3.5
 
-### New Features
+#New Features
 
 * add drawing mode to selectFeatures to enable selection via point/line/poolygon drawing. Selection will be done using any of ?geos_binary_ops
 
 # mapedit 0.3.3
 
-### Bug Fix
-
-* fix `edit` module lookup for already added `Leaflet.draw
-
-### New Features
+#New Features
 
 * add `CRS` in `edit*` functions; thx @tim-salabim
 
@@ -18,7 +14,7 @@
 
 # mapedit 0.3.2
 
-### Bug Fix
+#Bug Fix
 
 * polygons of `length > 1` not handled correctly.  See [discussion](https://github.com/r-spatial/mapedit/issues/48).
 
@@ -30,18 +26,18 @@
 
 # mapedit 0.3.1
 
-### Bug Fix
+#Bug Fix
 
 * multiple edits and deletes resulting in multiple FeatureCollections not handled properly causing some actions to not be considered when converting to `sf`; thanks @tim-salabim for identifying
 
 # mapedit 0.3.0
 
-### API Changes
+#API Changes
 
 * **BREAKING** editFeatures and selectFeatures add a map argument
 instead of platform
 
-### New Features
+#New Features
 
 * add editFeatures function for easy add, edit, delete with existing simple features (sf)
 * add editMap.NULL
@@ -57,7 +53,7 @@ within one RStudio window/context.
 * document more thoroughly
 * pass trial CRAN check
 
-## Bug Fixes
+Bug Fixes
 
 * fix internal `combine_list_of_sf` with length 0 `list`; found when `editFeatures()` and save with no changes
 
