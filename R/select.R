@@ -88,7 +88,13 @@ selectFeatures.sf = function(
 
     if (is.null(drawn)) invisible(return(NULL))
 
-    indx = unique(unlist(suppressMessages(op(drawn$finished, x))))
+    if (!is.na(sf::st_crs(x))) {
+      fin = sf::st_transform(drawn$finished, sf::st_crs(x))
+    } else {
+      fin = drawn$finished
+      st_crs(fin) = NA
+    }
+    indx = unique(unlist(suppressMessages(op(fin, x))))
 
     if(index) {
       return(as.numeric(indx))
