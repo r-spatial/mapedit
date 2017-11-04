@@ -29,7 +29,9 @@ editMap <- function(x, ...) {
 editMap.leaflet <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, ...
+  crs = 4326,
+  title = "Edit Map",
+  ...
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
 
@@ -45,7 +47,9 @@ editMap.leaflet <- function(
       editModUI(id = ns, height="97%"),
       height=NULL, width=NULL
     ),
-    miniUI::gadgetTitleBar("Edit Map", right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE))
+    miniUI::gadgetTitleBar(title = title,
+                           right = miniUI::miniTitleBarButton("done", "Done",
+                                                              primary = TRUE))
   )
 
   server <- function(input, output, session) {
@@ -83,13 +87,16 @@ editMap.leaflet <- function(
 editMap.mapview <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, ...
+  crs = 4326,
+  title = "Edit Map",
+  ...
 ) {
   stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
 
   editMap.leaflet(
     x@map, targetLayerId = targetLayerId, sf = sf,
-    ns = ns, viewer = viewer, record = TRUE, crs = crs
+    ns = ns, viewer = viewer, record = TRUE, crs = crs,
+    title = title
   )
 }
 
