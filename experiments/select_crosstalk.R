@@ -1,6 +1,6 @@
 library(sf)
-library(plotly)
 library(leaflet)
+library(plotly)
 library(crosstalk)
 library(htmltools)
 
@@ -62,12 +62,22 @@ function(el,x) {
             var id = String(lyr.options.layerId)
             if(
               !x.value  ||
-              (Array.isArray(x.value) && x.value.indexOf(id) === -1)
+              (
+                Array.isArray(x.value) &&
+                x.value.filter(function(d) {
+                  return d == id
+                }).length === 0
+              )
             ) {
               toggle_state(lyr, false)
               toggle_style(lyr, style_obj.false)
             }
-            if(Array.isArray(x.value) && x.value.indexOf(id) > -1) {
+            if(
+              Array.isArray(x.value) &&
+              x.value.filter(function(d) {
+                return d == id
+              }).length > 0
+            ) {
               toggle_state(lyr, true)
               toggle_style(lyr, style_obj.true)
             }
@@ -99,29 +109,6 @@ function(el,x) {
       )
     }
 
-    if(ct_sel) {
-      var ct_values = ct_sel.value
-      var id = String(layer.options.layerId)
-      if(selected) {
-        if(!ct_values) {
-          ct_sel.set([id])
-        }
-        if(Array.isArray(ct_values) && ct_values.indexOf(id) === -1) {
-          ct_sel.set(ct_values.concat(id))
-        }
-      }
-
-      if(ct_values && !selected) {
-        ct_values.length > 1 ?
-          ct_sel.set(
-            ct_values.filter(function(d) {
-              return d !== id
-            })
-          ) :
-          ct_sel.set(null) // select all if nothing selected
-      }
-    }
-
     return selected;
   };
   // set up click handler on each layer with a group name
@@ -133,6 +120,35 @@ function(el,x) {
       lyr.on('click',function(e){
         var selected = toggle_state(e.target);
         toggle_style(e.target, style_obj[String(selected)]);
+
+        if(ct_sel) {
+          var ct_values = ct_sel.value;
+          var id = lyr.options.layerId;
+          if(selected) {
+            if(!ct_values) {
+              ct_sel.set([id, String(id)]) // do both since Plotly uses String id
+            }
+            // use filter instead of indexOf to allow inexact equality
+            if(
+              Array.isArray(ct_values) &&
+              ct_values.filter(function(d) {
+                return d == id
+              }).length === 0
+            ) {
+              ct_sel.set(ct_values.concat([id, String(id)]))  // do both since Plotly uses String id
+            }
+          }
+
+          if(ct_values && !selected) {
+            ct_values.length > 1 ?
+              ct_sel.set(
+                ct_values.filter(function(d) {
+                  return d != id
+                })
+              ) :
+              ct_sel.set(null) // select all if nothing selected
+          }
+        }
       });
     }
   });
@@ -145,6 +161,7 @@ function(el,x) {
     )
   )
 }
+
 
 browsable(
   tagList(
@@ -162,6 +179,41 @@ browsable(
       plot_ly(boroughs_sd, x = ~x, y = ~y) %>%
         add_markers(alpha = 0.5,text = ~paste('Borough: ', BoroName)) %>%
         highlight(on = "plotly_selected")
+    )
+  )
+)
+
+
+# try it with DT datatable
+library(DT)
+
+# no reason to carry the load of the feature column
+#   in the datatables
+#   so we will modify the data to subtract the feature column
+#   not necessary to use dplyr but select makes our life easy
+#   also need to modify targets, colnames, and container
+dt <- datatable(boroughs_sd, width="100%")
+dt$x$data <- dplyr::select(dt$x$data, -geometry)
+dt$x$options$columnDefs[[1]]$targets <- seq_len(ncol(boroughs)-1)
+attr(dt$x, "colnames") <- attr(dt$x, "colnames")[which(attr(dt$x, "colnames") != "geometry")]
+dt$x$container <- gsub(x=dt$x$container, pattern="<th>geometry</th>\n", replacement="")
+dt
+
+
+browsable(
+  tagList(
+    tags$div(
+      style = "float:left; width: 49%;",
+      add_select_script(
+        map,
+        styleFalse = list(fillOpacity = 0.2, weight = 1, opacity = 0.4, color="black"),
+        styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7, color="blue"),
+        ns = ""
+      )
+    ),
+    tags$div(
+      style = "float:left; width: 49%;",
+      dt
     )
   )
 )
