@@ -48,11 +48,13 @@ function(el,x) {
     'true': %s
   }
 
+  var crosstalk_group = '%s';
+
   // instead of shiny input as our state manager
   //   use crosstalk
-  if(crosstalk) {
+  if(typeof(crosstalk) !== 'undefined' && crosstalk_group) {
     var ct_sel = new crosstalk.SelectionHandle()
-    ct_sel.setGroup('boroughs')
+    ct_sel.setGroup(crosstalk_group)
     ct_sel.on('change', function(x){
       if(x.sender !== ct_sel) { //ignore select from this map
         lf.eachLayer(function(lyr){
@@ -138,6 +140,7 @@ function(el,x) {
 ",
       jsonlite::toJSON(styleFalse, auto_unbox=TRUE),
       jsonlite::toJSON(styleTrue, auto_unbox=TRUE),
+      if(inherits(getMapData(map), "SharedData")) {getMapData(map)$groupName()} else {""},
       ns
     )
   )
@@ -150,7 +153,8 @@ browsable(
       add_select_script(
         map,
         styleFalse = list(fillOpacity = 0.2, weight = 1, opacity = 0.4, color="black"),
-        styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7, color="blue")
+        styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7, color="blue"),
+        ns = ""
       )
     ),
     tags$div(
