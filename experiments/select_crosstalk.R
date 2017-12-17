@@ -217,3 +217,34 @@ browsable(
     )
   )
 )
+
+
+# now try leaflet, plotly, and dt
+#   this unfortunately does not work
+#   exactly as we would like but plotly use of String key
+#   seems to cause the problem
+#   fixing Plotly is out of scope of this project
+#   but I might take a look at some point to submit pull
+browsable(
+  tagList(
+    tags$div(
+      style = "float:left; width: 32%;",
+      add_select_script(
+        map,
+        styleFalse = list(fillOpacity = 0.2, weight = 1, opacity = 0.4, color="black"),
+        styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7, color="blue"),
+        ns = ""
+      )
+    ),
+    tags$div(
+      style = "float:left; width: 32%;",
+      plot_ly(boroughs_sd, x = ~x, y = ~y) %>%
+        add_markers(alpha = 0.5,text = ~paste('Borough: ', BoroName)) %>%
+        highlight(on = "plotly_selected")
+    ),
+    tags$div(
+      style = "float:left; width: 32%;",
+      dt
+    )
+  )
+)
