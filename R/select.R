@@ -41,30 +41,32 @@ selectFeatures.sf = function(
   x = mapview:::checkAdjustProjection(x)
   x$edit_id = as.character(1:nrow(x))
 
-  if (is.null(map)) {
-    map = mapview::mapview()@map
-    map = mapview::addFeatures(
-      map, data=x, layerId=~x$edit_id, label=label
-    )
-    ext = mapview:::createExtent(x)
-    map = leaflet::fitBounds(
-      map,
-      lng1 = ext[1],
-      lat1 = ext[3],
-      lng2 = ext[2],
-      lat2 = ext[4]
-    )
-    map = mapview::addHomeButton(map = map, ext = ext)
-  } else {
-    if(inherits(map, "mapview")) {
-      map = map@map
-    }
-    map = mapview::addFeatures(
-      map, data=x, layerId=~x$edit_id, label=label
-    )
-  }
+  mode = match.arg(mode)
 
-  if (mode[1] == "click") {
+  if (mode == "click") {
+
+    if (is.null(map)) {
+      map = mapview::mapView(...)@map
+      map = mapview::addFeatures(
+        map, data = x, layerId = ~x$edit_id, label = label, ...
+      )
+      ext = mapview:::createExtent(x)
+      map = leaflet::fitBounds(
+        map,
+        lng1 = ext[1],
+        lat1 = ext[3],
+        lng2 = ext[2],
+        lat2 = ext[4]
+      )
+      map = mapview::addHomeButton(map = map, ext = ext)
+    } else {
+      if(inherits(map, "mapview")) {
+        map = map@map
+      }
+      map = mapview::addFeatures(
+        map, data=x, layerId=~x$edit_id, label=label
+      )
+    }
 
     ind = selectMap(map, viewer=viewer, ...)
 
@@ -83,11 +85,17 @@ selectFeatures.sf = function(
 
     stopifnot(requireNamespace("sf"))
 
-    drawn = editMap(mapview::mapview(x, layer.name = nm))
+    drawn = editMap(mapview::mapView(x, map = map, layer.name = nm, ...))
 
-    if (is.null(drawn)) invisible(return(NULL))
+    if (is.null(drawn$finished)) invisible(return(NULL))
 
-    indx = unique(unlist(suppressMessages(op(drawn$finished, x))))
+    if (!is.na(sf::st_crs(x))) {
+      fin = sf::st_transform(drawn$finished, sf::st_crs(x))
+    } else {
+      fin = drawn$finished
+      st_crs(fin) = NA
+    }
+    indx = unique(unlist(suppressMessages(op(fin, x))))
 
     if(index) {
       return(as.numeric(indx))
@@ -101,5 +109,5 @@ selectFeatures.sf = function(
 #' @name selectFeatures
 #' @export
 selectFeatures.Spatial = function(x, ...) {
-  selectFeatures(x=sf::st_as_sf(x), ...)
+  selectFeatures(x = sf::st_as_sf(x), ...)
 }
