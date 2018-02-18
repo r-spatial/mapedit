@@ -127,6 +127,7 @@ editMod <- function(
       circleOptions = FALSE,
       rectangleOptions = leaflet.extras::drawRectangleOptions(repeatMode = TRUE),
       markerOptions = leaflet.extras::drawMarkerOptions(repeatMode = TRUE),
+      circleMarkerOptions = leaflet.extras::drawCircleMarkerOptions(repeatMode = TRUE),
       editOptions = leaflet.extras::editToolbarOptions()
     )
   }
