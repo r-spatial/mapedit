@@ -1,7 +1,8 @@
 #' Interactively Edit a Map
 #'
 #' @param x \code{leaflet} or \code{mapview} map to edit
-#' @param ... other arguments
+#' @param ... other arguments for \code{mapview::addFeatures()} when
+#'          using \code{editMap.NULL} or \code{selectFeatures}
 #'
 #' @return \code{sf} simple features or \code{GeoJSON}
 #'
@@ -47,6 +48,7 @@ editMap.leaflet <- function(
       editModUI(id = ns, height="97%"),
       height=NULL, width=NULL
     ),
+
     miniUI::gadgetTitleBar(title = title,
                            right = miniUI::miniTitleBarButton("done", "Done",
                                                               primary = TRUE))
