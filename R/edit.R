@@ -26,6 +26,9 @@ editMap <- function(x, ...) {
 #'          is unlikely to require a change.
 #' @param record \code{logical} to record all edits for future playback.
 #' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
+#' @param crs see \code{\link[sf]{st_crs}}.
+#' @param title \code{string} to customize the title of the UI window.  The default
+#'          is "Edit Map".
 #' @export
 editMap.leaflet <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
@@ -158,6 +161,8 @@ editFeatures = function(x, ...) {
 #' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @param label \code{character} vector or \code{formula} for the
 #'          content that will appear in label/tooltip.
+#' @param crs see \code{\link[sf]{st_crs}}.
+#'
 #' @export
 editFeatures.sf = function(
   x,

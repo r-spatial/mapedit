@@ -33,6 +33,8 @@ of add, edit, delete.}
 
 \item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
 
+\item{crs}{see \code{\link[sf]{st_crs}}.}
+
 \item{label}{\code{character} vector or \code{formula} for the
 content that will appear in label/tooltip.}
 }

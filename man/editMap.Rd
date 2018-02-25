@@ -14,18 +14,19 @@ editMap(x, ...)
 
 \method{editMap}{leaflet}(x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, ...)
+  crs = 4326, title = "Edit Map", ...)
 
 \method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, ...)
+  crs = 4326, title = "Edit Map", ...)
 
 \method{editMap}{NULL}(x, ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}
 
-\item{...}{other arguments}
+\item{...}{other arguments for \code{mapview::addFeatures()} when
+using \code{editMap.NULL} or \code{selectFeatures}}
 
 \item{targetLayerId}{\code{string} name of the map layer group to use with edit}
 
@@ -38,6 +39,11 @@ is unlikely to require a change.}
 \item{record}{\code{logical} to record all edits for future playback.}
 
 \item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
+
+\item{crs}{see \code{\link[sf]{st_crs}}.}
+
+\item{title}{\code{string} to customize the title of the UI window.  The default
+is "Edit Map".}
 }
 \value{
 \code{sf} simple features or \code{GeoJSON}

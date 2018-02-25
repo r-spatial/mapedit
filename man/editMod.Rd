@@ -22,6 +22,8 @@ editMod(input, output, session, leafmap, targetLayerId = NULL, sf = TRUE,
 \code{GeoJSON}.}
 
 \item{record}{\code{logical} to record all edits for future playback.}
+
+\item{crs}{see \code{\link[sf]{st_crs}}.}
 }
 \value{
 server function for Shiny module
