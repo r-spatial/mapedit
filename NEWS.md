@@ -1,16 +1,21 @@
-## mapedit 0.3.7
+# mapedit 0.4.0
+
+### Bug Fix
+
+* fix `edit` module lookup for already added `Leaflet.draw`
 
 ### New Features
 
-* add drawing mode to selectFeatures to enable selection via point/line/poolygon drawing. Selection will be done using any of ?geos_binary_ops
-
-# mapedit 0.3.3
-
-### New Features
+* add drawing mode to selectFeatures to enable selection via point/line/polygon drawing. Selection will be done using any of `?geos_binary_ops`; thx @tim-salabim
 
 * add `CRS` in `edit*` functions; thx @tim-salabim
 
 * add label for reference in `edit*` and `select*`
+
+* add title argument for `editMap()`
+
+* automatically close browser window on Shiny session end when using
+`viewer = browserViewer(browser = getOption("browser"))`
 
 # mapedit 0.3.2
 

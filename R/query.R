@@ -37,7 +37,22 @@ selectMap.leaflet <- function(
       selectModUI(id = ns, height = "97%"),
       height=NULL, width=NULL
     ),
-    miniUI::gadgetTitleBar("Select Features on Map", right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE))
+    miniUI::gadgetTitleBar("Select Features on Map", right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE)),
+    tags$script(HTML(
+"
+// close browser window on session end
+$(document).on('shiny:disconnected', function() {
+  // check to make sure that button was pressed
+  //  to avoid websocket disconnect caused by some other reason than close
+  if(
+    Shiny.shinyapp.$inputValues['cancel:shiny.action'] ||
+    Shiny.shinyapp.$inputValues['done:shiny.action']
+  ) {
+    window.close()
+  }
+})
+"
+    ))
   )
 
   server <- function(input, output, session) {

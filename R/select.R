@@ -93,7 +93,7 @@ selectFeatures.sf = function(
       fin = sf::st_transform(drawn$finished, sf::st_crs(x))
     } else {
       fin = drawn$finished
-      st_crs(fin) = NA
+      sf::st_crs(fin) = NA
     }
     indx = unique(unlist(suppressMessages(op(fin, x))))
 

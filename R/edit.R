@@ -1,7 +1,8 @@
 #' Interactively Edit a Map
 #'
 #' @param x \code{leaflet} or \code{mapview} map to edit
-#' @param ... other arguments
+#' @param ... other arguments for \code{mapview::addFeatures()} when
+#'          using \code{editMap.NULL} or \code{selectFeatures}
 #'
 #' @return \code{sf} simple features or \code{GeoJSON}
 #'
@@ -25,6 +26,9 @@ editMap <- function(x, ...) {
 #'          is unlikely to require a change.
 #' @param record \code{logical} to record all edits for future playback.
 #' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
+#' @param crs see \code{\link[sf]{st_crs}}.
+#' @param title \code{string} to customize the title of the UI window.  The default
+#'          is "Edit Map".
 #' @export
 editMap.leaflet <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
@@ -47,9 +51,25 @@ editMap.leaflet <- function(
       editModUI(id = ns, height="97%"),
       height=NULL, width=NULL
     ),
-    miniUI::gadgetTitleBar(title = title,
-                           right = miniUI::miniTitleBarButton("done", "Done",
-                                                              primary = TRUE))
+    miniUI::gadgetTitleBar(
+      title = title,
+      right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE)
+    ),
+    tags$script(HTML(
+"
+// close browser window on session end
+$(document).on('shiny:disconnected', function() {
+  // check to make sure that button was pressed
+  //  to avoid websocket disconnect caused by some other reason than close
+  if(
+    Shiny.shinyapp.$inputValues['cancel:shiny.action'] ||
+    Shiny.shinyapp.$inputValues['done:shiny.action']
+  ) {
+    window.close()
+  }
+})
+"
+    ))
   )
 
   server <- function(input, output, session) {
@@ -141,6 +161,8 @@ editFeatures = function(x, ...) {
 #' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
 #' @param label \code{character} vector or \code{formula} for the
 #'          content that will appear in label/tooltip.
+#' @param crs see \code{\link[sf]{st_crs}}.
+#'
 #' @export
 editFeatures.sf = function(
   x,

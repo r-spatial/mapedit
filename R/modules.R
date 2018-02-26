@@ -97,6 +97,7 @@ editModUI <- function(id, ...) {
 #' @param sf \code{logical} to return simple features.  \code{sf=FALSE} will return
 #'          \code{GeoJSON}.
 #' @param record \code{logical} to record all edits for future playback.
+#' @param crs see \code{\link[sf]{st_crs}}.
 #'
 #' @return server function for Shiny module
 #' @import shiny
@@ -127,6 +128,7 @@ editMod <- function(
       circleOptions = FALSE,
       rectangleOptions = leaflet.extras::drawRectangleOptions(repeatMode = TRUE),
       markerOptions = leaflet.extras::drawMarkerOptions(repeatMode = TRUE),
+      #circleMarkerOptions = leaflet.extras::drawCircleMarkerOptions(repeatMode = TRUE),
       editOptions = leaflet.extras::editToolbarOptions()
     )
   }
