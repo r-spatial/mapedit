@@ -26,9 +26,25 @@ editMap <- function(x, ...) {
 #'          is unlikely to require a change.
 #' @param record \code{logical} to record all edits for future playback.
 #' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
+#'          NOTE: when using \code{browserViewer(browser = getOption("browser"))} to
+#'          open the app in the default browser, the browser window will automatically
+#'          close when closing the app (by pressing "done" or "cancel") in most browsers.
+#'          Firefox is an exception. See Details for instructions on how to enable this
+#'          behaviour in Firefox.
 #' @param crs see \code{\link[sf]{st_crs}}.
 #' @param title \code{string} to customize the title of the UI window.  The default
 #'          is "Edit Map".
+#'
+#' @details
+#'   When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
+#'   the systems default browser is Firefox, the browser window will likely not
+#'   automatically close when the app is closed (by pressing "done" or "cancel").
+#'   To enable automatic closing of tabs/windows in Firefox try the following:
+#'   \itemize{
+#'     \item{input "about:config " to your firefox address bar and hit enter}
+#'     \item{make sure your "dom.allow_scripts_to_close_windows" is true}
+#'   }
+#'
 #' @export
 editMap.leaflet <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
@@ -159,9 +175,24 @@ editFeatures = function(x, ...) {
 #'          of add, edit, delete.
 #' @param record \code{logical} to record all edits for future playback.
 #' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
+#'          NOTE: when using \code{browserViewer(browser = getOption("browser"))} to
+#'          open the app in the default browser, the browser window will automatically
+#'          close when closing the app (by pressing "done" or "cancel") in most browsers.
+#'          Firefox is an exception. See Details for instructions on how to enable this
+#'          behaviour in Firefox.
 #' @param label \code{character} vector or \code{formula} for the
 #'          content that will appear in label/tooltip.
 #' @param crs see \code{\link[sf]{st_crs}}.
+#'
+#' @details
+#'   When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
+#'   the systems default browser is Firefox, the browser window will likely not
+#'   automatically close when the app is closed (by pressing "done" or "cancel").
+#'   To enable automatic closing of tabs/windows in Firefox try the following:
+#'   \itemize{
+#'     \item{input "about:config " to your firefox address bar and hit enter}
+#'     \item{make sure your "dom.allow_scripts_to_close_windows" is true}
+#'   }
 #'
 #' @export
 editFeatures.sf = function(

@@ -31,7 +31,12 @@ of add, edit, delete.}
 
 \item{record}{\code{logical} to record all edits for future playback.}
 
-\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
+NOTE: when using \code{browserViewer(browser = getOption("browser"))} to
+open the app in the default browser, the browser window will automatically
+close when closing the app (by pressing "done" or "cancel") in most browsers.
+Firefox is an exception. See Details for instructions on how to enable this
+behaviour in Firefox.}
 
 \item{crs}{see \code{\link[sf]{st_crs}}.}
 
@@ -40,6 +45,16 @@ content that will appear in label/tooltip.}
 }
 \description{
 Interactively Edit Map Features
+}
+\details{
+When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
+  the systems default browser is Firefox, the browser window will likely not
+  automatically close when the app is closed (by pressing "done" or "cancel").
+  To enable automatic closing of tabs/windows in Firefox try the following:
+  \itemize{
+    \item{input "about:config " to your firefox address bar and hit enter}
+    \item{make sure your "dom.allow_scripts_to_close_windows" is true}
+  }
 }
 \examples{
 \dontrun{
