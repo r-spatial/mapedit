@@ -1,4 +1,4 @@
-# mapedit 0.4.0
+## mapedit 0.4.1
 
 ### Bug Fix
 
@@ -16,6 +16,8 @@
 
 * automatically close browser window on Shiny session end when using
 `viewer = browserViewer(browser = getOption("browser"))`
+
+* add new function drawFeatures
 
 # mapedit 0.3.2
 
