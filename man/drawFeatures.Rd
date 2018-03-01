@@ -24,6 +24,8 @@ close when closing the app (by pressing "done" or "cancel") in most browsers.
 Firefox is an exception. See Details for instructions on how to enable this
 behaviour in Firefox.}
 
+\item{title}{\code{string} to customize the title of the UI window.}
+
 \item{...}{additional arguments passed on to \code{\link{editMap}}.}
 }
 \description{
