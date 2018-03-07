@@ -1,3 +1,7 @@
+## mapedit 0.4.2 (develop)
+
+* stopApp when session ended to handle when a user closes a browser tab or window when using `viewer = browserViewer(browser = getOption("browser"))`
+
 ## mapedit 0.4.1
 
 ### Bug Fix
