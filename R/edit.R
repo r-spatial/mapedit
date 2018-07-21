@@ -183,6 +183,8 @@ editFeatures = function(x, ...) {
 #' @param label \code{character} vector or \code{formula} for the
 #'          content that will appear in label/tooltip.
 #' @param crs see \code{\link[sf]{st_crs}}.
+#' @param title \code{string} to customize the title of the UI window.  The default
+#'          is "Edit Map".
 #'
 #' @details
 #'   When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
@@ -203,6 +205,7 @@ editFeatures.sf = function(
   viewer = shiny::paneViewer(),
   crs = 4326,
   label = NULL,
+  title = "Edit Map",
   ...
 ) {
 
@@ -241,7 +244,7 @@ editFeatures.sf = function(
   crud = editMap(
     map, targetLayerId = "toedit",
     viewer = viewer, record = record,
-    crs = crs, ...
+    crs = crs, title = title, ...
   )
 
   merged <- Reduce(

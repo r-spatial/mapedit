@@ -30,6 +30,8 @@ selectFeatures = function(x, ...) {
 #'          behaviour in Firefox.
 #' @param label \code{character} vector or \code{formula} for the
 #'          content that will appear in label/tooltip.
+#' @param title \code{string} to customize the title of the UI window.  The default
+#'          is "Select features".
 #'
 #' @details
 #'   When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
@@ -50,6 +52,7 @@ selectFeatures.sf = function(
   index = FALSE,
   viewer = shiny::paneViewer(),
   label = NULL,
+  title = "Select features",
   ...
 ) {
 
@@ -84,7 +87,7 @@ selectFeatures.sf = function(
       )
     }
 
-    ind = selectMap(map, viewer=viewer, ...)
+    ind = selectMap(map, viewer=viewer, title = title, ...)
 
     indx = ind$id[as.logical(ind$selected)]
     # todrop = "edit_id"
@@ -101,7 +104,7 @@ selectFeatures.sf = function(
 
     stopifnot(requireNamespace("sf"))
 
-    drawn = editMap(mapview::mapView(x, map = map, layer.name = nm, ...))
+    drawn = editMap(mapview::mapView(x, map = map, layer.name = nm, ...), title = title)
 
     if (is.null(drawn$finished)) invisible(return(NULL))
 

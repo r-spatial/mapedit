@@ -19,6 +19,8 @@ selectMap <- function(x, ...) {
 #'          close when closing the app (by pressing "done" or "cancel") in most browsers.
 #'          Firefox is an exception. See Details for instructions on how to enable this
 #'          behaviour in Firefox.
+#' @param title \code{string} to customize the title of the UI window.  The default
+#'          is "Select features".
 #'
 #' @details
 #'   When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
@@ -37,6 +39,7 @@ selectMap.leaflet <- function(
   styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7),
   ns = "mapedit-select",
   viewer = shiny::paneViewer(),
+  title = "Select features",
   ...
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
@@ -53,7 +56,9 @@ selectMap.leaflet <- function(
       selectModUI(id = ns, height = "97%"),
       height=NULL, width=NULL
     ),
-    miniUI::gadgetTitleBar("Select Features on Map", right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE)),
+    miniUI::gadgetTitleBar(
+      title = title,
+      right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE)),
     tags$script(HTML(
 "
 // close browser window on session end

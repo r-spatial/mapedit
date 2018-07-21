@@ -10,7 +10,8 @@ selectMap(x, ...)
 
 \method{selectMap}{leaflet}(x = NULL, styleFalse = list(fillOpacity = 0.2,
   weight = 1, opacity = 0.4), styleTrue = list(fillOpacity = 0.7, weight = 3,
-  opacity = 0.7), ns = "mapedit-select", viewer = shiny::paneViewer(), ...)
+  opacity = 0.7), ns = "mapedit-select", viewer = shiny::paneViewer(),
+  title = "Select features", ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to use for selection}
@@ -29,6 +30,9 @@ open the app in the default browser, the browser window will automatically
 close when closing the app (by pressing "done" or "cancel") in most browsers.
 Firefox is an exception. See Details for instructions on how to enable this
 behaviour in Firefox.}
+
+\item{title}{\code{string} to customize the title of the UI window.  The default
+is "Select features".}
 }
 \description{
 Interactively Select Map Features

@@ -12,7 +12,8 @@ selectFeatures(x, ...)
 
 \method{selectFeatures}{sf}(x = NULL, mode = c("click", "draw"),
   op = sf::st_intersects, map = NULL, index = FALSE,
-  viewer = shiny::paneViewer(), label = NULL, ...)
+  viewer = shiny::paneViewer(), label = NULL, title = "Select features",
+  ...)
 
 \method{selectFeatures}{Spatial}(x, ...)
 }
@@ -45,6 +46,9 @@ behaviour in Firefox.}
 
 \item{label}{\code{character} vector or \code{formula} for the
 content that will appear in label/tooltip.}
+
+\item{title}{\code{string} to customize the title of the UI window.  The default
+is "Select features".}
 }
 \description{
 Interactively Select Map Features
