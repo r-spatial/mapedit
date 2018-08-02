@@ -24,6 +24,8 @@ Imports:
     miniUI,
     sf (>= 0.5-2),
     shiny
+Suggests:
+    crayon
 Enhances:
     geojsonio
 Encoding: UTF-8
