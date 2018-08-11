@@ -150,6 +150,9 @@ editMod <- function(
 
   shiny::observeEvent(input[[EVT_DRAW]], {
     featurelist$drawn <- c(featurelist$drawn, list(input[[EVT_DRAW]]))
+    if (any(unlist(input[[EVT_DRAW]]$geometry$coordinates) < -180) ||
+        any(unlist(input[[EVT_DRAW]]$geometry$coordinates) > 180))
+      insane_longitude_warning()
     featurelist$finished <- c(featurelist$finished, list(input[[EVT_DRAW]]))
   })
 
