@@ -5,7 +5,7 @@ geojson_to_sf = function(x) {
     lapply(x, function(x) {
       x <- lapply(x, fix_geojson_coords)
       sf::read_sf(
-        jsonlite::toJSON(x, force=TRUE, auto_unbox=TRUE, digits = 6)
+        jsonlite::toJSON(x, force=TRUE, auto_unbox=TRUE, digits = NA)
       )
     })
   )
@@ -14,7 +14,7 @@ geojson_to_sf = function(x) {
 #' @keywords internal
 st_as_sfc.geo_list = function(x, crs = 4326, ...) {
   geom_sf = sf::read_sf(
-    jsonlite::toJSON(x, auto_unbox=TRUE, force=TRUE, digits = 6)
+    jsonlite::toJSON(x, auto_unbox=TRUE, force=TRUE, digits = NA)
   )
   suppressWarnings({
     sf::st_crs(geom_sf) = crs
