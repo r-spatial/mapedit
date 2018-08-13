@@ -1,3 +1,20 @@
+## mapedit 0.4.2 (develop)
+
+### New Features
+
+* stopApp when session ended to handle when a user closes a browser tab or window when using `viewer = browserViewer(browser = getOption("browser"))`
+
+* add circleMarkerOptions for Leaflet.draw
+
+* warn when feature drawn outside of -180, 180
+
+### Bug Fixes
+
+* fix precision to match new Leaflet 6 digits
+
+* expose title argument to editFeatures and drawFeatures
+
+
 ## mapedit 0.4.1
 
 ### Bug Fix
@@ -18,6 +35,7 @@
 `viewer = browserViewer(browser = getOption("browser"))`
 
 * add new function drawFeatures
+
 
 # mapedit 0.3.2
 
