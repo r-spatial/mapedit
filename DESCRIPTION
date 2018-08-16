@@ -2,8 +2,8 @@ Package: mapedit
 Title: Interactive Editing of Spatial Data in R
 Description: Suite of interactive functions and helpers for selecting and editing
     geospatial data.
-Version: 0.4.2
-Date: 2018-08-11
+Version: 0.4.3
+Date: 2018-08-16
 Authors@R: c(
     person("Tim", "Appelhans", role = c("aut", "cre"), email = "tim.appelhans@gmail.com"),
     person("Kenton", "Russell", role = c("aut"))
@@ -30,4 +30,4 @@ Enhances:
     geojsonio
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
