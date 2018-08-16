@@ -2,11 +2,8 @@
 % Please edit documentation in R/edit.R
 \name{editMap}
 \alias{editMap}
-\alias{editMap}
 \alias{editMap.leaflet}
-\alias{editMap}
 \alias{editMap.mapview}
-\alias{editMap}
 \alias{editMap.NULL}
 \title{Interactively Edit a Map}
 \usage{

@@ -2,17 +2,15 @@
 % Please edit documentation in R/edit.R
 \name{editFeatures}
 \alias{editFeatures}
-\alias{editFeatures}
 \alias{editFeatures.sf}
-\alias{editFeatures}
 \alias{editFeatures.Spatial}
 \title{Interactively Edit Map Features}
 \usage{
 editFeatures(x, ...)
 
 \method{editFeatures}{sf}(x, map = NULL, mergeOrder = c("add", "edit",
-  "delete"), record = FALSE, viewer = shiny::paneViewer(), crs = 4326,
-  label = NULL, title = "Edit Map", ...)
+  "delete"), record = FALSE, viewer = shiny::paneViewer(),
+  crs = 4326, label = NULL, title = "Edit Map", ...)
 
 \method{editFeatures}{Spatial}(x, ...)
 }

@@ -2,9 +2,7 @@
 % Please edit documentation in R/select.R
 \name{selectFeatures}
 \alias{selectFeatures}
-\alias{selectFeatures}
 \alias{selectFeatures.sf}
-\alias{selectFeatures}
 \alias{selectFeatures.Spatial}
 \title{Interactively Select Map Features}
 \usage{
@@ -12,8 +10,8 @@ selectFeatures(x, ...)
 
 \method{selectFeatures}{sf}(x = NULL, mode = c("click", "draw"),
   op = sf::st_intersects, map = NULL, index = FALSE,
-  viewer = shiny::paneViewer(), label = NULL, title = "Select features",
-  ...)
+  viewer = shiny::paneViewer(), label = NULL,
+  title = "Select features", ...)
 
 \method{selectFeatures}{Spatial}(x, ...)
 }
