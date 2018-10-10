@@ -58,11 +58,16 @@ make_an_sf <- function(dat) {
     )
 
     output$tbl <- DT::renderDataTable({
+
+      n <- ncol(data_copy) # used to hide geometry and leaflet_id columns
+
       DT::datatable(
-        dat,
-        options = list(scrollY="400px"),
+        data_copy,
+        options = list(scrollY="400px",
+                       columnDefs = list(list(visible=FALSE, targets=(n-1):n))),
         # could support multi but do single for now
-        selection = "single"
+        selection = "single",
+        editable = TRUE
       )
     })
 
@@ -155,6 +160,26 @@ make_an_sf <- function(dat) {
         }
       }
     )
+
+    # update table with entered notes
+    proxy = dataTableProxy('tbl')
+
+    observeEvent(input$tbl_cell_edit, {
+
+      info = input$tbl_cell_edit
+
+      str(info)
+
+      i = info$row
+      j = info$col
+      v = info$value
+
+      info$value <- as.character(info$value)
+
+      data_copy[i, j] <<- DT::coerceValue(v, data_copy[i, j])
+      replaceData(proxy, data_copy, resetPaging = FALSE)  # important
+
+    })
 
     # provide mechanism to return after all done
     observeEvent(input$donebtn, {
