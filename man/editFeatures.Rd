@@ -12,7 +12,8 @@ editFeatures(x, ...)
 
 \method{editFeatures}{sf}(x, map = NULL, mergeOrder = c("add", "edit",
   "delete"), record = FALSE, viewer = shiny::paneViewer(), crs = 4326,
-  label = NULL, title = "Edit Map", ...)
+  label = NULL, title = "Edit Map", editor = c("leaflet.extras",
+  "leafpm"), ...)
 
 \method{editFeatures}{Spatial}(x, ...)
 }
@@ -45,6 +46,8 @@ content that will appear in label/tooltip.}
 
 \item{title}{\code{string} to customize the title of the UI window.  The default
 is "Edit Map".}
+
+\item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
 }
 \description{
 Interactively Edit Map Features

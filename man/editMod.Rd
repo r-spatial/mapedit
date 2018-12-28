@@ -5,7 +5,7 @@
 \title{Shiny Module Server for Geo Create, Edit, Delete}
 \usage{
 editMod(input, output, session, leafmap, targetLayerId = NULL, sf = TRUE,
-  record = FALSE, crs = 4326)
+  record = FALSE, crs = 4326, editor = c("leaflet.extras", "leafpm"))
 }
 \arguments{
 \item{input}{Shiny server function input}
@@ -24,6 +24,8 @@ editMod(input, output, session, leafmap, targetLayerId = NULL, sf = TRUE,
 \item{record}{\code{logical} to record all edits for future playback.}
 
 \item{crs}{see \code{\link[sf]{st_crs}}.}
+
+\item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
 }
 \value{
 server function for Shiny module

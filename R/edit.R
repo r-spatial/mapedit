@@ -34,6 +34,7 @@ editMap <- function(x, ...) {
 #' @param crs see \code{\link[sf]{st_crs}}.
 #' @param title \code{string} to customize the title of the UI window.  The default
 #'          is "Edit Map".
+#' @param editor \code{character} either "leaflet.extras" or "leafpm"
 #'
 #' @details
 #'   When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
@@ -51,6 +52,7 @@ editMap.leaflet <- function(
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
   crs = 4326,
   title = "Edit Map",
+  editor = c("leaflet.extras", "leafpm"),
   ...
 ) {
   stopifnot(!is.null(x), inherits(x, "leaflet"))
@@ -96,7 +98,8 @@ $(document).on('shiny:disconnected', function() {
       targetLayerId = targetLayerId,
       sf = sf,
       record = record,
-      crs = crs
+      crs = crs,
+      editor = editor
     )
 
     observe({crud()})
@@ -136,6 +139,7 @@ editMap.mapview <- function(
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
   crs = 4326,
   title = "Edit Map",
+  editor = c("leaflet.extras", "leafpm"),
   ...
 ) {
   stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
@@ -143,7 +147,8 @@ editMap.mapview <- function(
   editMap.leaflet(
     x@map, targetLayerId = targetLayerId, sf = sf,
     ns = ns, viewer = viewer, record = TRUE, crs = crs,
-    title = title
+    title = title,
+    editor = editor
   )
 }
 
@@ -196,6 +201,7 @@ editFeatures = function(x, ...) {
 #' @param crs see \code{\link[sf]{st_crs}}.
 #' @param title \code{string} to customize the title of the UI window.  The default
 #'          is "Edit Map".
+#' @param editor \code{character} either "leaflet.extras" or "leafpm"
 #'
 #' @details
 #'   When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
@@ -217,6 +223,7 @@ editFeatures.sf = function(
   crs = 4326,
   label = NULL,
   title = "Edit Map",
+  editor = c("leaflet.extras", "leafpm"),
   ...
 ) {
 
@@ -255,7 +262,7 @@ editFeatures.sf = function(
   crud = editMap(
     map, targetLayerId = "toedit",
     viewer = viewer, record = record,
-    crs = crs, title = title, ...
+    crs = crs, title = title, editor = editor, ...
   )
 
   merged <- Reduce(
