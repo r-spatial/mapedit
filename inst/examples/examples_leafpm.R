@@ -1,7 +1,8 @@
 library(sf)
 library(mapview)
-library(mapedit)
 
+#devtools::install_github("timelyportfolio/mapedit@leafpm")
+library(mapedit)
 #devtools::install_github("timelyportfolio/leafpm")
 library(leafpm)
 
