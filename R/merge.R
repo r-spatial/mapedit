@@ -38,13 +38,18 @@ merge_edit <- function(
   mapply(
     function(ed, ed_id) {
       matched_id_row = which(orig_ids == ed_id)
-      sf::st_geometry(orig2)[matched_id_row] <<- ed
-      # sf::st_geometry(orig2)[matched_id_row] <<- sf::st_geometry(sf::st_cast(
-      #   sf::st_sfc(ed),
-      #   as.character(sf::st_geometry_type(
-      #     sf::st_geometry(orig2[matched_id_row,])
-      #   ))
-      # ))
+      # sf::st_geometry(orig2)[matched_id_row] <<- ed
+      tryCatch(
+        sf::st_geometry(orig2)[matched_id_row] <<- sf::st_geometry(sf::st_cast(
+          sf::st_sfc(ed),
+          as.character(sf::st_geometry_type(
+            sf::st_geometry(orig2[matched_id_row,])
+          ))
+        )),
+        error = function(e) {
+          sf::st_geometry(orig2)[matched_id_row] <<- ed
+        }
+      )
       return(NULL)
     },
     sf::st_geometry(edits),
