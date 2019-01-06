@@ -33,17 +33,18 @@ merge_edit <- function(
 
   orig_ids = orig2[[names(by)[1]]]
 
-  edit_ids = edits[,by[[1]], drop=TRUE]
+  edit_ids = edits[, by[[1]], drop=TRUE]
 
   mapply(
     function(ed, ed_id) {
       matched_id_row = which(orig_ids == ed_id)
-      sf::st_geometry(orig2)[matched_id_row] <<- sf::st_geometry(sf::st_cast(
-        sf::st_sfc(ed),
-        as.character(sf::st_geometry_type(
-          sf::st_geometry(orig2[matched_id_row,])
-        ))
-      ))
+      sf::st_geometry(orig2)[matched_id_row] <<- ed
+      # sf::st_geometry(orig2)[matched_id_row] <<- sf::st_geometry(sf::st_cast(
+      #   sf::st_sfc(ed),
+      #   as.character(sf::st_geometry_type(
+      #     sf::st_geometry(orig2[matched_id_row,])
+      #   ))
+      # ))
       return(NULL)
     },
     sf::st_geometry(edits),
@@ -67,6 +68,7 @@ merge_edit <- function(
   #))
 
   #sf::st_geometry(orig2)[matched_id_rows] <- sf::st_geometry(edits)
+
   orig2
 }
 
