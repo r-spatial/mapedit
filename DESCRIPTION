@@ -26,7 +26,8 @@ Imports:
     sf (>= 0.5-2),
     shiny
 Suggests:
-    crayon
+    crayon,
+    lwgeom
 Enhances:
     geojsonio
 Encoding: UTF-8
