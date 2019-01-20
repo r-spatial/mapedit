@@ -4,8 +4,9 @@
 \alias{editMod}
 \title{Shiny Module Server for Geo Create, Edit, Delete}
 \usage{
-editMod(input, output, session, leafmap, targetLayerId = NULL, sf = TRUE,
-  record = FALSE, crs = 4326, editor = c("leaflet.extras", "leafpm"))
+editMod(input, output, session, leafmap, targetLayerId = NULL,
+  sf = TRUE, record = FALSE, crs = 4326,
+  editor = c("leaflet.extras", "leafpm"))
 }
 \arguments{
 \item{input}{Shiny server function input}

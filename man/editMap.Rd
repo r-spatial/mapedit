@@ -2,11 +2,8 @@
 % Please edit documentation in R/edit.R
 \name{editMap}
 \alias{editMap}
-\alias{editMap}
 \alias{editMap.leaflet}
-\alias{editMap}
 \alias{editMap.mapview}
-\alias{editMap}
 \alias{editMap.NULL}
 \title{Interactively Edit a Map}
 \usage{
@@ -14,13 +11,13 @@ editMap(x, ...)
 
 \method{editMap}{leaflet}(x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, title = "Edit Map", editor = c("leaflet.extras", "leafpm"),
-  ...)
+  crs = 4326, title = "Edit Map", editor = c("leaflet.extras",
+  "leafpm"), ...)
 
 \method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, title = "Edit Map", editor = c("leaflet.extras", "leafpm"),
-  ...)
+  crs = 4326, title = "Edit Map", editor = c("leaflet.extras",
+  "leafpm"), ...)
 
 \method{editMap}{NULL}(x, ...)
 }
