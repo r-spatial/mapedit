@@ -97,6 +97,8 @@ editModUI <- function(id, ...) {
 #' @param sf \code{logical} to return simple features.  \code{sf=FALSE} will return
 #'          \code{GeoJSON}.
 #' @param record \code{logical} to record all edits for future playback.
+#' @param crs see \code{\link[sf]{st_crs}}.
+#' @param editor \code{character} either "leaflet.extras" or "leafpm"
 #'
 #' @return server function for Shiny module
 #' @import shiny
@@ -107,28 +109,36 @@ editMod <- function(
   targetLayerId = NULL,
   sf = TRUE,
   record = FALSE,
-  crs = 4326
+  crs = 4326,
+  editor = c("leaflet.extras", "leafpm")
 ) {
   # check to see if addDrawToolbar has been already added to the map
   if(is.null(
     Find(
       function(cl) {
-        cl$method == "addDrawToolbar"
+        cl$method == "addDrawToolbar" || cl$method == "addPmToolbar"
       },
       leafmap$x$calls
     )
   )) {
-    # add draw toolbar if not found
-    leafmap <- leaflet.extras::addDrawToolbar(
-      leafmap,
-      targetGroup = targetLayerId,
-      polylineOptions = leaflet.extras::drawPolylineOptions(repeatMode = TRUE),
-      polygonOptions = leaflet.extras::drawPolygonOptions(repeatMode = TRUE),
-      circleOptions = FALSE,
-      rectangleOptions = leaflet.extras::drawRectangleOptions(repeatMode = TRUE),
-      markerOptions = leaflet.extras::drawMarkerOptions(repeatMode = TRUE),
-      editOptions = leaflet.extras::editToolbarOptions()
-    )
+    if(editor[1] == "leaflet.extras") {
+      # add draw toolbar if not found
+      leafmap <- leaflet.extras::addDrawToolbar(
+        leafmap,
+        targetGroup = targetLayerId,
+        polylineOptions = leaflet.extras::drawPolylineOptions(repeatMode = TRUE),
+        polygonOptions = leaflet.extras::drawPolygonOptions(repeatMode = TRUE),
+        circleOptions = FALSE,
+        rectangleOptions = leaflet.extras::drawRectangleOptions(repeatMode = TRUE),
+        markerOptions = leaflet.extras::drawMarkerOptions(repeatMode = TRUE),
+        circleMarkerOptions = leaflet.extras::drawCircleMarkerOptions(repeatMode = TRUE),
+        editOptions = leaflet.extras::editToolbarOptions()
+      )
+    }
+
+    if(editor[1] == "leafpm") {
+      leafmap <- leafpm::addPmToolbar(leafmap, targetGroup = targetLayerId)
+    }
   }
 
   output$map <- leaflet::renderLeaflet({leafmap})
@@ -148,6 +158,9 @@ editMod <- function(
 
   shiny::observeEvent(input[[EVT_DRAW]], {
     featurelist$drawn <- c(featurelist$drawn, list(input[[EVT_DRAW]]))
+    if (any(unlist(input[[EVT_DRAW]]$geometry$coordinates) < -180) ||
+        any(unlist(input[[EVT_DRAW]]$geometry$coordinates) > 180))
+      insane_longitude_warning()
     featurelist$finished <- c(featurelist$finished, list(input[[EVT_DRAW]]))
   })
 
@@ -169,9 +182,20 @@ editMod <- function(
 
   shiny::observeEvent(input[[EVT_DELETE]], {
     deleted <- input[[EVT_DELETE]]
+
     # find the deleted features and update finished
     # start by getting the leaflet ids to do the match
     ids <- unlist(lapply(featurelist$finished, function(x){x$properties$`_leaflet_id`}))
+
+    # leaflet.pm returns only a single feature while leaflet.extras returns feature collection
+    # convert leaflet.pm so logic will be the same
+    if(editor == "leafpm") {
+      deleted <- list(
+        type = "FeatureCollection",
+        features = list(deleted)
+      )
+    }
+
     # now modify finished to match edited
     lapply(deleted$features, function(x) {
       loc <- match(x$properties$`_leaflet_id`, ids)

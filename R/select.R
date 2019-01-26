@@ -23,8 +23,26 @@ selectFeatures = function(x, ...) {
 #'          the index of selected features rather than the actual
 #'          selected features
 #' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
+#'          NOTE: when using \code{browserViewer(browser = getOption("browser"))} to
+#'          open the app in the default browser, the browser window will automatically
+#'          close when closing the app (by pressing "done" or "cancel") in most browsers.
+#'          Firefox is an exception. See Details for instructions on how to enable this
+#'          behaviour in Firefox.
 #' @param label \code{character} vector or \code{formula} for the
 #'          content that will appear in label/tooltip.
+#' @param title \code{string} to customize the title of the UI window.  The default
+#'          is "Select features".
+#'
+#' @details
+#'   When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
+#'   the systems default browser is Firefox, the browser window will likely not
+#'   automatically close when the app is closed (by pressing "done" or "cancel").
+#'   To enable automatic closing of tabs/windows in Firefox try the following:
+#'   \itemize{
+#'     \item{input "about:config " to your firefox address bar and hit enter}
+#'     \item{make sure your "dom.allow_scripts_to_close_windows" is true}
+#'   }
+#'
 #' @export
 selectFeatures.sf = function(
   x = NULL,
@@ -34,6 +52,7 @@ selectFeatures.sf = function(
   index = FALSE,
   viewer = shiny::paneViewer(),
   label = NULL,
+  title = "Select features",
   ...
 ) {
 
@@ -68,7 +87,7 @@ selectFeatures.sf = function(
       )
     }
 
-    ind = selectMap(map, viewer=viewer, ...)
+    ind = selectMap(map, viewer=viewer, title = title, ...)
 
     indx = ind$id[as.logical(ind$selected)]
     # todrop = "edit_id"
@@ -85,7 +104,7 @@ selectFeatures.sf = function(
 
     stopifnot(requireNamespace("sf"))
 
-    drawn = editMap(mapview::mapView(x, map = map, layer.name = nm, ...))
+    drawn = editMap(mapview::mapView(x, map = map, layer.name = nm, ...), title = title)
 
     if (is.null(drawn$finished)) invisible(return(NULL))
 
@@ -93,7 +112,7 @@ selectFeatures.sf = function(
       fin = sf::st_transform(drawn$finished, sf::st_crs(x))
     } else {
       fin = drawn$finished
-      st_crs(fin) = NA
+      sf::st_crs(fin) = NA
     }
     indx = unique(unlist(suppressMessages(op(fin, x))))
 

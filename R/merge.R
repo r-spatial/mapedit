@@ -33,17 +33,30 @@ merge_edit <- function(
 
   orig_ids = orig2[[names(by)[1]]]
 
-  edit_ids = edits[,by[[1]], drop=TRUE]
+  edit_ids = edits[, by[[1]], drop=TRUE]
 
   mapply(
     function(ed, ed_id) {
       matched_id_row = which(orig_ids == ed_id)
-      sf::st_geometry(orig2)[matched_id_row] <<- sf::st_geometry(sf::st_cast(
-        sf::st_sfc(ed),
-        as.character(sf::st_geometry_type(
-          sf::st_geometry(orig2[matched_id_row,])
-        ))
+
+      # get type of original
+      orig_type <- as.character(sf::st_geometry_type(
+        sf::st_geometry(orig[matched_id_row,])
       ))
+
+      tryCatch(
+        sf::st_geometry(orig2)[matched_id_row] <<- sf::st_geometry(sf::st_cast(
+          sf::st_sfc(ed),
+          orig_type
+        )),
+        error = function(e) {
+          sf::st_geometry(orig2)[matched_id_row] <<- ed
+          warning(
+            paste0("Unable to cast back to original type - ", e$message, " - but this is often caused by intermediate step."),
+            call. = FALSE
+          )
+        }
+      )
       return(NULL)
     },
     sf::st_geometry(edits),
@@ -67,6 +80,7 @@ merge_edit <- function(
   #))
 
   #sf::st_geometry(orig2)[matched_id_rows] <- sf::st_geometry(edits)
+
   orig2
 }
 

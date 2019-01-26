@@ -2,11 +2,8 @@
 % Please edit documentation in R/edit.R
 \name{editMap}
 \alias{editMap}
-\alias{editMap}
 \alias{editMap.leaflet}
-\alias{editMap}
 \alias{editMap.mapview}
-\alias{editMap}
 \alias{editMap.NULL}
 \title{Interactively Edit a Map}
 \usage{
@@ -14,18 +11,21 @@ editMap(x, ...)
 
 \method{editMap}{leaflet}(x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, ...)
+  crs = 4326, title = "Edit Map", editor = c("leaflet.extras",
+  "leafpm"), ...)
 
 \method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, ...)
+  crs = 4326, title = "Edit Map", editor = c("leaflet.extras",
+  "leafpm"), ...)
 
 \method{editMap}{NULL}(x, ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}
 
-\item{...}{other arguments}
+\item{...}{other arguments for \code{mapview::addFeatures()} when
+using \code{editMap.NULL} or \code{selectFeatures}}
 
 \item{targetLayerId}{\code{string} name of the map layer group to use with edit}
 
@@ -37,13 +37,35 @@ is unlikely to require a change.}
 
 \item{record}{\code{logical} to record all edits for future playback.}
 
-\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
+NOTE: when using \code{browserViewer(browser = getOption("browser"))} to
+open the app in the default browser, the browser window will automatically
+close when closing the app (by pressing "done" or "cancel") in most browsers.
+Firefox is an exception. See Details for instructions on how to enable this
+behaviour in Firefox.}
+
+\item{crs}{see \code{\link[sf]{st_crs}}.}
+
+\item{title}{\code{string} to customize the title of the UI window.  The default
+is "Edit Map".}
+
+\item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
 }
 \value{
 \code{sf} simple features or \code{GeoJSON}
 }
 \description{
 Interactively Edit a Map
+}
+\details{
+When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
+  the systems default browser is Firefox, the browser window will likely not
+  automatically close when the app is closed (by pressing "done" or "cancel").
+  To enable automatic closing of tabs/windows in Firefox try the following:
+  \itemize{
+    \item{input "about:config " to your firefox address bar and hit enter}
+    \item{make sure your "dom.allow_scripts_to_close_windows" is true}
+  }
 }
 \examples{
 \dontrun{

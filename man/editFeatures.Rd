@@ -2,17 +2,16 @@
 % Please edit documentation in R/edit.R
 \name{editFeatures}
 \alias{editFeatures}
-\alias{editFeatures}
 \alias{editFeatures.sf}
-\alias{editFeatures}
 \alias{editFeatures.Spatial}
 \title{Interactively Edit Map Features}
 \usage{
 editFeatures(x, ...)
 
 \method{editFeatures}{sf}(x, map = NULL, mergeOrder = c("add", "edit",
-  "delete"), record = FALSE, viewer = shiny::paneViewer(), crs = 4326,
-  label = NULL, ...)
+  "delete"), record = FALSE, viewer = shiny::paneViewer(),
+  crs = 4326, label = NULL, title = "Edit Map",
+  editor = c("leaflet.extras", "leafpm"), ...)
 
 \method{editFeatures}{Spatial}(x, ...)
 }
@@ -31,13 +30,35 @@ of add, edit, delete.}
 
 \item{record}{\code{logical} to record all edits for future playback.}
 
-\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
+\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
+NOTE: when using \code{browserViewer(browser = getOption("browser"))} to
+open the app in the default browser, the browser window will automatically
+close when closing the app (by pressing "done" or "cancel") in most browsers.
+Firefox is an exception. See Details for instructions on how to enable this
+behaviour in Firefox.}
+
+\item{crs}{see \code{\link[sf]{st_crs}}.}
 
 \item{label}{\code{character} vector or \code{formula} for the
 content that will appear in label/tooltip.}
+
+\item{title}{\code{string} to customize the title of the UI window.  The default
+is "Edit Map".}
+
+\item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
 }
 \description{
 Interactively Edit Map Features
+}
+\details{
+When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
+  the systems default browser is Firefox, the browser window will likely not
+  automatically close when the app is closed (by pressing "done" or "cancel").
+  To enable automatic closing of tabs/windows in Firefox try the following:
+  \itemize{
+    \item{input "about:config " to your firefox address bar and hit enter}
+    \item{make sure your "dom.allow_scripts_to_close_windows" is true}
+  }
 }
 \examples{
 \dontrun{

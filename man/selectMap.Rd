@@ -2,15 +2,15 @@
 % Please edit documentation in R/query.R
 \name{selectMap}
 \alias{selectMap}
-\alias{selectMap}
 \alias{selectMap.leaflet}
 \title{Interactively Select Map Features}
 \usage{
 selectMap(x, ...)
 
-\method{selectMap}{leaflet}(x = NULL, styleFalse = list(fillOpacity = 0.2,
-  weight = 1, opacity = 0.4), styleTrue = list(fillOpacity = 0.7, weight = 3,
-  opacity = 0.7), ns = "mapedit-select", viewer = shiny::paneViewer(), ...)
+\method{selectMap}{leaflet}(x = NULL, styleFalse = list(fillOpacity =
+  0.2, weight = 1, opacity = 0.4), styleTrue = list(fillOpacity = 0.7,
+  weight = 3, opacity = 0.7), ns = "mapedit-select",
+  viewer = shiny::paneViewer(), title = "Select features", ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to use for selection}
@@ -23,10 +23,28 @@ for selected (\code{styleTrue}) and deselected (\code{styleFalse})}
 \item{ns}{\code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
 is unlikely to require a change.}
 
-\item{viewer}{\code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.}
+\item{viewer}{\code{function} for the viewer. See Shiny \code{\link[shiny]{viewer}}.
+NOTE: when using \code{browserViewer(browser = getOption("browser"))} to
+open the app in the default browser, the browser window will automatically
+close when closing the app (by pressing "done" or "cancel") in most browsers.
+Firefox is an exception. See Details for instructions on how to enable this
+behaviour in Firefox.}
+
+\item{title}{\code{string} to customize the title of the UI window.  The default
+is "Select features".}
 }
 \description{
 Interactively Select Map Features
+}
+\details{
+When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
+  the systems default browser is Firefox, the browser window will likely not
+  automatically close when the app is closed (by pressing "done" or "cancel").
+  To enable automatic closing of tabs/windows in Firefox try the following:
+  \itemize{
+    \item{input "about:config " to your firefox address bar and hit enter}
+    \item{make sure your "dom.allow_scripts_to_close_windows" is true}
+  }
 }
 \examples{
 \dontrun{
