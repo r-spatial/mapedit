@@ -227,6 +227,9 @@ editFeatures.sf = function(
   ...
 ) {
 
+  # store original projection of edited object ----
+  orig_proj <- sf::st_crs(x)
+
   x$edit_id = as.character(1:nrow(x))
 
   if (is.null(map)) {
@@ -299,6 +302,11 @@ editFeatures.sf = function(
   )
 
   merged <- dplyr::select_(merged, "-edit_id")
+
+  # re-transform to original projection if needed ----
+  if (sf::st_crs(merged) != orig_proj) {
+    merged <- sf::st_transform(merged, orig_proj)
+  }
 
   # check to see if the result is valid with lwgeom if available and make valid
   #   if error then return the invalid merged with a warning
