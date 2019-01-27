@@ -317,7 +317,7 @@ editFeatures.sf = function(
 
   # warn if anything is not valid
   if(!all(sf::st_is_valid(merged))) {
-    warn("returned features do not appear valid; please inspect closely", call. = FALSE)
+    warning("returned features do not appear valid; please inspect closely", call. = FALSE)
   }
 
   # return merged features
