@@ -300,21 +300,6 @@ editFeatures.sf = function(
 
   merged <- dplyr::select_(merged, "-edit_id")
 
-  # check to see if the result is valid with lwgeom if available and make valid
-  #   if error then return the invalid merged with a warning
-  if(requireNamespace("lwgeom")) {
-    tryCatch(
-      {
-        merged <- st_make_valid(merged)
-      },
-      error = function(e) {
-        warn("unable to make valid with lwgeom; please inspect closely", call. = FALSE)
-      }
-    )
-  } else {
-    message("lwgeom package not available so could not test validity")
-  }
-
   # return merged features
   if(record==TRUE) {
     attr(merged, "recorder") <- attr(crud, "recorder", exact=TRUE)
