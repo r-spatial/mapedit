@@ -259,6 +259,21 @@ editFeatures.sf = function(
     )
   }
 
+  # currently we don't have a way to set custom options for leaflet.pm
+  # and we will want to customize allowSelfIntersection depending on feature types
+  if(inherits(map, "mapview")) map = map@map
+  if(editor[1] == "leafpm") {
+    # now let's see if any of the features are polygons
+    if(any(st_dimension(x) == 2)) {
+      map = leafpm::addPmToolbar(
+        map,
+        targetGroup = "toedit",
+        drawOptions = pmDrawOptions(allowSelfIntersection = FALSE),
+        editOptions = pmEditOptions(allowSelfIntersection = FALSE)
+      )
+    }
+  }
+
   crud = editMap(
     map, targetLayerId = "toedit",
     viewer = viewer, record = record,
