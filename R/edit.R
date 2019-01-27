@@ -305,10 +305,10 @@ editFeatures.sf = function(
   if(requireNamespace("lwgeom")) {
     tryCatch(
       {
-        merged <- lwgeom::st_make_valid(merged)
+        merged <- st_make_valid(merged)
       },
       error = function(e) {
-        warning("unable to make valid with lwgeom; please inspect closely", call. = FALSE)
+        warn("unable to make valid with lwgeom; please inspect closely", call. = FALSE)
       }
     )
   } else {
