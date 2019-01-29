@@ -74,7 +74,7 @@ editMap.leaflet <- function(
       right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE)
     ),
     tags$script(HTML(
-"
+      "
 // close browser window on session end
 $(document).on('shiny:disconnected', function() {
   // check to make sure that button was pressed
@@ -229,6 +229,12 @@ editFeatures.sf = function(
 
   # store original projection of edited object ----
   orig_proj <- sf::st_crs(x)
+  if (is.na(orig_proj)) {
+    stop("The CRS of the input object is not set. Aborting. `mapedit` does not currently
+         allow editing objects with arbitrary coordinates system. Please set the
+         CRS of the input using `sf::st_set_crs()` (for `sf` objects) or `proj4string()
+         for `sp` objects", call. = FALSE)
+  }
 
   x$edit_id = as.character(1:nrow(x))
 
