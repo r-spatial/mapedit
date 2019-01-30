@@ -33,12 +33,14 @@ drawFeatures = function(map = NULL,
                         record = FALSE,
                         viewer = shiny::paneViewer(),
                         title = "Draw Features",
+                        editor = c("leaflet.extras", "leafpm"),
                         ...) {
   res = editMap(x = map,
                 sf = sf,
                 record = record,
                 viewer = viewer,
                 title = title,
+                editor = editor,
                 ...)
   if (!inherits(res, "sf") && is.list(res)) res = res$finished
   return(res)

@@ -154,7 +154,7 @@ editMap.mapview <- function(
 
 #' @name editMap
 #' @export
-editMap.NULL = function(x, ...) {
+editMap.NULL = function(x, editor = c("leaflet.extras", "leafpm"), ...) {
   m = mapview::mapview()@map
   m = leaflet::fitBounds(
     m,
@@ -163,7 +163,7 @@ editMap.NULL = function(x, ...) {
     lng2 = 180, #as.numeric(sf::st_bbox(x)[3]),
     lat2 = 90 #as.numeric(sf::st_bbox(x)[4])
   )
-  ed = editMap(m, record=TRUE)
+  ed = editMap(m, record = TRUE, editor = editor)
   ed_record <- ed$finished
   attr(ed_record, "recorder") <- attr(ed, "recorder", exact = TRUE)
   ed_record
