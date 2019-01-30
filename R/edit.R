@@ -268,6 +268,21 @@ editFeatures.sf = function(
     )
   }
 
+  # currently we don't have a way to set custom options for leaflet.pm
+  # and we will want to customize allowSelfIntersection depending on feature types
+  if(inherits(map, "mapview")) map = map@map
+  if(editor[1] == "leafpm") {
+    # now let's see if any of the features are polygons
+    if(any(st_dimension(x) == 2)) {
+      map = leafpm::addPmToolbar(
+        map,
+        targetGroup = "toedit",
+        drawOptions = pmDrawOptions(allowSelfIntersection = FALSE),
+        editOptions = pmEditOptions(allowSelfIntersection = FALSE)
+      )
+    }
+  }
+
   crud = editMap(
     map, targetLayerId = "toedit",
     viewer = viewer, record = record,
@@ -314,19 +329,9 @@ editFeatures.sf = function(
     merged <- sf::st_transform(merged, orig_proj)
   }
 
-  # check to see if the result is valid with lwgeom if available and make valid
-  #   if error then return the invalid merged with a warning
-  if(requireNamespace("lwgeom")) {
-    tryCatch(
-      {
-        merged <- lwgeom::st_make_valid(merged)
-      },
-      error = function(e) {
-        warning("unable to make valid with lwgeom; please inspect closely", call. = FALSE)
-      }
-    )
-  } else {
-    message("lwgeom package not available so could not test validity")
+  # warn if anything is not valid
+  if(!all(sf::st_is_valid(merged))) {
+    warning("returned features do not appear valid; please inspect closely", call. = FALSE)
   }
 
   # return merged features
