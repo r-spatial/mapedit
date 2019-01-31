@@ -137,7 +137,11 @@ editMod <- function(
     }
 
     if(editor[1] == "leafpm") {
-      leafmap <- leafpm::addPmToolbar(leafmap, targetGroup = targetLayerId)
+      leafmap <- leafpm::addPmToolbar(
+        leafmap,
+        targetGroup = targetLayerId,
+        toolbarOptions = leafpm::pmToolbarOptions(drawCircle = FALSE)
+      )
     }
   }
 

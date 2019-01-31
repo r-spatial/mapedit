@@ -277,6 +277,7 @@ editFeatures.sf = function(
       map = leafpm::addPmToolbar(
         map,
         targetGroup = "toedit",
+        toolbarOptions = leafpm::pmToolbarOptions(drawCircle = FALSE),
         drawOptions = leafpm::pmDrawOptions(allowSelfIntersection = FALSE),
         editOptions = leafpm::pmEditOptions(allowSelfIntersection = FALSE),
         cutOptions = leafpm::pmCutOptions(allowSelfIntersection = FALSE)
