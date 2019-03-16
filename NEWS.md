@@ -1,3 +1,10 @@
+## mapedit 0.5.0
+
+### New Features
+
+* add `editor  = "leafpm"` to `draw*()` and `edit*()` functions to use the `Leaflet.pm` pluging for editing.  `Leaflet.pm` provides support for creating and editing holes, snapping, and integrates better with some `multi*` features.  Note, `mapedit` now offers two editors `"leaflet.extras"` and `"leafpm"`, since each have advantages and disadvantages.
+
+
 ## mapedit 0.4.3
 
 ### New Features

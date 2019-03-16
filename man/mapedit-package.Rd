@@ -40,6 +40,7 @@ Useful links:
 Authors:
 \itemize{
   \item Kenton Russell
+  \item Lorenzo Busetto
 }
 
 }

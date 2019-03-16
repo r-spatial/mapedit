@@ -11,13 +11,15 @@ editMap(x, ...)
 
 \method{editMap}{leaflet}(x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, title = "Edit Map", ...)
+  crs = 4326, title = "Edit Map", editor = c("leaflet.extras",
+  "leafpm"), ...)
 
 \method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, title = "Edit Map", ...)
+  crs = 4326, title = "Edit Map", editor = c("leaflet.extras",
+  "leafpm"), ...)
 
-\method{editMap}{NULL}(x, ...)
+\method{editMap}{NULL}(x, editor = c("leaflet.extras", "leafpm"), ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}
@@ -46,6 +48,8 @@ behaviour in Firefox.}
 
 \item{title}{\code{string} to customize the title of the UI window.  The default
 is "Edit Map".}
+
+\item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
 }
 \value{
 \code{sf} simple features or \code{GeoJSON}
