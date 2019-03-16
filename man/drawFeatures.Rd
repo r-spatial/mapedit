@@ -5,7 +5,8 @@
 \title{Draw (simple) features on a map}
 \usage{
 drawFeatures(map = NULL, sf = TRUE, record = FALSE,
-  viewer = shiny::paneViewer(), title = "Draw Features", ...)
+  viewer = shiny::paneViewer(), title = "Draw Features",
+  editor = c("leaflet.extras", "leafpm"), ...)
 }
 \arguments{
 \item{map}{a background \code{leaflet} or \code{mapview} map
@@ -25,6 +26,8 @@ Firefox is an exception. See Details for instructions on how to enable this
 behaviour in Firefox.}
 
 \item{title}{\code{string} to customize the title of the UI window.}
+
+\item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
 
 \item{...}{additional arguments passed on to \code{\link{editMap}}.}
 }

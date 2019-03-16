@@ -273,7 +273,7 @@ editFeatures.sf = function(
   if(inherits(map, "mapview")) map = map@map
   if(editor[1] == "leafpm") {
     # now let's see if any of the features are polygons
-    if(any(st_dimension(x) == 2)) {
+    if(any(sf::st_dimension(x) == 2)) {
       map = leafpm::addPmToolbar(
         map,
         targetGroup = "toedit",

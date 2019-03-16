@@ -19,7 +19,7 @@ editMap(x, ...)
   crs = 4326, title = "Edit Map", editor = c("leaflet.extras",
   "leafpm"), ...)
 
-\method{editMap}{NULL}(x, ...)
+\method{editMap}{NULL}(x, editor = c("leaflet.extras", "leafpm"), ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}

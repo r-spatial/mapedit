@@ -15,6 +15,7 @@
 #'          Firefox is an exception. See Details for instructions on how to enable this
 #'          behaviour in Firefox.
 #' @param title \code{string} to customize the title of the UI window.
+#' @param editor \code{character} either "leaflet.extras" or "leafpm"
 #' @param ... additional arguments passed on to \code{\link{editMap}}.
 #'
 #' @details
