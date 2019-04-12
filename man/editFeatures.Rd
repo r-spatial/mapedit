@@ -11,7 +11,8 @@ editFeatures(x, ...)
 \method{editFeatures}{sf}(x, map = NULL, mergeOrder = c("add", "edit",
   "delete"), record = FALSE, viewer = shiny::paneViewer(),
   crs = 4326, label = NULL, title = "Edit Map",
-  editor = c("leaflet.extras", "leafpm"), ...)
+  editor = c("leaflet.extras", "leafpm"), ..., pmToolbarOpts = list(),
+  pmDrawOpts = list(), pmEditOpts = list(), pmCutOpts = list())
 
 \method{editFeatures}{Spatial}(x, ...)
 }
@@ -46,6 +47,26 @@ content that will appear in label/tooltip.}
 is "Edit Map".}
 
 \item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
+
+\item{pmToolbarOpts}{\code{list} of supplied arguments to be passed
+on to \code{leafpm::pmToolbarOptions}. The list elements (if
+any) should be among those documented as accepted by
+\code{\link[leafpm]{pmToolbarOptions}}.}
+
+\item{pmDrawOpts}{\code{list} of supplied arguments to be passed on
+to \code{leafpm::pmDrawOptions}. The list elements (if any)
+should be among those documented as accepted by
+\code{\link[leafpm]{pmDrawOptions}}.}
+
+\item{pmEditOpts}{\code{list} of supplied arguments to be passed on
+to \code{leafpm::pmEditOptions}. The list elements (if any)
+should be among those documented as accepted by
+\code{\link[leafpm]{pmEditOptions}}.}
+
+\item{pmCutOpts}{\code{list} of supplied arguments to be passed on
+to \code{leafpm::pmCutOptions}. The list elements (if any)
+should be among those documented as accepted by
+\code{\link[leafpm]{pmCutOptions}}.}
 }
 \description{
 Interactively Edit Map Features

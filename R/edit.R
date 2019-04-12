@@ -202,7 +202,22 @@ editFeatures = function(x, ...) {
 #' @param title \code{string} to customize the title of the UI window.  The default
 #'          is "Edit Map".
 #' @param editor \code{character} either "leaflet.extras" or "leafpm"
-#'
+#' @param pmToolbarOpts \code{list} of supplied arguments to be passed
+#'     on to \code{leafpm::pmToolbarOptions}. The list elements (if
+#'     any) should be among those documented as accepted by
+#'     \code{\link[leafpm]{pmToolbarOptions}}.
+#' @param pmDrawOpts \code{list} of supplied arguments to be passed on
+#'     to \code{leafpm::pmDrawOptions}. The list elements (if any)
+#'     should be among those documented as accepted by
+#'     \code{\link[leafpm]{pmDrawOptions}}.
+#' @param pmEditOpts \code{list} of supplied arguments to be passed on
+#'     to \code{leafpm::pmEditOptions}. The list elements (if any)
+#'     should be among those documented as accepted by
+#'     \code{\link[leafpm]{pmEditOptions}}.
+#' @param pmCutOpts \code{list} of supplied arguments to be passed on
+#'     to \code{leafpm::pmCutOptions}. The list elements (if any)
+#'     should be among those documented as accepted by
+#'     \code{\link[leafpm]{pmCutOptions}}.
 #' @details
 #'   When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
 #'   the systems default browser is Firefox, the browser window will likely not
@@ -224,7 +239,11 @@ editFeatures.sf = function(
   label = NULL,
   title = "Edit Map",
   editor = c("leaflet.extras", "leafpm"),
-  ...
+  ...,
+  pmToolbarOpts = list(),
+  pmDrawOpts = list(),
+  pmEditOpts = list(),
+  pmCutOpts = list()
 ) {
 
   # store original projection of edited object ----
@@ -277,10 +296,18 @@ editFeatures.sf = function(
       map = leafpm::addPmToolbar(
         map,
         targetGroup = "toedit",
-        toolbarOptions = leafpm::pmToolbarOptions(drawCircle = FALSE),
-        drawOptions = leafpm::pmDrawOptions(allowSelfIntersection = FALSE),
-        editOptions = leafpm::pmEditOptions(allowSelfIntersection = FALSE),
-        cutOptions = leafpm::pmCutOptions(allowSelfIntersection = FALSE)
+        toolbarOptions =
+          do.call(leafpm::pmToolbarOptions,
+                  modifyList(list(drawCircle = FALSE), pmToolbarOpts)),
+        drawOptions =
+          do.call(leafpm::pmDrawOptions,
+                  modifyList(list(allowSelfIntersection = FALSE), pmDrawOpts)),
+        editOptions =
+          do.call(leafpm::pmEditOptions,
+                  modifyList(list(allowSelfIntersection = FALSE), pmEditOpts)),
+        cutOptions =
+          do.call(leafpm::pmCutOptions,
+                  modifyList(list(allowSelfIntersection = FALSE), pmCutOpts))
       )
     }
   }
