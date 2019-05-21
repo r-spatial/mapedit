@@ -151,7 +151,8 @@ editMod <- function(
     drawn = list(),
     edited_all = list(),
     deleted_all = list(),
-    finished = list()
+    finished = list(),
+    all = list()
   )
 
   recorder <- list()
@@ -159,6 +160,7 @@ editMod <- function(
   EVT_DRAW <- "map_draw_new_feature"
   EVT_EDIT <- "map_draw_edited_features"
   EVT_DELETE <- "map_draw_deleted_features"
+  EVT_ALL <- "map_draw_all_features"
 
   shiny::observeEvent(input[[EVT_DRAW]], {
     featurelist$drawn <- c(featurelist$drawn, list(input[[EVT_DRAW]]))
@@ -211,10 +213,17 @@ editMod <- function(
     featurelist$deleted_all <- c(featurelist$deleted_all, list(deleted))
   })
 
+  shiny::observeEvent(input[[EVT_ALL]], {
+    featurelist$all <- list(input[[EVT_ALL]])
+    if (any(unlist(input[[EVT_ALL]]$geometry$coordinates) < -180) ||
+        any(unlist(input[[EVT_ALL]]$geometry$coordinates) > 180))
+      insane_longitude_warning()
+  })
+
   # record events if record = TRUE
   if(record == TRUE) {
     lapply(
-      c(EVT_DRAW, EVT_EDIT, EVT_DELETE),
+      c(EVT_DRAW, EVT_EDIT, EVT_DELETE, EVT_ALL),
       function(evt) {
         observeEvent(input[[evt]], {
           recorder <<- c(
@@ -240,7 +249,8 @@ editMod <- function(
       drawn = featurelist$drawn,
       edited = featurelist$edited_all,
       deleted = featurelist$deleted_all,
-      finished = featurelist$finished
+      finished = featurelist$finished,
+      all = featurelist$all
     )
     # if sf argument is TRUE then convert to simple features
     if(sf) {
