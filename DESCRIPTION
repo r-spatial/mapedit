@@ -19,6 +19,7 @@ Imports:
     htmltools (>= 0.3),
     htmlwidgets,
     jsonlite,
+    leafem,
     leaflet (>= 2.0.1),
     leaflet.extras (>= 1.0),
     leafpm,

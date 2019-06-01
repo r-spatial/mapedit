@@ -24,7 +24,7 @@ editMap(x, ...)
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}
 
-\item{...}{other arguments for \code{mapview::addFeatures()} when
+\item{...}{other arguments for \code{leafem::addFeatures()} when
 using \code{editMap.NULL} or \code{selectFeatures}}
 
 \item{targetLayerId}{\code{string} name of the map layer group to use with edit}
