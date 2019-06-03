@@ -112,6 +112,7 @@ editMod <- function(
   crs = 4326,
   editor = c("leaflet.extras", "leafpm")
 ) {
+  editor <- match.arg(editor)
   # check to see if addDrawToolbar has been already added to the map
   if(is.null(
     Find(
@@ -121,7 +122,7 @@ editMod <- function(
       leafmap$x$calls
     )
   )) {
-    if(editor[1] == "leaflet.extras") {
+    if(editor == "leaflet.extras") {
       # add draw toolbar if not found
       leafmap <- leaflet.extras::addDrawToolbar(
         leafmap,
@@ -136,12 +137,26 @@ editMod <- function(
       )
     }
 
-    if(editor[1] == "leafpm") {
-      leafmap <- leafpm::addPmToolbar(
-        leafmap,
-        targetGroup = targetLayerId,
-        toolbarOptions = leafpm::pmToolbarOptions(drawCircle = FALSE)
-      )
+    if(editor == "leafpm") {
+        # Need for `allowSelfIntersection` arguments depends on whether
+        # features are 2-d (polygons and lines) or 1-d (points)
+        if(any(sapply(leafmap$x$calls, "[[", "method") %in%
+               c("addPolylines", "addPolygons"))) {
+          leafmap <- leafpm::addPmToolbar(
+          leafmap,
+          targetGroup = targetLayerId,
+          toolbarOptions = leafpm::pmToolbarOptions(drawCircle = FALSE),
+          drawOptions = leafpm::pmDrawOptions(allowSelfIntersection = FALSE),
+          editOptions = leafpm::pmEditOptions(allowSelfIntersection = FALSE),
+          cutOptions = leafpm::pmCutOptions(allowSelfIntersection = FALSE)
+          )
+      } else {
+        leafmap <- leafpm::addPmToolbar(
+          leafmap,
+          targetGroup = targetLayerId,
+          toolbarOptions = leafpm::pmToolbarOptions(drawCircle = FALSE)
+          )
+      }
     }
   }
 
