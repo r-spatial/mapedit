@@ -6,7 +6,7 @@
 \usage{
 editMod(input, output, session, leafmap, targetLayerId = NULL,
   sf = TRUE, record = FALSE, crs = 4326,
-  editor = c("leaflet.extras", "leafpm"))
+  editor = c("leaflet.extras", "leafpm"), editorOptions = list())
 }
 \arguments{
 \item{input}{Shiny server function input}
