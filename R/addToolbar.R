@@ -11,7 +11,7 @@
 ##'     \code{leafpm::addPmToolbar}.
 processOpts <- function(fun, args) {
     ## Account for special meaning of `FALSE` as arg in leaflet.extras
-    if(!is.null(args) && !isTRUE(args)) {
+    if(identical(args, FALSE)) {
         return(FALSE)
     } else {
         return(do.call(fun, args))
