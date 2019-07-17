@@ -27,6 +27,10 @@ editMod(input, output, session, leafmap, targetLayerId = NULL,
 \item{crs}{see \code{\link[sf]{st_crs}}.}
 
 \item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
+
+\item{editorOptions}{\code{list} of options suitable for passing to
+either \code{leaflet.extras::addDrawToolbar} or
+\code{leafpm::addPmToolbar}.}
 }
 \value{
 server function for Shiny module
