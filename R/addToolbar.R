@@ -7,8 +7,7 @@
 ##'     the form suitable for passage to \code{fun} or (if the chosen
 ##'     editor is \code{"leaflet.extras"}) \code{FALSE}.
 ##' @return An object suitable for passing in as the supplied argument
-##'     to one of the formals of either for passage to either
-##'     \code{leaflet.extras::addDrawToolbar} or
+##'     to either \code{leaflet.extras::addDrawToolbar} or
 ##'     \code{leafpm::addPmToolbar}.
 processOpts <- function(fun, args) {
     ## Account for special meaning of `FALSE` as arg in leaflet.extras
