@@ -9,7 +9,7 @@ Authors@R: c(
     person("Kenton", "Russell", role = c("aut")),
     person("Lorenzo", "Busetto", role = c("aut")),
     person("Josh", "O'Brien", role = c("ctb")),
-    person("Jakob", "Gutschlhofer", role = c("aut")),
+    person("Jakob", "Gutschlhofer", role = c("aut"))
   )
 URL: https://github.com/r-spatial/mapedit
 BugReports: https://github.com/r-spatial/mapedit/issues

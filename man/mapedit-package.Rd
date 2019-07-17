@@ -41,6 +41,12 @@ Authors:
 \itemize{
   \item Kenton Russell
   \item Lorenzo Busetto
+  \item Jakob Gutschlhofer
+}
+
+Other contributors:
+\itemize{
+  \item Josh O'Brien [contributor]
 }
 
 }
