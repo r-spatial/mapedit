@@ -1,3 +1,4 @@
+
 #' Shiny Module UI for Geo Selection
 #'
 #' @param id \code{character} id for the the Shiny namespace
@@ -110,39 +111,14 @@ editMod <- function(
   sf = TRUE,
   record = FALSE,
   crs = 4326,
-  editor = c("leaflet.extras", "leafpm")
+  editor = c("leaflet.extras", "leafpm"),
+  editorOptions = list()
 ) {
+  editor <- match.arg(editor)
   # check to see if addDrawToolbar has been already added to the map
-  if(is.null(
-    Find(
-      function(cl) {
-        cl$method == "addDrawToolbar" || cl$method == "addPmToolbar"
-      },
-      leafmap$x$calls
-    )
-  )) {
-    if(editor[1] == "leaflet.extras") {
-      # add draw toolbar if not found
-      leafmap <- leaflet.extras::addDrawToolbar(
-        leafmap,
-        targetGroup = targetLayerId,
-        polylineOptions = leaflet.extras::drawPolylineOptions(repeatMode = TRUE),
-        polygonOptions = leaflet.extras::drawPolygonOptions(repeatMode = TRUE),
-        circleOptions = FALSE,
-        rectangleOptions = leaflet.extras::drawRectangleOptions(repeatMode = TRUE),
-        markerOptions = leaflet.extras::drawMarkerOptions(repeatMode = TRUE),
-        circleMarkerOptions = leaflet.extras::drawCircleMarkerOptions(repeatMode = TRUE),
-        editOptions = leaflet.extras::editToolbarOptions()
-      )
-    }
-
-    if(editor[1] == "leafpm") {
-      leafmap <- leafpm::addPmToolbar(
-        leafmap,
-        targetGroup = targetLayerId,
-        toolbarOptions = leafpm::pmToolbarOptions(drawCircle = FALSE)
-      )
-    }
+  if(!any(sapply(leafmap$x$calls, "[[", "method") %in%
+          c("addDrawToolbar", "addPmToolbar"))) {
+      leafmap <- addToolbar(leafmap, editorOptions, editor, targetLayerId)
   }
 
   output$map <- leaflet::renderLeaflet({leafmap})
