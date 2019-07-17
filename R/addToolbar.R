@@ -62,7 +62,7 @@ addToolbar <- function(leafmap, editorOptions, editor,
     }
 
     ## Apply user-supplied options, if any
-    editorArgs <- modifyList(editorDefaults, editorOptions)
+    editorArgs <- utils::modifyList(editorDefaults, editorOptions)
 
 
     ## Add toolbar to leafmap object
