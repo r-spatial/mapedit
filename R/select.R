@@ -66,7 +66,7 @@ selectFeatures.sf = function(
 
     if (is.null(map)) {
       map = mapview::mapView(...)@map
-      map = mapview::addFeatures(
+      map = leafem::addFeatures(
         map, data = x, layerId = ~x$edit_id, label = label, ...
       )
       ext = mapview:::createExtent(x)
@@ -77,12 +77,12 @@ selectFeatures.sf = function(
         lng2 = ext[2],
         lat2 = ext[4]
       )
-      map = mapview::addHomeButton(map = map, ext = ext)
+      map = leafem::addHomeButton(map = map, ext = ext)
     } else {
       if(inherits(map, "mapview")) {
         map = map@map
       }
-      map = mapview::addFeatures(
+      map = leafem::addFeatures(
         map, data=x, layerId=~x$edit_id, label=label
       )
     }

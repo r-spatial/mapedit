@@ -1,7 +1,7 @@
 #' Interactively Edit a Map
 #'
 #' @param x \code{leaflet} or \code{mapview} map to edit
-#' @param ... other arguments for \code{mapview::addFeatures()} when
+#' @param ... other arguments for \code{leafem::addFeatures()} when
 #'          using \code{editMap.NULL} or \code{selectFeatures}
 #'
 #' @return \code{sf} simple features or \code{GeoJSON}
@@ -241,7 +241,7 @@ editFeatures.sf = function(
   if (is.null(map)) {
     x = mapview:::checkAdjustProjection(x)
     map = mapview::mapview()@map
-    map = mapview::addFeatures(
+    map = leafem::addFeatures(
       map, data=x, layerId=~x$edit_id,
       label=label,
       labelOptions = leaflet::labelOptions(direction="top", offset=c(0,-40)),
@@ -255,12 +255,12 @@ editFeatures.sf = function(
       lng2 = ext[2],
       lat2 = ext[4]
     )
-    map = mapview::addHomeButton(map = map, ext = ext)
+    map = leafem::addHomeButton(map = map, ext = ext)
   } else {
     if(inherits(map, "mapview")) {
       map = map@map
     }
-    map = mapview::addFeatures(
+    map = leafem::addFeatures(
       map, data=x, layerId=~x$edit_id,
       label=label,
       labelOptions = leaflet::labelOptions(direction="top", offset=c(0,-40)),
