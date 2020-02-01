@@ -2,12 +2,14 @@ Package: mapedit
 Title: Interactive Editing of Spatial Data in R
 Description: Suite of interactive functions and helpers for selecting and editing
     geospatial data.
-Version: 0.5.0
-Date: 2019-03-16
+Version: 0.6.0
+Date: 2019-07-16
 Authors@R: c(
     person("Tim", "Appelhans", role = c("aut", "cre"), email = "tim.appelhans@gmail.com"),
     person("Kenton", "Russell", role = c("aut")),
-    person("Lorenzo", "Busetto", role = c("aut"))
+    person("Lorenzo", "Busetto", role = c("aut")),
+    person("Josh", "O'Brien", role = c("ctb")),
+    person("Jakob", "Gutschlhofer", role = c("aut"))
   )
 URL: https://github.com/r-spatial/mapedit
 BugReports: https://github.com/r-spatial/mapedit/issues

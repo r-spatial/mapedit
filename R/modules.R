@@ -1,3 +1,4 @@
+
 #' Shiny Module UI for Geo Selection
 #'
 #' @param id \code{character} id for the the Shiny namespace
@@ -99,6 +100,9 @@ editModUI <- function(id, ...) {
 #' @param record \code{logical} to record all edits for future playback.
 #' @param crs see \code{\link[sf]{st_crs}}.
 #' @param editor \code{character} either "leaflet.extras" or "leafpm"
+#' @param editorOptions \code{list} of options suitable for passing to
+#'     either \code{leaflet.extras::addDrawToolbar} or
+#'     \code{leafpm::addPmToolbar}.
 #'
 #' @return server function for Shiny module
 #' @import shiny
@@ -110,39 +114,14 @@ editMod <- function(
   sf = TRUE,
   record = FALSE,
   crs = 4326,
-  editor = c("leaflet.extras", "leafpm")
+  editor = c("leaflet.extras", "leafpm"),
+  editorOptions = list()
 ) {
+  editor <- match.arg(editor)
   # check to see if addDrawToolbar has been already added to the map
-  if(is.null(
-    Find(
-      function(cl) {
-        cl$method == "addDrawToolbar" || cl$method == "addPmToolbar"
-      },
-      leafmap$x$calls
-    )
-  )) {
-    if(editor[1] == "leaflet.extras") {
-      # add draw toolbar if not found
-      leafmap <- leaflet.extras::addDrawToolbar(
-        leafmap,
-        targetGroup = targetLayerId,
-        polylineOptions = leaflet.extras::drawPolylineOptions(repeatMode = TRUE),
-        polygonOptions = leaflet.extras::drawPolygonOptions(repeatMode = TRUE),
-        circleOptions = FALSE,
-        rectangleOptions = leaflet.extras::drawRectangleOptions(repeatMode = TRUE),
-        markerOptions = leaflet.extras::drawMarkerOptions(repeatMode = TRUE),
-        circleMarkerOptions = leaflet.extras::drawCircleMarkerOptions(repeatMode = TRUE),
-        editOptions = leaflet.extras::editToolbarOptions()
-      )
-    }
-
-    if(editor[1] == "leafpm") {
-      leafmap <- leafpm::addPmToolbar(
-        leafmap,
-        targetGroup = targetLayerId,
-        toolbarOptions = leafpm::pmToolbarOptions(drawCircle = FALSE)
-      )
-    }
+  if(!any(sapply(leafmap$x$calls, "[[", "method") %in%
+          c("addDrawToolbar", "addPmToolbar"))) {
+      leafmap <- addToolbar(leafmap, editorOptions, editor, targetLayerId)
   }
 
   output$map <- leaflet::renderLeaflet({leafmap})
@@ -151,7 +130,8 @@ editMod <- function(
     drawn = list(),
     edited_all = list(),
     deleted_all = list(),
-    finished = list()
+    finished = list(),
+    all = list()
   )
 
   recorder <- list()
@@ -159,6 +139,7 @@ editMod <- function(
   EVT_DRAW <- "map_draw_new_feature"
   EVT_EDIT <- "map_draw_edited_features"
   EVT_DELETE <- "map_draw_deleted_features"
+  EVT_ALL <- "map_draw_all_features"
 
   shiny::observeEvent(input[[EVT_DRAW]], {
     featurelist$drawn <- c(featurelist$drawn, list(input[[EVT_DRAW]]))
@@ -211,10 +192,17 @@ editMod <- function(
     featurelist$deleted_all <- c(featurelist$deleted_all, list(deleted))
   })
 
+  shiny::observeEvent(input[[EVT_ALL]], {
+    featurelist$all <- list(input[[EVT_ALL]])
+    if (any(unlist(input[[EVT_ALL]]$geometry$coordinates) < -180) ||
+        any(unlist(input[[EVT_ALL]]$geometry$coordinates) > 180))
+      insane_longitude_warning()
+  })
+
   # record events if record = TRUE
   if(record == TRUE) {
     lapply(
-      c(EVT_DRAW, EVT_EDIT, EVT_DELETE),
+      c(EVT_DRAW, EVT_EDIT, EVT_DELETE, EVT_ALL),
       function(evt) {
         observeEvent(input[[evt]], {
           recorder <<- c(
@@ -240,7 +228,8 @@ editMod <- function(
       drawn = featurelist$drawn,
       edited = featurelist$edited_all,
       deleted = featurelist$deleted_all,
-      finished = featurelist$finished
+      finished = featurelist$finished,
+      all = featurelist$all
     )
     # if sf argument is TRUE then convert to simple features
     if(sf) {

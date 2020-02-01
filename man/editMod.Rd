@@ -6,7 +6,7 @@
 \usage{
 editMod(input, output, session, leafmap, targetLayerId = NULL,
   sf = TRUE, record = FALSE, crs = 4326,
-  editor = c("leaflet.extras", "leafpm"))
+  editor = c("leaflet.extras", "leafpm"), editorOptions = list())
 }
 \arguments{
 \item{input}{Shiny server function input}
@@ -27,6 +27,10 @@ editMod(input, output, session, leafmap, targetLayerId = NULL,
 \item{crs}{see \code{\link[sf]{st_crs}}.}
 
 \item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
+
+\item{editorOptions}{\code{list} of options suitable for passing to
+either \code{leaflet.extras::addDrawToolbar} or
+\code{leafpm::addPmToolbar}.}
 }
 \value{
 server function for Shiny module
