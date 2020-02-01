@@ -9,18 +9,35 @@
 \usage{
 editMap(x, ...)
 
-\method{editMap}{leaflet}(x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, title = "Edit Map", editor = c("leaflet.extras",
-  "leafpm"), editorOptions = list(), ...)
+\method{editMap}{leaflet}(
+  x = NULL,
+  targetLayerId = NULL,
+  sf = TRUE,
+  ns = "mapedit-edit",
+  record = FALSE,
+  viewer = shiny::paneViewer(),
+  crs = 4326,
+  title = "Edit Map",
+  editor = c("leaflet.extras", "leafpm"),
+  editorOptions = list(),
+  ...
+)
 
-\method{editMap}{mapview}(x = NULL, targetLayerId = NULL, sf = TRUE,
-  ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, title = "Edit Map", editor = c("leaflet.extras",
-  "leafpm"), editorOptions = list(), ...)
+\method{editMap}{mapview}(
+  x = NULL,
+  targetLayerId = NULL,
+  sf = TRUE,
+  ns = "mapedit-edit",
+  record = FALSE,
+  viewer = shiny::paneViewer(),
+  crs = 4326,
+  title = "Edit Map",
+  editor = c("leaflet.extras", "leafpm"),
+  editorOptions = list(),
+  ...
+)
 
-\method{editMap}{NULL}(x, editor = c("leaflet.extras", "leafpm"),
-  editorOptions = list(), ...)
+\method{editMap}{`NULL`}(x, editor = c("leaflet.extras", "leafpm"), editorOptions = list(), ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}

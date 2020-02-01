@@ -8,10 +8,17 @@
 \usage{
 selectFeatures(x, ...)
 
-\method{selectFeatures}{sf}(x = NULL, mode = c("click", "draw"),
-  op = sf::st_intersects, map = NULL, index = FALSE,
-  viewer = shiny::paneViewer(), label = NULL,
-  title = "Select features", ...)
+\method{selectFeatures}{sf}(
+  x = NULL,
+  mode = c("click", "draw"),
+  op = sf::st_intersects,
+  map = NULL,
+  index = FALSE,
+  viewer = shiny::paneViewer(),
+  label = NULL,
+  title = "Select features",
+  ...
+)
 
 \method{selectFeatures}{Spatial}(x, ...)
 }

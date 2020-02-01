@@ -22,18 +22,23 @@ Interactive editing of spatial data in R | an [RConsortium](https://www.r-consor
 
 ### Status
 
-`mapedit` is still in active development.  We would very much appreciate feedback, ideas, and use cases.  The API has stabilized, but please be aware that the API might change over the next couple of months.  We will use semantic versioning with Github tagged releases to track changes and progress.  All changes will also be documented in NEWS.md.
+`mapedit` is still in active development.  We would very much appreciate feedback, ideas, and use cases.  The API has stabilized, and wee will use semantic versioning with Github tagged releases to track changes and progress.  All changes will also be documented in NEWS.md.
 
 ### Blog Posts
 
-[Introduction to mapedit](http://r-spatial.org/r/2017/01/30/mapedit_intro.html) - January 30, 2017
+[Introduction to mapedit](http://r-spatial.org/r/2017/01/30/mapedit_intro.html) January 30, 2017
 
 
-[mapedit updates in 0.2.0](http://r-spatial.org/r/2017/06/09/mapedit_0-2-0.html) - June 12, 2017
+[mapedit updates in 0.2.0](http://r-spatial.org/r/2017/06/09/mapedit_0-2-0.html) June 12, 2017
+
+
+[mapedit 0.5.0 and Leaflet.pm](https://www.r-spatial.org/r/2019/03/31/mapedit_leafpm.html) March 31, 2019
+
+
 
 ### Talks
 
-[Tim Appelhans at useR 2017](https://channel9.msdn.com/events/useR-international-R-User-conferences/useR-International-R-User-2017-Conference/mapedit-interactive-manipulation-of-spatial-objects?term=tim%20appelhans) -  July 2017
+[Tim Appelhans at useR 2017](https://channel9.msdn.com/events/useR-international-R-User-conferences/useR-International-R-User-2017-Conference/mapedit-interactive-manipulation-of-spatial-objects?term=tim%20appelhans) July 2017
 
 ### Install
 
@@ -42,7 +47,7 @@ As the CRAN badge above indicates, `mapedit` has achieved CRAN status.  To insta
 ```
 install.packages("mapedit")
 # cutting edge
-#  devtools::install_github("r-spatial/mapedit")
+# remotes::install_github("r-spatial/mapedit@develop")
 ```
 
 ### Examples

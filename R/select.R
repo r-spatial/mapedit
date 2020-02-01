@@ -57,7 +57,7 @@ selectFeatures.sf = function(
 ) {
 
   nm = deparse(substitute(x))
-  x = mapview:::checkAdjustProjection(x)
+  x = checkAdjustProjection(x)
   x$edit_id = as.character(1:nrow(x))
 
   mode = match.arg(mode)
@@ -69,7 +69,7 @@ selectFeatures.sf = function(
       map = leafem::addFeatures(
         map, data = x, layerId = ~x$edit_id, label = label, ...
       )
-      ext = mapview:::createExtent(x)
+      ext = createExtent(x)
       map = leaflet::fitBounds(
         map,
         lng1 = ext[1],

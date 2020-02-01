@@ -8,10 +8,19 @@
 \usage{
 editFeatures(x, ...)
 
-\method{editFeatures}{sf}(x, map = NULL, mergeOrder = c("add", "edit",
-  "delete"), record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, label = NULL, title = "Edit Map",
-  editor = c("leaflet.extras", "leafpm"), editorOptions = list(), ...)
+\method{editFeatures}{sf}(
+  x,
+  map = NULL,
+  mergeOrder = c("add", "edit", "delete"),
+  record = FALSE,
+  viewer = shiny::paneViewer(),
+  crs = 4326,
+  label = NULL,
+  title = "Edit Map",
+  editor = c("leaflet.extras", "leafpm"),
+  editorOptions = list(),
+  ...
+)
 
 \method{editFeatures}{Spatial}(x, ...)
 }

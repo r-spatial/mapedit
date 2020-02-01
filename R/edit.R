@@ -252,7 +252,7 @@ editFeatures.sf = function(
   x$edit_id = as.character(1:nrow(x))
 
   if (is.null(map)) {
-    x = mapview:::checkAdjustProjection(x)
+    x = checkAdjustProjection(x)
     map = mapview::mapview()@map
     map = leafem::addFeatures(
       map, data=x, layerId=~x$edit_id,
@@ -260,7 +260,7 @@ editFeatures.sf = function(
       labelOptions = leaflet::labelOptions(direction="top", offset=c(0,-40)),
       group = "toedit"
     )
-    ext = mapview:::createExtent(x)
+    ext = createExtent(x)
     map = leaflet::fitBounds(
       map,
       lng1 = ext[1],
