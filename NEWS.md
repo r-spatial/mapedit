@@ -1,3 +1,11 @@
+## mapedit 0.6.0
+
+### New Features
+
+* Add listener for all features and add to returned features with `leaflet.extras` editor.  See [pull #98](https://github.com/r-spatial/mapedit/pull/98).
+
+* Add `editorOptions` for better control of options in `edit*` and `draw*` functions.  See [pull #100](https://github.com/r-spatial/mapedit/pull/100) and [pull #103](https://github.com/r-spatial/mapedit/pull/103).
+
 ## mapedit 0.5.0
 
 ### New Features
