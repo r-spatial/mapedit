@@ -82,8 +82,8 @@ We can interactively CRD (create, update, delete) features on a map with
 ### Code of Conduct
 
 Please note that this project is released with a [Contributor Code of
-Conduct](CONDUCT.md). By participating in this project you agree to
-abide by its terms.
+Conduct](https://github.com/r-spatial/mapedit/blob/master/CONDUCT.md).
+By participating in this project you agree to abide by its terms.
 
 ### Acknowledgment
 
