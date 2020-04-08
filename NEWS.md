@@ -1,3 +1,11 @@
+## mapedit 0.6.1
+
+### Bug Fix
+
+* properly flush deleted features when user deletes multiple. See [issue #106](https://github.com/r-spatial/mapedit/issues/106)
+
+* Allow `mapedit` to work in a loop or in sequence. See [issue #83](https://github.com/r-spatial/mapedit/issues/83)
+
 ## mapedit 0.6.0
 
 ### New Features
