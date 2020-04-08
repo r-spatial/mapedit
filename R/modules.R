@@ -185,6 +185,7 @@ editMod <- function(
     lapply(deleted$features, function(x) {
       loc <- match(x$properties$`_leaflet_id`, ids)
       if(length(loc) > 0) {
+        ids <<- ids[-loc]
         featurelist$finished[loc] <<- NULL
       }
     })
