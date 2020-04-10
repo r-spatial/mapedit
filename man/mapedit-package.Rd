@@ -35,11 +35,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Kenton Russell \email{kent.russell@timelyportfolio.com}
+\strong{Maintainer}: Tim Appelhans \email{tim.appelhans@gmail.com}
 
 Authors:
 \itemize{
-  \item Tim Appelhans
+  \item Kenton Russell
   \item Lorenzo Busetto
   \item Jakob Gutschlhofer
 }
