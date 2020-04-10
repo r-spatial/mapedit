@@ -65,7 +65,7 @@ selectFeatures.sf = function(
   if (mode == "click") {
 
     if (is.null(map)) {
-      map = mapview::mapView(...)@map
+      map = mapview:::initMap(proj4str = sf::st_crs(x)$proj4string)
       map = leafem::addFeatures(
         map, data = x, layerId = ~x$edit_id, label = label, ...
       )
