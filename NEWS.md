@@ -2,9 +2,11 @@
 
 ### Bug Fix
 
-* properly flush deleted features when user deletes multiple. See [issue #106](https://github.com/r-spatial/mapedit/issues/106)
+* properly flush deleted features when user deletes multiple. See [issue #106](https://github.com/r-spatial/mapedit/issues/106).
 
-* Allow `mapedit` to work in a loop or in sequence. See [issue #83](https://github.com/r-spatial/mapedit/issues/83)
+* allow `mapedit` to work in a loop or in sequence. See [issue #83](https://github.com/r-spatial/mapedit/issues/83).
+
+* make behavior of `selectFeatures` consistent between modes `"draw"` and `"click"` when working with features with no CRS.  See [issue #110](https://github.com/r-spatial/mapedit/issues/110).
 
 ## mapedit 0.6.0
 
