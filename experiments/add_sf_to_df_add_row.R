@@ -4,6 +4,7 @@ library(mapedit)
 library(sf)
 library(DT)
 library(shiny)
+library(shinyWidgets)
 library(htmltools)
 
 script_zoom <- tags$script(
@@ -29,7 +30,13 @@ debugger;
   )
 )
 
-make_an_sf <- function(dat) {
+
+
+
+
+
+make_an_sf <- function(dat){
+
   ui <- tagList(
     script_zoom,
     fluidPage(
@@ -38,16 +45,13 @@ make_an_sf <- function(dat) {
         column(6,editModUI("map")),
         tags$hr()
       ),
-      fluidRow(column(4,
+      fluidRow(column(6,
                       h3('Add New Row'),
-                      textInput('brewery','Brewery Name', width = '100%'),
-                      textInput('address','Address', width = '100%'),
-                      fluidRow(column(12,
-                                      switchInput(inputId = "new", value = FALSE))
-                      )),
-               column(4),
-               column(4,
-                      actionButton("donebtn", "Done")),
+                      uiOutput('dyn_form'),
+                      switchInput(inputId = "new", value = FALSE)
+      ),
+      column(6,
+             actionButton("donebtn", "Done")),
 
       )
     )
@@ -59,6 +63,8 @@ make_an_sf <- function(dat) {
       geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
     )
 
+    col <- reactiveValues(types = sapply(dat, class))
+
     # add column for leaflet id, since we will need to track layer id
     #   to offer zoom to
     data_copy$leaflet_id <- NA
@@ -68,6 +74,35 @@ make_an_sf <- function(dat) {
       leafmap = mapview()@map,
       id = "map"
     )
+
+    observe({
+
+      output$dyn_form <- renderUI({
+
+        tagList(
+          lapply(1:length(col$types), function(n){
+            if (col$types[n] == 'character') {
+              textInput(names(col$types[n]), names(col$types[n]),
+                        width = '100%')
+            } else if (col$types[n] == 'factor') {
+              selectInput(names(col$types[n]), names(col$types[n]),
+                          choices = levels(dat[[names(col$types[n])]]),
+                          selected = NULL,
+                          selectize = TRUE,
+                          width = '100%')
+            } else if (col$types[n] == 'numeric') {
+              numericInput(names(col$types[n]), names(col$types[n]),
+                           value = 0,
+                           width = '100%')
+            }
+          })
+
+        )
+
+
+      })
+
+    })
 
     output$tbl <- DT::renderDataTable({
 
@@ -128,13 +163,25 @@ make_an_sf <- function(dat) {
 
               ng <<- sf::st_geometry(mapedit:::st_as_sfc.geo_list(evt)) # new geom object
 
-              new_row <<- data.frame(brewery = input$brewery,
-                                    address = input$address,
-                                    leaflet_id = evt$properties$`_leaflet_id`) %>%
+              # creates first column and row (must be more elegant way)
+              new_row <- data.frame(X = input[[names(col$types[1])]])
+              colnames(new_row) <- names(col$types[1])
+              #
+              # remaining columns will be correct size
+              for (i in 2:length(col$types)) {
+                new_row[names(col$types[i])] <- input[[names(col$types[i])]]
+              }
+
+              new_row$leaflet_id <- evt$properties$`_leaflet_id`
+
+              new_row <- new_row %>%
                 sf::st_set_geometry(ng) %>%
                 st_set_crs(4326)
 
               print('new row success')
+
+              nr <<- new_row
+              dc <<- data_copy
 
               # add to data_copy data.frame and update visible table
               data_copy <<- data_copy %>%
@@ -155,7 +202,7 @@ make_an_sf <- function(dat) {
             }
 
           }
-      })
+        })
     }
 
     addDrawObserve(EVT_DRAW)
@@ -198,16 +245,25 @@ make_an_sf <- function(dat) {
       # ensure export is sf
       stopApp(st_sf(data_copy,crs=4326))
     })
+
   }
 
   return(runApp(shinyApp(ui,server)))
-
 }
 
 
+
 # let's act like breweries does not have geometries and select the top 2
-brewsub <- breweries[1:2, 1:2,drop=TRUE]
+data <- data.frame(
+  name = c('SiteA', 'SiteB'),
+  type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
+  size = c(35, 45)
+)
 
-brewpub <- make_an_sf(brewsub)
+data_sf <- make_an_sf(data)
 
-mapview(brewpub)
+mapview(data_sf)
+
+
+
+
