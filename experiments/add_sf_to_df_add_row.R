@@ -55,7 +55,7 @@ make_an_sf <- function(dat){
         column(3,
                h3('Add New Column'),
                shiny::textInput('new_name', 'New Column Name', width = '100%'),
-               shiny::selectInput('new_type', 'Column Type', choices = c('character', 'numeric')),
+               shiny::selectInput('new_type', 'Column Type', choices = c('character', 'numeric', 'integer')),
                actionButton("col_add", "Add Column")
                )
       ),
@@ -93,6 +93,10 @@ make_an_sf <- function(dat){
                   #replaceData(proxy, data_copy, resetPaging = TRUE, clearSelection = 'all')  # important
 
                   # add input$new_name to df$type
+                  ntype <- input$new_type
+                  names(ntype) <- input$new_name
+
+                  df$types <- c(df$types, ntype)
 
                   updateTextInput(session, 'new_name', value = NA)
 
@@ -104,7 +108,7 @@ make_an_sf <- function(dat){
       # creates first column and row (must be more elegant way)
       new_row <- data.frame(X = input[[names(df$types[1])]])
       colnames(new_row) <- names(df$types[1])
-      #
+
       # remaining columns will be correct size
       for (i in 2:length(df$types)) {
         new_row[names(df$types[i])] <- input[[names(df$types[i])]]
@@ -113,15 +117,9 @@ make_an_sf <- function(dat){
       new_row$leaflet_id <- NA
       new_row <- st_as_sf(new_row, geometry = st_sfc(st_point()))
 
-      print('bind row success')
-
       # add to data_copy data.frame and update visible table
       df$data <- df$data %>%
         rbind(new_row)
-
-      print('bind row success')
-
-      #replaceData(proxy, data_copy, resetPaging = FALSE)  # important
 
       showNotification('Added New Row')
 
@@ -278,7 +276,7 @@ make_an_sf <- function(dat){
 
   }
 
-  return(runApp(shinyApp(ui,server)))
+  return(runApp(shinyApp(ui,server), launch.browser = TRUE))
 }
 
 
