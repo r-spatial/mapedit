@@ -41,19 +41,27 @@ make_an_sf <- function(dat){
     script_zoom,
     fluidPage(
       fluidRow(
-        column(6,DT::dataTableOutput("tbl",width="100%", height="400px")),
-        column(6,editModUI("map")),
-        tags$hr()
+        column(12, editModUI("map"))
       ),
-      fluidRow(column(6,
+      tags$hr(),
+      fluidRow(
+        column(6,
+               DT::dataTableOutput("tbl",width="100%", height=300)),
+        column(3,
                       h3('Add New Row'),
                       uiOutput('dyn_form'),
-                      switchInput(inputId = "new", value = FALSE)
+                      actionButton("row_add", "Add Row")
+               ),
+        column(3,
+               h3('Add New Column'),
+               shiny::textInput('new_name', 'New Column Name', width = '100%'),
+               shiny::selectInput('new_type', 'Column Type', choices = c('character', 'numeric')),
+               actionButton("col_add", "Add Column")
+               )
       ),
-      column(6,
-             actionButton("donebtn", "Done")),
+      fluidRow(tags$hr(),
+               actionButton("donebtn", "Done"))
 
-      )
     )
   )
 
@@ -63,11 +71,67 @@ make_an_sf <- function(dat){
       geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
     )
 
-    col <- reactiveValues(types = sapply(dat, class))
-
     # add column for leaflet id, since we will need to track layer id
     #   to offer zoom to
     data_copy$leaflet_id <- NA
+
+
+    df <- reactiveValues(types = sapply(dat, class),
+                         data = data_copy)
+
+
+
+    observeEvent(input$col_add, {
+
+                  #TODO: add checks for missing inputs
+                  add_col <- df$data
+
+                  add_col[[input$new_name]] <- do.call(paste0('as.', input$new_type), list(NA))
+
+                  df$data <- add_col
+
+                  #replaceData(proxy, data_copy, resetPaging = TRUE, clearSelection = 'all')  # important
+
+                  # add input$new_name to df$type
+
+                  updateTextInput(session, 'new_name', value = NA)
+
+
+                  })
+
+    observeEvent(input$row_add, {
+
+      # creates first column and row (must be more elegant way)
+      new_row <- data.frame(X = input[[names(df$types[1])]])
+      colnames(new_row) <- names(df$types[1])
+      #
+      # remaining columns will be correct size
+      for (i in 2:length(df$types)) {
+        new_row[names(df$types[i])] <- input[[names(df$types[i])]]
+      }
+
+      new_row$leaflet_id <- NA
+      new_row <- st_as_sf(new_row, geometry = st_sfc(st_point()))
+
+      print('bind row success')
+
+      # add to data_copy data.frame and update visible table
+      df$data <- df$data %>%
+        rbind(new_row)
+
+      print('bind row success')
+
+      #replaceData(proxy, data_copy, resetPaging = FALSE)  # important
+
+      showNotification('Added New Row')
+
+      # reset input table (TODO: adjust to variable input names)
+      updateTextInput(session, 'brewery', value = NA)
+      updateTextInput(session, 'address', value = NA)
+      updateSwitchInput(session, 'new', value = FALSE)
+
+    })
+
 
     edits <- callModule(
       editMod,
@@ -80,18 +144,18 @@ make_an_sf <- function(dat){
       output$dyn_form <- renderUI({
 
         tagList(
-          lapply(1:length(col$types), function(n){
-            if (col$types[n] == 'character') {
-              textInput(names(col$types[n]), names(col$types[n]),
+          lapply(1:length(df$types), function(n){
+            if (df$types[n] == 'character') {
+              textInput(names(df$types[n]), names(df$types[n]),
                         width = '100%')
-            } else if (col$types[n] == 'factor') {
-              selectInput(names(col$types[n]), names(col$types[n]),
-                          choices = levels(dat[[names(col$types[n])]]),
+            } else if (df$types[n] == 'factor') {
+              selectInput(names(df$types[n]), names(df$types[n]),
+                          choices = levels(dat[[names(df$types[n])]]),
                           selected = NULL,
                           selectize = TRUE,
                           width = '100%')
-            } else if (col$types[n] == 'numeric') {
-              numericInput(names(col$types[n]), names(col$types[n]),
+            } else if (df$types[n] == 'numeric') {
+              numericInput(names(df$types[n]), names(df$types[n]),
                            value = 0,
                            width = '100%')
             }
@@ -106,15 +170,16 @@ make_an_sf <- function(dat){
 
     output$tbl <- DT::renderDataTable({
 
-      n <- ncol(data_copy) # used to hide geometry and leaflet_id columns
+      n <- grep('geom|leaflet', colnames(df$data)) # used to hide geometry and leaflet_id columns
 
       DT::datatable(
-        data_copy,
-        options = list(scrollY="400px",
+        df$data,
+        options = list(scrollY="300px",
                        pageLength = 5,
-                       columnDefs = list(list(visible=FALSE, targets=(n-1):n))),
+                       columnDefs = list(list(visible=FALSE, targets=n))),
         # could support multi but do single for now
         selection = "single",
+        height = 300,
         editable = TRUE
       )
     })
@@ -153,54 +218,10 @@ make_an_sf <- function(dat){
 
           # replace if draw or edit
           if(skip==FALSE) {
-            sf::st_geometry(data_copy[selected,]) <<- sf::st_geometry(
+            sf::st_geometry(df$data[selected,]) <- sf::st_geometry(
               mapedit:::st_as_sfc.geo_list(evt)
             )
-            data_copy[selected,]$leaflet_id <<- evt$properties$`_leaflet_id`
-          } else {
-
-            if (input$new) {
-
-              ng <<- sf::st_geometry(mapedit:::st_as_sfc.geo_list(evt)) # new geom object
-
-              # creates first column and row (must be more elegant way)
-              new_row <- data.frame(X = input[[names(col$types[1])]])
-              colnames(new_row) <- names(col$types[1])
-              #
-              # remaining columns will be correct size
-              for (i in 2:length(col$types)) {
-                new_row[names(col$types[i])] <- input[[names(col$types[i])]]
-              }
-
-              new_row$leaflet_id <- evt$properties$`_leaflet_id`
-
-              new_row <- new_row %>%
-                sf::st_set_geometry(ng) %>%
-                st_set_crs(4326)
-
-              print('new row success')
-
-              nr <<- new_row
-              dc <<- data_copy
-
-              # add to data_copy data.frame and update visible table
-              data_copy <<- data_copy %>%
-                sf::st_set_crs(4326) %>%
-                rbind(new_row)
-
-              print('bind row success')
-
-              replaceData(proxy, data_copy, resetPaging = FALSE)  # important
-
-              showNotification('Added New Row')
-
-              # reset input table
-              updateTextInput(session, 'brewery', value = NA)
-              updateTextInput(session, 'address', value = NA)
-              updateSwitchInput(session, 'new', value = FALSE)
-
-            }
-
+            df$data[selected,]$leaflet_id <- evt$properties$`_leaflet_id`
           }
         })
     }
@@ -208,12 +229,13 @@ make_an_sf <- function(dat){
     addDrawObserve(EVT_DRAW)
     addDrawObserve(EVT_EDIT)
 
+
     # ensure no rows are selected when adding new row
-    observeEvent(input$new, {
-      if (input$new){
-        proxy %>% selectRows(NULL)
-      }
-    })
+    # observeEvent(input$new, {
+    #   if (input$new){
+    #     proxy %>% selectRows(NULL)
+    #   }
+    # })
 
     # zoom to if feature available on selected row
     observeEvent(
@@ -221,7 +243,7 @@ make_an_sf <- function(dat){
       {
         selected <- input$tbl_rows_selected
         if(!is.null(selected)) {
-          rowsel <- data_copy[selected, ]
+          rowsel <- df$data[selected, ]
           # simple check to see if feature available
           #   and leaflet id populated
           if(
@@ -237,13 +259,21 @@ make_an_sf <- function(dat){
 
     # update table cells with double click on cell
     observeEvent(input$tbl_cell_edit, {
-      data_copy <<- editData(data_copy, input$tbl_cell_edit, 'tbl')
+      df$data <- editData(df$data, input$tbl_cell_edit, 'tbl')
     })
 
     # provide mechanism to return after all done
     observeEvent(input$donebtn, {
-      # ensure export is sf
-      stopApp(st_sf(data_copy,crs=4326))
+
+      stopApp({
+        # ensure export is sf and correct crs
+        out <- st_sf(df$data,crs=4326)
+
+        # clean bounding box just in case
+        attr(st_geometry(out), "bbox") <- st_bbox(st_union(out$geometry))
+
+        out
+      })
     })
 
   }
