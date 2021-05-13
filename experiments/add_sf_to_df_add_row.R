@@ -36,7 +36,7 @@ debugger;
 
 
 
-make_an_sf <- function(dat, zoomto = NULL){
+make_an_sf <- function(dat = NULL, zoomto = NULL){
 
   APP_CRS <- 4326
 
@@ -116,6 +116,17 @@ make_an_sf <- function(dat, zoomto = NULL){
         data_copy$leaflet_id <- NA # may need to redo this each time?
       }
 
+    } else if (is.null(dat)){
+
+      dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...')
+
+      data_copy <- st_as_sf(
+        dat,
+        geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
+      ) %>% st_set_crs(APP_CRS)
+
+      # add column for leaflet id, since we will need to track layer id to offer zoom to
+      data_copy$leaflet_id <- NA
     }
 
 
