@@ -6,6 +6,7 @@ library(DT)
 library(shiny)
 library(shinyWidgets)
 library(htmltools)
+library(tmaptools)
 
 script_zoom <- tags$script(
   HTML(
@@ -35,7 +36,15 @@ debugger;
 
 
 
-make_an_sf <- function(dat){
+make_an_sf <- function(dat, zoomto = NULL){
+
+  APP_CRS <- 4326
+
+  if (!is.null(zoomto)) {
+    zoomto_area <- tmaptools::geocode_OSM(zoomto)
+    zoomto <- st_as_sfc(zoomto_area$bbox) %>% st_sf() %>% st_set_crs(APP_CRS)
+  }
+
 
   ui <- tagList(
     script_zoom,
@@ -72,13 +81,15 @@ make_an_sf <- function(dat){
       data_copy <- st_as_sf(
         dat,
         geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
-      )
+      ) %>% st_set_crs(APP_CRS)
+
       # add column for leaflet id, since we will need to track layer id to offer zoom to
       data_copy$leaflet_id <- NA
 
     } else if ('sf' %in% class(dat)) {
 
-      data_copy <- dat
+      data_copy <- dat # TODO check orig crs and transform to 4326
+
       if (!('leaflet_id' %in% colnames(dat))) {
         data_copy$leaflet_id <- NA # may need to redo this each time?
       }
@@ -87,7 +98,8 @@ make_an_sf <- function(dat){
 
 
     df <- reactiveValues(types = sapply(dat, class),
-                         data = data_copy)
+                         data = data_copy,
+                         zoom_to = zoomto)
 
 
 
@@ -100,8 +112,6 @@ make_an_sf <- function(dat){
 
                   df$data <- add_col
 
-                  #replaceData(proxy, data_copy, resetPaging = TRUE, clearSelection = 'all')  # important
-
                   # add input$new_name to df$type
                   ntype <- input$new_type
                   names(ntype) <- input$new_name
@@ -109,7 +119,7 @@ make_an_sf <- function(dat){
                   df$types <- c(df$types, ntype)
 
                   updateTextInput(session, 'new_name', value = NA)
-
+                  showNotification('Added New Column')
 
                   })
 
@@ -125,7 +135,7 @@ make_an_sf <- function(dat){
       }
 
       new_row$leaflet_id <- NA
-      new_row <- st_as_sf(new_row, geometry = st_sfc(st_point()), crs = 4326)
+      new_row <- st_as_sf(new_row, geometry = st_sfc(st_point()), crs = APP_CRS)
 
       # add to data_copy data.frame and update visible table
       df$data <- df$data %>%
@@ -146,7 +156,13 @@ make_an_sf <- function(dat){
     observe({
       edits <- callModule(
       editMod,
-      leafmap = mapview(df$data)@map,
+      leafmap = {if (is.null(df$zoom_to)){
+                   mapv <- mapview(df$data)@map
+                 } else {
+                   mapv <- mapview(df$zoom_to)@map # only use once
+                 }
+                 mapv
+        },
       id = "map"
       )
       })
@@ -241,14 +257,6 @@ make_an_sf <- function(dat){
     addDrawObserve(EVT_DRAW)
     addDrawObserve(EVT_EDIT)
 
-
-    # ensure no rows are selected when adding new row
-    # observeEvent(input$new, {
-    #   if (input$new){
-    #     proxy %>% selectRows(NULL)
-    #   }
-    # })
-
     # zoom to if feature available on selected row
     observeEvent(
       input$tbl_rows_selected,
@@ -279,7 +287,7 @@ make_an_sf <- function(dat){
 
       stopApp({
         # ensure export is sf and correct crs
-        out <- st_sf(df$data,crs=4326)
+        out <- st_sf(df$data,crs=APP_CRS)
 
         # clean bounding box just in case
         attr(st_geometry(out), "bbox") <- st_bbox(st_union(out$geometry))
@@ -302,7 +310,7 @@ data <- data.frame(
   size = c(35, 45)
 )
 
-data_sf <- make_an_sf(data_sf)
+data_sf <- make_an_sf(data, zoomto = 'australia')
 
 mapview(data_sf)
 
