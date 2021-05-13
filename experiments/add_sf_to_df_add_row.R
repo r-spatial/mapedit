@@ -58,7 +58,7 @@ make_an_sf <- function(dat, zoomto = NULL){
       tags$hr(),
       fluidRow(
         column(6,
-               DT::dataTableOutput("tbl",width="100%", height=300)),
+               DT::dataTableOutput("tbl",width="100%", height=200)),
         column(3,
                       h3('Add New Row'),
                       uiOutput('dyn_form'),
@@ -72,7 +72,13 @@ make_an_sf <- function(dat, zoomto = NULL){
                )
       ),
       fluidRow(tags$hr(),
-               actionButton("donebtn", "Done"))
+               div(style = 'padding: 20px',
+                 actionBttn("donebtn", "Done",
+                          icon = icon('check-circle'),
+                          style = 'material-flat',
+                          block = TRUE,
+                          color = 'success',
+                          size = 'lg')))
 
     )
   )
@@ -206,12 +212,12 @@ make_an_sf <- function(dat, zoomto = NULL){
 
       DT::datatable(
         df$data,
-        options = list(scrollY="300px",
+        options = list(scrollY="200px",
                        pageLength = 5,
                        columnDefs = list(list(visible=FALSE, targets=n))),
         # could support multi but do single for now
         selection = "single",
-        height = 300,
+        height = 200,
         editable = TRUE
       )
     })
@@ -314,7 +320,7 @@ data <- data.frame(
   size = c(35, 45)
 )
 
-data_sf <- make_an_sf(data, zoomto = 'australia')
+data_sf <- make_an_sf(data, zoomto = 'germany')
 
 mapview(data_sf)
 
