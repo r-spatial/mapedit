@@ -61,15 +61,27 @@ make_an_sf <- function(dat, zoomto = NULL){
         column(6,
                DT::dataTableOutput("tbl",width="100%", height=200)),
         column(3,
-                      h3('Add New Row'),
-                      uiOutput('dyn_form'),
-                      actionButton("row_add", "Add Row")
+               wellPanel(
+                 h3('Add New Row'),
+                 uiOutput('dyn_form'),
+                 actionBttn("row_add", "Row",
+                              icon = icon('plus'),
+                              style = 'material-flat',
+                              block = TRUE,
+                              color = 'primary',
+                              size = 'md'))
                ),
         column(3,
-               h3('Add New Column'),
-               shiny::textInput('new_name', 'New Column Name', width = '100%'),
-               shiny::radioButtons('new_type', 'Column Type', choices = c('character', 'numeric', 'integer', 'Date')),
-               actionButton("col_add", "Add Column")
+               wellPanel(
+                 h3('Add New Column'),
+                 shiny::textInput('new_name', 'New Column Name', width = '100%'),
+                 shiny::radioButtons('new_type', 'Column Type', choices = c('character', 'numeric', 'integer', 'Date')),
+                 actionBttn("col_add", "Column",
+                            icon = icon('plus'),
+                            style = 'material-flat',
+                            block = TRUE,
+                            color = 'primary',
+                            size = 'md'))
                )
       ),
       fluidRow(tags$hr(),
