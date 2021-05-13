@@ -51,6 +51,7 @@ make_an_sf <- function(dat, zoomto = NULL){
 
   ui <- tagList(
     script_zoom,
+    useSweetAlert(),
     fluidPage(
       fluidRow(
         column(12, editModUI("map"))
@@ -67,7 +68,7 @@ make_an_sf <- function(dat, zoomto = NULL){
         column(3,
                h3('Add New Column'),
                shiny::textInput('new_name', 'New Column Name', width = '100%'),
-               shiny::selectInput('new_type', 'Column Type', choices = c('character', 'numeric', 'integer')),
+               shiny::radioButtons('new_type', 'Column Type', choices = c('character', 'numeric', 'integer', 'Date')),
                actionButton("col_add", "Add Column")
                )
       ),
@@ -155,9 +156,20 @@ make_an_sf <- function(dat, zoomto = NULL){
       # TODO: current method breaks zoom when input sf
 
       # reset input table (TODO: adjust to variable input names)
-      updateTextInput(session, 'brewery', value = NA)
-      updateTextInput(session, 'address', value = NA)
-      updateSwitchInput(session, 'new', value = FALSE)
+      for (i in 1:length(df$types)) {
+        typ <- df$types[i]
+        nm <- names(typ)
+        print(typ)
+        if (typ == 'character') {
+          updateTextInput(session, nm, value = NA)
+        } else if (typ %in% c('numeric','integer')) {
+          updateNumericInput(session, nm, value = NA)
+        } else if (typ == 'Date') {
+          updateDateInput(session, nm, value = NA)
+        }
+      }
+
+
 
     })
 
@@ -183,19 +195,19 @@ make_an_sf <- function(dat, zoomto = NULL){
 
         tagList(
           lapply(1:length(df$types), function(n){
+            name <- names(df$types[n])
+            label <- paste0(names(df$types[n]), ' (', df$types[n], ')')
             if (df$types[n] == 'character') {
-              textInput(names(df$types[n]), names(df$types[n]),
-                        width = '100%')
+              textInput(name, label, width = '100%')
             } else if (df$types[n] == 'factor') {
-              selectInput(names(df$types[n]), names(df$types[n]),
+              selectInput(name, label, width = '100%',
                           choices = levels(dat[[names(df$types[n])]]),
                           selected = NULL,
-                          selectize = TRUE,
-                          width = '100%')
-            } else if (df$types[n] == 'numeric') {
-              numericInput(names(df$types[n]), names(df$types[n]),
-                           value = 0,
-                           width = '100%')
+                          selectize = TRUE)
+            } else if (df$types[n] %in% c('numeric','integer')) {
+              numericInput(name, label, width = '100%', value = NA)
+            } else if (df$types[n] == 'Date') {
+              dateInput(name, label, width = '100%', value = NA)
             }
           })
 
@@ -295,15 +307,24 @@ make_an_sf <- function(dat, zoomto = NULL){
     # provide mechanism to return after all done
     observeEvent(input$donebtn, {
 
-      stopApp({
-        # ensure export is sf and correct crs
-        out <- st_sf(df$data,crs=APP_CRS)
+      if (any(st_is_empty(df$data$geometry))) {
+        shinyWidgets::show_alert('Missing Geometry',
+                                 'some features are missing geometry, these must be entered before saving',
+                                 type = 'warning')
+      } else {
+        stopApp({
+          # ensure export is sf and correct crs
+          out <- st_sf(df$data,crs=APP_CRS)
 
-        # clean bounding box just in case
-        attr(st_geometry(out), "bbox") <- st_bbox(st_union(out$geometry))
+          # clean bounding box just in case
+          attr(st_geometry(out), "bbox") <- st_bbox(st_union(out$geometry))
 
-        out
-      })
+          out
+        })
+      }
+
+
+
     })
 
   }
