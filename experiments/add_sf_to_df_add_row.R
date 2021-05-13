@@ -66,14 +66,24 @@ make_an_sf <- function(dat){
   )
 
   server <- function(input, output, session) {
-    data_copy <- st_as_sf(
-      dat,
-      geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
-    )
 
-    # add column for leaflet id, since we will need to track layer id
-    #   to offer zoom to
-    data_copy$leaflet_id <- NA
+    if (class(dat) == 'data.frame') {
+
+      data_copy <- st_as_sf(
+        dat,
+        geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
+      )
+      # add column for leaflet id, since we will need to track layer id to offer zoom to
+      data_copy$leaflet_id <- NA
+
+    } else if ('sf' %in% class(dat)) {
+
+      data_copy <- dat
+      if (!('leaflet_id' %in% colnames(dat))) {
+        data_copy$leaflet_id <- NA # may need to redo this each time?
+      }
+
+    }
 
 
     df <- reactiveValues(types = sapply(dat, class),
@@ -115,13 +125,15 @@ make_an_sf <- function(dat){
       }
 
       new_row$leaflet_id <- NA
-      new_row <- st_as_sf(new_row, geometry = st_sfc(st_point()))
+      new_row <- st_as_sf(new_row, geometry = st_sfc(st_point()), crs = 4326)
 
       # add to data_copy data.frame and update visible table
       df$data <- df$data %>%
         rbind(new_row)
 
       showNotification('Added New Row')
+
+      # TODO: current method breaks zoom when input sf
 
       # reset input table (TODO: adjust to variable input names)
       updateTextInput(session, 'brewery', value = NA)
@@ -131,11 +143,13 @@ make_an_sf <- function(dat){
     })
 
 
-    edits <- callModule(
+    observe({
+      edits <- callModule(
       editMod,
-      leafmap = mapview()@map,
+      leafmap = mapview(df$data)@map,
       id = "map"
-    )
+      )
+      })
 
     observe({
 
@@ -276,7 +290,7 @@ make_an_sf <- function(dat){
 
   }
 
-  return(runApp(shinyApp(ui,server), launch.browser = TRUE))
+  return(runApp(shinyApp(ui,server)))
 }
 
 
@@ -288,7 +302,7 @@ data <- data.frame(
   size = c(35, 45)
 )
 
-data_sf <- make_an_sf(data)
+data_sf <- make_an_sf(data_sf)
 
 mapview(data_sf)
 
