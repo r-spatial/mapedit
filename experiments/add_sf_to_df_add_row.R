@@ -40,6 +40,9 @@ make_an_sf <- function(dat, zoomto = NULL){
 
   APP_CRS <- 4326
 
+  assertthat::assert_that(!(!('sf' %in% class(data)) & is.null(zoomto)),
+                          msg = 'If your input is not an SF object you must define a zoomto location')
+
   if (!is.null(zoomto)) {
     zoomto_area <- tmaptools::geocode_OSM(zoomto)
     zoomto <- st_as_sfc(zoomto_area$bbox) %>% st_sf() %>% st_set_crs(APP_CRS)
@@ -159,7 +162,8 @@ make_an_sf <- function(dat, zoomto = NULL){
       leafmap = {if (is.null(df$zoom_to)){
                    mapv <- mapview(df$data)@map
                  } else {
-                   mapv <- mapview(df$zoom_to)@map # only use once
+                   mapv <- mapview(df$zoom_to)@map %>%
+                     leaflet::hideGroup('df$zoom_to')
                  }
                  mapv
         },
