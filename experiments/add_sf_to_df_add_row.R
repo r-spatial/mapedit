@@ -44,11 +44,10 @@ make_an_sf <- function(dat, zoomto = NULL){
 
   APP_CRS <- 4326
 
-  if (!('sf' %in% class(data))) {
+  if (!('sf' %in% class(dat))) {
     assertthat::assert_that(!(is.null(zoomto)),
                             msg = 'If your input is a non-spatial data.frame you must define a zoomto location')
   }
-
 
   if (!is.null(zoomto)) {
     zoomto_area <- tmaptools::geocode_OSM(zoomto)
@@ -359,7 +358,7 @@ data <- data.frame(
   size = c(35, 45)
 )
 
-data_sf <- make_an_sf(data, zoomto = 'germany')
+data_sf <- make_an_sf(data_sf)
 
 mapview(data_sf)
 
