@@ -8,31 +8,6 @@ library(shinyWidgets)
 library(htmltools)
 library(tmaptools)
 
-script_zoom <- tags$script(
-  HTML(
-"
-function findleaf() {
-  return HTMLWidgets.find('.leaflet').getMap();
-}
-
-function zoom(layerid) {
-  var map = findleaf();
-  map.fitBounds(map._layers[layerid].getBounds());
-}
-
-Shiny.addCustomMessageHandler(
-  'zoomselected',
-  function(layerid) {
-debugger;
-    zoom(layerid);
-  }
-)
-"
-  )
-)
-
-
-
 
 
 
@@ -111,16 +86,9 @@ make_an_sf <- function(dat, zoomto = NULL){
         geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
       ) %>% st_set_crs(APP_CRS)
 
-      # add column for leaflet id, since we will need to track layer id to offer zoom to
-      data_copy$leaflet_id <- NA
-
     } else if ('sf' %in% class(dat)) {
 
       data_copy <- dat # TODO check orig crs and transform to 4326
-
-      if (!('leaflet_id' %in% colnames(dat))) {
-        data_copy$leaflet_id <- NA # may need to redo this each time?
-      }
 
     }
 
@@ -161,7 +129,6 @@ make_an_sf <- function(dat, zoomto = NULL){
         new_row[names(df$types[i])] <- input[[names(df$types[i])]]
       }
 
-      new_row$leaflet_id <- NA
       new_row <- st_as_sf(new_row, geometry = st_sfc(st_point()), crs = APP_CRS)
 
       # add to data_copy data.frame and update visible table
@@ -170,13 +137,12 @@ make_an_sf <- function(dat, zoomto = NULL){
 
       showNotification('Added New Row')
 
-      # TODO: current method breaks zoom when input sf
 
-      # reset input table (TODO: adjust to variable input names)
+      # reset input table
       for (i in 1:length(df$types)) {
         typ <- df$types[i]
         nm <- names(typ)
-        print(typ)
+
         if (typ == 'character') {
           updateTextInput(session, nm, value = NA)
         } else if (typ %in% c('numeric','integer')) {
@@ -184,10 +150,8 @@ make_an_sf <- function(dat, zoomto = NULL){
         } else if (typ == 'Date') {
           updateDateInput(session, nm, value = NA)
         }
+
       }
-
-
-
     })
 
 
@@ -205,6 +169,8 @@ make_an_sf <- function(dat, zoomto = NULL){
       id = "map"
       )
       })
+
+    proxy_map <- leaflet::leafletProxy('map-map', session)
 
     observe({
 
@@ -237,7 +203,7 @@ make_an_sf <- function(dat, zoomto = NULL){
 
     output$tbl <- DT::renderDataTable({
 
-      n <- grep('geom|leaflet', colnames(df$data)) # used to hide geometry and leaflet_id columns
+      n <- grep('geom', colnames(df$data)) # used to hide geometry column
 
       DT::datatable(
         df$data,
@@ -288,7 +254,6 @@ make_an_sf <- function(dat, zoomto = NULL){
             sf::st_geometry(df$data[selected,]) <- sf::st_geometry(
               mapedit:::st_as_sfc.geo_list(evt)
             )
-            df$data[selected,]$leaflet_id <- evt$properties$`_leaflet_id`
           }
         })
     }
@@ -305,12 +270,22 @@ make_an_sf <- function(dat, zoomto = NULL){
           rowsel <- df$data[selected, ]
           # simple check to see if feature available
           #   and leaflet id populated
-          if(
-            all(!is.na(sf::st_coordinates(sf::st_geometry(rowsel)[[1]]))) &&
-            !is.na(rowsel$leaflet_id)
-          ) {
-            print(rowsel)
-            session$sendCustomMessage("zoomselected", rowsel$leaflet_id)
+          if (all(!is.na(sf::st_coordinates(sf::st_geometry(rowsel)[[1]])))) {
+
+            if (st_geometry_type(rowsel) == 'POINT') {
+
+              pnt <- st_coordinates(rowsel) %>% as.data.frame()
+              proxy_map %>%
+                leaflet::setView(lng = pnt$X, lat = pnt$Y, zoom = 16)
+
+            } else {
+
+              bb <- st_bbox(sf::st_geometry(rowsel))
+              proxy_map %>%
+                flyToBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
+
+            }
+
           }
         }
       }
@@ -358,7 +333,7 @@ data <- data.frame(
   size = c(35, 45)
 )
 
-data_sf <- make_an_sf(data_sf)
+data_sf <- make_an_sf(data, zoomto = 'germany')
 
 mapview(data_sf)
 
