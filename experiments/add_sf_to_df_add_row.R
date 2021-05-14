@@ -11,7 +11,62 @@ library(tmaptools)
 
 
 
-make_an_sf <- function(dat, zoomto = NULL){
+#' @title Geo Attributes
+#'
+#' @description Geo Attributes launches a `shiny` application where you can add and edit spatial geometry
+#' and attributes. Starting with a `data.frame` or and `sf data.frame`, or nothing at all; you can add
+#' columns, and rows and geometry for each row. Clicking on a row with geometry you can zoom across the
+#' map between features. When you are done, your edits are saved to an `sf data.frame` for use in R or to
+#' be saved to formats such as `geojson`.
+#'
+#' The application can dynamically handle: character, numeric, integer, factor and date fields.
+#'
+#' When the input data set is an `sf data.frame` the map automatically zooms to the extent of the `sf` object.
+#' When the input has no spatial data, you must tell the function where to zoom. The function uses
+#' \link{\code{tmaptools::geocode_OSM}} to identify the coordinates of your area of interest.
+#'
+#' @param dat input data source, can be a `data.frame` or an `sf data.frame`, or it can be left empty.
+#' When nothing is passed to `dat` a basic `data.frame` is generated with `id` and `comment` fields.
+#' @param zoomto character area of interest. The area is defined using \link{\code{tmaptools::geocode_OSM}},
+#' which uses \link{OSM Nominatim}{https://nominatim.org/}. The area can be as ambiguous as a country, or
+#' as specific as a street address. You can test the area of interest using the application or the example
+#' code below.
+#'
+#' @import sf
+#' @import leaflet
+#' @import mapview
+#' @import mapedit
+#' @import DT
+#' @import shiny
+#' @import htmltools
+#' @importFrom shinyWidgets actionButtn show_alert useSweetAlert
+#' @importFrom tmaptools geocode_OSM
+#'
+#' @return sf data.frame
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' # with no input
+#' data_sf <- geo_attributes(zoomto = 'germany')
+#'
+#' # a data.frame input
+#' dat <- data.frame(name = c('SiteA', 'SiteB'),
+#'                   type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
+#'                   size = c(35, 45))
+#'
+#' data_sf <- geo_attributes(dat, zoomto = 'berlin')
+#'
+#' # an sf data.frame input
+#' data_sf <- geo_attributes(data_sf)
+#'
+#' # test zoomto area of interest
+#' zoomto_area <- tmaptools::geocode_OSM('paris')
+#' mapview(st_as_sfc(zoomto_area$bbox))
+#'
+#' }
+geo_attributes <- function(dat, zoomto = NULL){
 
   if (missing(dat)) {
     dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...')
@@ -95,7 +150,6 @@ make_an_sf <- function(dat, zoomto = NULL){
     df <- reactiveValues(types = sapply(dat, class),
                          data = data_copy,
                          zoom_to = zoomto)
-
 
 
     observeEvent(input$col_add, {
@@ -193,12 +247,9 @@ make_an_sf <- function(dat, zoomto = NULL){
               dateInput(name, label, width = '100%', value = NA)
             }
           })
-
         )
 
-
       })
-
     })
 
     output$tbl <- DT::renderDataTable({
@@ -276,7 +327,7 @@ make_an_sf <- function(dat, zoomto = NULL){
 
               pnt <- st_coordinates(rowsel) %>% as.data.frame()
               proxy_map %>%
-                leaflet::setView(lng = pnt$X, lat = pnt$Y, zoom = 16)
+                leaflet::flyTo(lng = pnt$X, lat = pnt$Y, zoom = 14)
 
             } else {
 
@@ -314,8 +365,6 @@ make_an_sf <- function(dat, zoomto = NULL){
           out
         })
       }
-
-
 
     })
 
