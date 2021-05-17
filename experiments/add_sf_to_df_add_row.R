@@ -7,7 +7,7 @@ library(shiny)
 library(shinyWidgets)
 library(htmltools)
 library(tmaptools)
-
+library(dplyr)
 
 
 
@@ -36,6 +36,7 @@ library(tmaptools)
 #' @import leaflet
 #' @import mapview
 #' @import mapedit
+#' @import dplyr
 #' @import DT
 #' @import shiny
 #' @import htmltools
