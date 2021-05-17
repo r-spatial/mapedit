@@ -399,20 +399,19 @@ geo_attributes <- function(dat, zoomto = NULL){
         } else {
           stopApp({
 
-        geo_type <- lapply(df$data$geometry, FUN = function(x){class(x)[[2]]})
+        out <- df$data %>%
+          dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
 
-        df_geo_type <- rbind.data.frame(matrix(unlist(geo_type), nrow=length(geo_type), byrow=TRUE,dimnames = NULL))
-
-        colnames(df_geo_type)[[1]] <- 'geo_type'
-
-        df_out_list <- cbind.data.frame(df_geo_type, df$data)
-        df_out_list <- st_sf(df_out_list, crs = APP_CRS)
-        out <- split(df_out_list , f = df_out_list$geo_type)
+        out <- st_sf(out, crs = APP_CRS)
+        out <- split(out , f = out$geo_type)
 
         # clean bounding box just in case
-        #attr(st_geometry(df_out_list), "bbox") <- st_bbox(st_union(df_out_list$geometry))
-        print('hello')
+        for(i in 1:length(out)){
+        attr(st_geometry(out[[i]]), "bbox") <- st_bbox(st_union(out[[i]]$geometry))
+        }
+
         out
+
         })
         }
 
