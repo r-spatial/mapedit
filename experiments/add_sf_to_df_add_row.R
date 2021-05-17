@@ -75,6 +75,12 @@ geo_attributes <- function(dat, zoomto = NULL){
 
   APP_CRS <- 4326
 
+  # trying to accept list of sf data.frames with multiple geom types
+  # (TODO: doesn't work yet, existing geom won't display but can be replaced and cells edited)
+  if (is.list(dat)) {
+    dat <- rbind(dat[[1]], dat[[2]])
+  }
+
   if (!('sf' %in% class(dat))) {
     assertthat::assert_that(!(is.null(zoomto)),
                             msg = 'If your input is a non-spatial data.frame you must define a zoomto location')
