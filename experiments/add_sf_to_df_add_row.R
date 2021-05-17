@@ -86,7 +86,7 @@ geo_attributes <- function(dat, zoomto = NULL){
 
 
   ui <- tagList(
-    script_zoom,
+    # script_zoom,
     useSweetAlert(),
     fluidPage(
       fluidRow(
@@ -154,6 +154,12 @@ geo_attributes <- function(dat, zoomto = NULL){
 
     observeEvent(input$col_add, {
 
+      if (nchar(input$new_name)==0) {
+
+        shinyWidgets::show_alert('Missing Column Name',
+                                 'this column is missing a name, this must be entered before adding a column',
+                                 type = 'warning')
+      } else {
                   #TODO: add checks for missing inputs
                   add_col <- df$data
 
@@ -169,10 +175,29 @@ geo_attributes <- function(dat, zoomto = NULL){
 
                   updateTextInput(session, 'new_name', value = NA)
                   showNotification('Added New Column')
-
+      }
                   })
 
-    observeEvent(input$row_add, {
+
+    #create a vector input for 'row_add'
+    EVT_ADD_ROW <- "row_add"
+
+    # determines whether to use 'row_add' or 'map_draw_feature'
+    # also, if rows are selected then it won't trigger the 'map_draw_feature'
+
+    addRowOrDrawObserve <- function(event, id) {
+      observeEvent(
+        if(is.na(id)){
+
+          input[[event]]
+
+        } else {
+
+        input[[nsm(event, id = id)]]},{
+
+          if(!is.null(input$tbl_rows_selected)){
+
+          } else {
 
       # creates first column and row (must be more elegant way)
       new_row <- data.frame(X = input[[names(df$types[1])]])
@@ -206,8 +231,12 @@ geo_attributes <- function(dat, zoomto = NULL){
         }
 
       }
+          }
     })
+    }
 
+    addRowOrDrawObserve(EVT_ADD_ROW, id = NA)
+    addRowOrDrawObserve(EVT_DRAW, id = 'map')
 
     observe({
       edits <- callModule(
@@ -293,7 +322,17 @@ geo_attributes <- function(dat, zoomto = NULL){
           }
 
           # get selected row
-          selected <- isolate(input$tbl_rows_selected)
+          # below just determines whether to use 'row_add' or 'map_draw_feature' for adding geometries
+          if(!is.null(input$tbl_rows_selected)) {
+
+            selected <- isolate(input$tbl_rows_selected)
+
+
+          } else {
+
+            selected <- length(input$tbl_rows_all) + 1
+
+          }
 
           skip = FALSE
           # ignore if selected is null
@@ -317,6 +356,7 @@ geo_attributes <- function(dat, zoomto = NULL){
       input$tbl_rows_selected,
       {
         selected <- input$tbl_rows_selected
+
         if(!is.null(selected)) {
           rowsel <- df$data[selected, ]
           # simple check to see if feature available
@@ -350,6 +390,33 @@ geo_attributes <- function(dat, zoomto = NULL){
     # provide mechanism to return after all done
     observeEvent(input$donebtn, {
 
+      if(grepl(class(df$data$geometry)[[1]], "sfc_GEOMETRY")){
+
+        if (any(st_is_empty(df$data$geometry))) {
+          shinyWidgets::show_alert('Missing Geometry',
+                                   'some features are missing geometry, these must be entered before saving',
+                                   type = 'warning')
+        } else {
+          stopApp({
+
+        out <- df$data %>%
+          dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
+
+        out <- st_sf(out, crs = APP_CRS)
+        out <- split(out , f = out$geo_type)
+
+        # clean bounding box just in case
+        for(i in 1:length(out)){
+        attr(st_geometry(out[[i]]), "bbox") <- st_bbox(st_union(out[[i]]$geometry))
+        }
+
+        out
+
+        })
+        }
+
+      } else {
+
       if (any(st_is_empty(df$data$geometry))) {
         shinyWidgets::show_alert('Missing Geometry',
                                  'some features are missing geometry, these must be entered before saving',
@@ -365,7 +432,7 @@ geo_attributes <- function(dat, zoomto = NULL){
           out
         })
       }
-
+   }
     })
 
   }
@@ -382,7 +449,7 @@ data <- data.frame(
   size = c(35, 45)
 )
 
-data_sf <- make_an_sf(data, zoomto = 'germany')
+data_sf <- geo_attributes(data, zoomto = 'germany')
 
 mapview(data_sf)
 
