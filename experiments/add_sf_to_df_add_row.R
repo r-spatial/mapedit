@@ -87,6 +87,11 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
     dat <- bind_rows(dat)
   }
 
+  original_sf_rec <- observeEvent(data$sf,
+
+
+  )
+
   if (!('sf' %in% class(dat))) {
     assertthat::assert_that(!(is.null(zoomto)),
                             msg = 'If your input is a non-spatial data.frame you must define a zoomto location')
@@ -260,7 +265,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
       editMod,
       leafmap = {if (!is.null(original_sf)) {
                    mapv <- mapview(original_sf, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
-                 } else if (is.null(df$zoom_to)){
+                 } else if ('sf' %in% class(dat)){
                    mapv <- mapview(df$data, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
                  } else {
                    mapv <- mapview(df$zoom_to)@map %>%
@@ -470,8 +475,9 @@ data <- data.frame(
 )
 
 data_sf <- geo_attributes(data, zoomto = 'london', col_add = F)
+data_sf2 <- geo_attributes(data_sf, col_add = F)
 
-mapview(data_sf)
+mapview(data_sf2)
 
 
 
