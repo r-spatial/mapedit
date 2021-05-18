@@ -76,8 +76,10 @@ geo_attributes <- function(dat, zoomto = NULL){
   APP_CRS <- 4326
 
   # trying to accept list of sf data.frames with multiple geom types
-  # (TODO: doesn't work yet, existing geom won't display but can be replaced and cells edited)
-  if (is.list(dat)) {
+  # (TODO: works but original geom continues to display. method works nicely except if editing replacing existing geoms)
+  original_sf <- NULL
+  if (all(class(dat) == 'list')) {
+    original_sf <- dat
     dat <- rbind(dat[[1]], dat[[2]])
   }
 
@@ -141,7 +143,7 @@ geo_attributes <- function(dat, zoomto = NULL){
 
   server <- function(input, output, session) {
 
-    if (class(dat) == 'data.frame') {
+    if (all(class(dat) == 'data.frame')) {
 
       data_copy <- st_as_sf(
         dat,
@@ -248,7 +250,9 @@ geo_attributes <- function(dat, zoomto = NULL){
     observe({
       edits <- callModule(
       editMod,
-      leafmap = {if (is.null(df$zoom_to)){
+      leafmap = {if (!is.null(original_sf)) {
+                   mapv <- mapview(original_sf)@map
+                 } else if (is.null(df$zoom_to)){
                    mapv <- mapview(df$data)@map
                  } else {
                    mapv <- mapview(df$zoom_to)@map %>%
@@ -414,7 +418,7 @@ geo_attributes <- function(dat, zoomto = NULL){
 
         # clean bounding box just in case
         for(i in 1:length(out)){
-        attr(st_geometry(out[[i]]), "bbox") <- st_bbox(st_union(out[[i]]$geometry))
+          attr(st_geometry(out[[i]]), "bbox") <- st_bbox(st_union(out[[i]]$geometry))
         }
 
         out
@@ -453,10 +457,11 @@ geo_attributes <- function(dat, zoomto = NULL){
 data <- data.frame(
   name = c('SiteA', 'SiteB'),
   type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
-  size = c(35, 45)
+  size = c(35, 45),
+  stringsAsFactors = FALSE
 )
 
-data_sf <- geo_attributes(data, zoomto = 'germany')
+data_sf <- geo_attributes(data, zoomto = 'london')
 
 mapview(data_sf)
 
