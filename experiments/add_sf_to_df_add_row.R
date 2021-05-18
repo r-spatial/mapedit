@@ -33,6 +33,8 @@ library(dplyr)
 #' which uses \link{OSM Nominatim}{https://nominatim.org/}. The area can be as ambiguous as a country, or
 #' as specific as a street address. You can test the area of interest using the application or the example
 #' code below.
+#' @param col_add boolean option to add columns. Set to false if you don't want to allow a user to modify
+#' the data structure.
 #'
 #' @import sf
 #' @import leaflet
@@ -69,7 +71,7 @@ library(dplyr)
 #' mapview(st_as_sfc(zoomto_area$bbox))
 #'
 #' }
-geo_attributes <- function(dat, zoomto = NULL){
+geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
 
   if (missing(dat)) {
     dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...')
@@ -105,7 +107,7 @@ geo_attributes <- function(dat, zoomto = NULL){
       ),
       tags$hr(),
       fluidRow(
-        column(6,
+        column(ifelse(col_add, 6, 9),
                DT::dataTableOutput("tbl",width="100%", height=200)),
         column(3,
                wellPanel(
@@ -118,18 +120,22 @@ geo_attributes <- function(dat, zoomto = NULL){
                               color = 'primary',
                               size = 'md'))
                ),
-        column(3,
-               wellPanel(
-                 h3('Add New Column'),
-                 shiny::textInput('new_name', 'New Column Name', width = '100%'),
-                 shiny::radioButtons('new_type', 'Column Type', choices = c('character', 'numeric', 'integer', 'Date')),
-                 actionBttn("col_add", "Column",
-                            icon = icon('plus'),
-                            style = 'material-flat',
-                            block = TRUE,
-                            color = 'primary',
-                            size = 'md'))
-               )
+        {if (col_add) {
+               column(3,
+                      wellPanel(
+                        h3('Add New Column'),
+                        shiny::textInput('new_name', 'New Column Name', width = '100%'),
+                        shiny::radioButtons('new_type', 'Column Type', choices = c('character', 'numeric', 'integer', 'Date')),
+                        actionBttn("col_add", "Column",
+                                   icon = icon('plus'),
+                                   style = 'material-flat',
+                                   block = TRUE,
+                                   color = 'primary',
+                                   size = 'md'))
+               )} else {
+                 NULL
+               }
+               }
       ),
       fluidRow(tags$hr(),
                div(style = 'padding: 20px',
