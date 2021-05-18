@@ -84,7 +84,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
   original_sf <- NULL
   if (all(class(dat) == 'list')) {
     original_sf <- dat
-    dat <- rbind(dat[[1]], dat[[2]])
+    dat <- bind_rows(dat)
   }
 
   if (!('sf' %in% class(dat))) {
