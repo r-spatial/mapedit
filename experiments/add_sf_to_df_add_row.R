@@ -14,10 +14,12 @@ library(dplyr)
 #' @title Geo Attributes
 #'
 #' @description Geo Attributes launches a `shiny` application where you can add and edit spatial geometry
-#' and attributes. Starting with a `data.frame` or and `sf data.frame`, or nothing at all; you can add
-#' columns, and rows and geometry for each row. Clicking on a row with geometry you can zoom across the
-#' map between features. When you are done, your edits are saved to an `sf data.frame` for use in R or to
-#' be saved to formats such as `geojson`.
+#' and attributes. Starting with a `data.frame` or an `sf data.frame`, a list of `sf data.frames` or nothing
+#' at all. You can add columns, and rows and geometry for each row. Clicking on a row with geometry you can
+#' zoom across the map between features.
+#'
+#' When you are done, your edits are saved to an `sf data.frame` for
+#' use in R or to be saved to formats such as `geojson`.
 #'
 #' The application can dynamically handle: character, numeric, integer, factor and date fields.
 #'
@@ -31,6 +33,8 @@ library(dplyr)
 #' which uses \link{OSM Nominatim}{https://nominatim.org/}. The area can be as ambiguous as a country, or
 #' as specific as a street address. You can test the area of interest using the application or the example
 #' code below.
+#' @param col_add boolean option to add columns. Set to false if you don't want to allow a user to modify
+#' the data structure.
 #'
 #' @import sf
 #' @import leaflet
@@ -67,7 +71,7 @@ library(dplyr)
 #' mapview(st_as_sfc(zoomto_area$bbox))
 #'
 #' }
-geo_attributes <- function(dat, zoomto = NULL){
+geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
 
   if (missing(dat)) {
     dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...')
@@ -80,7 +84,7 @@ geo_attributes <- function(dat, zoomto = NULL){
   original_sf <- NULL
   if (all(class(dat) == 'list')) {
     original_sf <- dat
-    dat <- rbind(dat[[1]], dat[[2]])
+    dat <- bind_rows(dat)
   }
 
   if (!('sf' %in% class(dat))) {
@@ -103,7 +107,7 @@ geo_attributes <- function(dat, zoomto = NULL){
       ),
       tags$hr(),
       fluidRow(
-        column(6,
+        column(ifelse(col_add, 6, 9),
                DT::dataTableOutput("tbl",width="100%", height=200)),
         column(3,
                wellPanel(
@@ -116,18 +120,22 @@ geo_attributes <- function(dat, zoomto = NULL){
                               color = 'primary',
                               size = 'md'))
                ),
-        column(3,
-               wellPanel(
-                 h3('Add New Column'),
-                 shiny::textInput('new_name', 'New Column Name', width = '100%'),
-                 shiny::radioButtons('new_type', 'Column Type', choices = c('character', 'numeric', 'integer', 'Date')),
-                 actionBttn("col_add", "Column",
-                            icon = icon('plus'),
-                            style = 'material-flat',
-                            block = TRUE,
-                            color = 'primary',
-                            size = 'md'))
-               )
+        {if (col_add) {
+               column(3,
+                      wellPanel(
+                        h3('Add New Column'),
+                        shiny::textInput('new_name', 'New Column Name', width = '100%'),
+                        shiny::radioButtons('new_type', 'Column Type', choices = c('character', 'numeric', 'integer', 'Date')),
+                        actionBttn("col_add", "Column",
+                                   icon = icon('plus'),
+                                   style = 'material-flat',
+                                   block = TRUE,
+                                   color = 'primary',
+                                   size = 'md'))
+               )} else {
+                 NULL
+               }
+               }
       ),
       fluidRow(tags$hr(),
                div(style = 'padding: 20px',
@@ -251,9 +259,9 @@ geo_attributes <- function(dat, zoomto = NULL){
       edits <- callModule(
       editMod,
       leafmap = {if (!is.null(original_sf)) {
-                   mapv <- mapview(original_sf)@map
+                   mapv <- mapview(original_sf, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
                  } else if (is.null(df$zoom_to)){
-                   mapv <- mapview(df$data)@map
+                   mapv <- mapview(df$data, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
                  } else {
                    mapv <- mapview(df$zoom_to)@map %>%
                      leaflet::hideGroup('df$zoom_to')
@@ -453,7 +461,7 @@ geo_attributes <- function(dat, zoomto = NULL){
 
 
 
-# let's act like breweries does not have geometries and select the top 2
+# let's create a fake site list
 data <- data.frame(
   name = c('SiteA', 'SiteB'),
   type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
@@ -461,7 +469,7 @@ data <- data.frame(
   stringsAsFactors = FALSE
 )
 
-data_sf <- geo_attributes(data, zoomto = 'london')
+data_sf <- geo_attributes(data, zoomto = 'london', col_add = F)
 
 mapview(data_sf)
 
