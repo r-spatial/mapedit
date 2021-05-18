@@ -87,11 +87,6 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
     dat <- bind_rows(dat)
   }
 
-  original_sf_rec <- observeEvent(data$sf,
-
-
-  )
-
   if (!('sf' %in% class(dat))) {
     assertthat::assert_that(!(is.null(zoomto)),
                             msg = 'If your input is a non-spatial data.frame you must define a zoomto location')
@@ -264,7 +259,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
       edits <- callModule(
       editMod,
       leafmap = {if (!is.null(original_sf)) {
-                   mapv <- mapview(original_sf, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
+                   mapv <- mapview(original_sf_rec(), color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
                  } else if ('sf' %in% class(dat)){
                    mapv <- mapview(df$data, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
                  } else {
@@ -276,6 +271,22 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
       id = "map"
       )
       })
+
+
+    #need to somehow update the list 'original_sf' on the fly
+    # making the original_sf list reactive to the df$data seems to work
+    # still testing...
+
+    original_sf_rec <- reactive({
+
+      og_sf <- df$data %>%
+        dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
+
+      og_sf <- st_sf(og_sf, crs = APP_CRS)
+      og_sf <- split(og_sf , f = og_sf$geo_type)
+      og_sf
+      }
+    )
 
     proxy_map <- leaflet::leafletProxy('map-map', session)
 
