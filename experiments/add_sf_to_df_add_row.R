@@ -259,9 +259,9 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
       edits <- callModule(
       editMod,
       leafmap = {if (!is.null(original_sf)) {
-                   mapv <- mapview(original_sf)@map
+                   mapv <- mapview(original_sf, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
                  } else if (is.null(df$zoom_to)){
-                   mapv <- mapview(df$data)@map
+                   mapv <- mapview(df$data, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
                  } else {
                    mapv <- mapview(df$zoom_to)@map %>%
                      leaflet::hideGroup('df$zoom_to')
@@ -461,7 +461,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
 
 
 
-# let's act like breweries does not have geometries and select the top 2
+# let's create a fake site list
 data <- data.frame(
   name = c('SiteA', 'SiteB'),
   type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
@@ -469,7 +469,7 @@ data <- data.frame(
   stringsAsFactors = FALSE
 )
 
-data_sf <- geo_attributes(data, zoomto = 'london')
+data_sf <- geo_attributes(data, zoomto = 'london', col_add = F)
 
 mapview(data_sf)
 
