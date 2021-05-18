@@ -14,10 +14,12 @@ library(dplyr)
 #' @title Geo Attributes
 #'
 #' @description Geo Attributes launches a `shiny` application where you can add and edit spatial geometry
-#' and attributes. Starting with a `data.frame` or and `sf data.frame`, or nothing at all; you can add
-#' columns, and rows and geometry for each row. Clicking on a row with geometry you can zoom across the
-#' map between features. When you are done, your edits are saved to an `sf data.frame` for use in R or to
-#' be saved to formats such as `geojson`.
+#' and attributes. Starting with a `data.frame` or an `sf data.frame`, a list of `sf data.frames` or nothing
+#' at all. You can add columns, and rows and geometry for each row. Clicking on a row with geometry you can
+#' zoom across the map between features.
+#'
+#' When you are done, your edits are saved to an `sf data.frame` for
+#' use in R or to be saved to formats such as `geojson`.
 #'
 #' The application can dynamically handle: character, numeric, integer, factor and date fields.
 #'
