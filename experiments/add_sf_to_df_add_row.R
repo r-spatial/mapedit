@@ -78,7 +78,7 @@ geo_attributes <- function(dat, zoomto = NULL){
   # trying to accept list of sf data.frames with multiple geom types
   # (TODO: works but original geom continues to display. method works nicely except if editing replacing existing geoms)
   original_sf <- NULL
-  if (is.list(dat)) {
+  if (all(class(dat) == 'list')) {
     original_sf <- dat
     dat <- rbind(dat[[1]], dat[[2]])
   }
@@ -457,10 +457,11 @@ geo_attributes <- function(dat, zoomto = NULL){
 data <- data.frame(
   name = c('SiteA', 'SiteB'),
   type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
-  size = c(35, 45)
+  size = c(35, 45),
+  stringsAsFactors = FALSE
 )
 
-data_sf <- geo_attributes(data_sf)
+data_sf <- geo_attributes(data, zoomto = 'london')
 
 mapview(data_sf)
 
