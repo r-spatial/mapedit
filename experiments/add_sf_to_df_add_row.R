@@ -120,6 +120,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
                               color = 'primary',
                               size = 'md'))
                ),
+        # add column conditional on col_add
         {if (col_add) {
                column(3,
                       wellPanel(
