@@ -74,8 +74,9 @@ library(dplyr)
 #' }
 geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
+
   if (missing(dat)) {
-    dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...')
+    dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...') %>% mutate(leaf_id = NA_integer_)
   }
 
   APP_CRS <- 4326
@@ -84,7 +85,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
   # (TODO: works but original geom continues to display. method works nicely except if editing replacing existing geoms)
   original_sf <- NULL
   if (all(class(dat) == 'list')) {
-    original_sf <- dat
+    original_sf <- dat %>% mutate(leaf_id = NA_integer_)
     dat <- bind_rows(dat)
   }
 
@@ -153,7 +154,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
   server <- function(input, output, session) {
 
     if (all(class(dat) == 'data.frame')) {
-
+      dat <- dat %>% mutate(leaf_id = NA_integer_)
       data_copy <- st_as_sf(
         dat,
         geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
@@ -161,7 +162,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
     } else if ('sf' %in% class(dat)) {
 
-      data_copy <- dat # TODO check orig crs and transform to 4326
+      data_copy <- dat %>% mutate(leaf_id = NA_integer_)# TODO check orig crs and transform to 4326
 
     }
 
@@ -291,6 +292,8 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
       }
     )
 
+
+
     proxy_map <- leaflet::leafletProxy('map-map', session)
 
     observe({
@@ -321,7 +324,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
     output$tbl <- DT::renderDataTable({
 
-      n <- grep('geom', colnames(df$data)) # used to hide geometry column
+      n <- grep('leaf_id|geom', colnames(df$data)) # used to hide geometry/leaf_id column
 
       DT::datatable(
         df$data,
@@ -353,20 +356,63 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
         input[[nsm(event)]],
         {
           evt <- input[[nsm(event)]]
-          # for now if edit, just consider, first feature
-          #   of the FeatureCollection
-          if(event == EVT_DELETE) {
-            evt <- evt$features[1]
-          }
 
-          # get selected row
-          # below just determines whether to use 'row_add' or 'map_draw_feature' for adding geometries
+           # get selected row section
+          # pretty nasty if/else going on... not sure how to clean-up?
+
+
+          # this allows the user to edit geometries or delete and then save without selecting row.
+          # you can also select row and edit/delete as well but this gives the ability to not do so.
+          # a for-loop maybe not so good for unpacking large sf/df but for now it's fine for poc
+
+          if(event == EVT_DELETE) {
+
+            ids <- vector()
+            for(i in 1:length(evt$features)){
+
+              iter <- evt$features[[i]]$properties[['_leaflet_id']]
+
+              ids <- append(ids, iter)
+            }
+
+            df$data <- filter(df$data, !df$data$leaf_id %in% ids)
+
+          } else if (event == EVT_EDIT) {
+
+            for(i in 1:length(evt$features)){
+
+               evt_type <- evt$features[[i]]$geometry$type
+               leaf_id <- evt$features[[i]]$properties[['_leaflet_id']]
+               geom <- unlist(evt$features[[i]]$geometry$coordinates)
+
+               if (evt_type == 'Point') {
+
+                 sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_point(geom))
+
+               } else if (evt_type == 'Polygon'){
+
+                 geom <- matrix(geom, ncol = 2, byrow = T)
+                 sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_polygon(list(geom)))
+
+               } else if (evt_type == 'LineString'){
+
+                 geom <- matrix(geom, ncol = 2, byrow = T)
+
+                 sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_linestring(geom))
+               }
+
+            }
+
+          } else {
+
+            # below just determines whether to use 'row_add' or 'map_draw_feature' for adding geometries
+
           if(!is.null(input$tbl_rows_selected)) {
 
             selected <- isolate(input$tbl_rows_selected)
 
 
-          } else {
+          }  else if (event == EVT_DRAW){
 
             selected <- length(input$tbl_rows_all) + 1
 
@@ -380,14 +426,21 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
           # replace if draw or edit
           if(skip==FALSE) {
             sf::st_geometry(df$data[selected,]) <- sf::st_geometry(
-              mapedit:::st_as_sfc.geo_list(evt)
-            )
+              mapedit:::st_as_sfc.geo_list(evt))
+
+              #adding the leaf_id when we draw or row_add
+              df$data[selected, 'leaf_id'] <- as.integer(evt$properties[['_leaflet_id']])
+          }
+
+
+
           }
         })
     }
 
     addDrawObserve(EVT_DRAW)
     addDrawObserve(EVT_EDIT)
+    addDrawObserve(EVT_DELETE)
 
     # zoom to if feature available on selected row
     observeEvent(
@@ -437,7 +490,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
         } else {
           stopApp({
 
-        out <- df$data %>%
+        out <- df$data %>% dplyr::select(-leaf_id) %>%
           dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
 
         out <- st_sf(out, crs = APP_CRS)
@@ -467,7 +520,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
           # clean bounding box just in case
           attr(st_geometry(out), "bbox") <- st_bbox(st_union(out$geometry))
 
-          out
+          out %>% dplyr::select(-leaf_id)
         })
       }
    }
@@ -488,5 +541,7 @@ data <- data.frame(
   stringsAsFactors = FALSE
 )
 
-data_sf <- geo_attributes(breweries, col_add = T)
+data_sf2 <- geo_attributes(data, zoomto = 'Montana', col_add = T)
 
+mapview(data_sf2)
+mapview(geom_save)
