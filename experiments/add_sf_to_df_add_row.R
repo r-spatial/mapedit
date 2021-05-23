@@ -359,8 +359,8 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
           #  not great but good enough for poc
           if(is.null(selected)) {skip = TRUE}
 
-          # replace if draw or edit
-          if(skip==FALSE) {
+          # replace if draw or edit & evt has geom to save
+          if(skip==FALSE & length(evt) > 2) {
             sf::st_geometry(df$data[selected,]) <- sf::st_geometry(
               mapedit:::st_as_sfc.geo_list(evt)
             )
