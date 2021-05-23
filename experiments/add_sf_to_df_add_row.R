@@ -88,7 +88,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
     original_sf <- lapply(dat, function(df){
       df %>% mutate(leaf_id = NA_integer_)
     })
-    dat <- bind_rows(dat)
+    dat <- bind_rows(dat) %>% mutate(leaf_id = NA_integer_)
   }
 
   if (!('sf' %in% class(dat))) {
@@ -164,7 +164,8 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
     } else if ('sf' %in% class(dat)) {
 
-      data_copy <- dat %>% mutate(leaf_id = NA_integer_)# TODO check orig crs and transform to 4326
+      dat <- dat %>% mutate(leaf_id = NA_integer_)
+      data_copy <- dat # TODO check orig crs and transform to 4326
 
     }
 
@@ -187,6 +188,18 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
     }
     )
 
+    sf_reac <- reactive({
+
+      og_sf <- df$data %>%
+        dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
+
+      og_sf <- st_sf(og_sf, crs = APP_CRS)
+      og_sf <- split(og_sf , f = og_sf$geo_type)
+      og_sf
+
+
+    })
+
 
     observe({
       edits <- callModule(
@@ -194,7 +207,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
         leafmap = {if (!is.null(original_sf)) {
           mapv <- mapview(original_sf_rec(), color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
         } else if ('sf' %in% class(dat)){
-          mapv <- mapview(df$data, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
+          mapv <- mapview(sf_reac(), color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
         } else {
           mapv <- mapview(df$zoom_to)@map %>%
             leaflet::hideGroup('df$zoom_to')
@@ -543,7 +556,9 @@ data <- data.frame(
   stringsAsFactors = FALSE
 )
 
-data_sf2 <- geo_attributes(data, zoomto = 'Montana', col_add = T)
+data_sf2 <- geo_attributes(zoomto = 'Montana', col_add = T)
+sf_pts <- geo_attributes(data_sf2, zoomto = 'Montana', col_add = T)
 
 mapview(data_sf2)
+mapview(sf_pts)
 mapview(geom_save)
