@@ -85,7 +85,9 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
   # (TODO: works but original geom continues to display. method works nicely except if editing replacing existing geoms)
   original_sf <- NULL
   if (all(class(dat) == 'list')) {
-    original_sf <- dat %>% mutate(leaf_id = NA_integer_)
+    original_sf <- lapply(dat, function(df){
+      df %>% mutate(leaf_id = NA_integer_)
+    })
     dat <- bind_rows(dat)
   }
 
