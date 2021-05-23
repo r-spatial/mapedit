@@ -35,7 +35,8 @@ library(dplyr)
 #' code below.
 #' @param col_add boolean option to add columns. Set to false if you don't want to allow a user to modify
 #' the data structure.
-#'
+#' @param reset boolean option to reset attribute input. Set to false if you don't want the attribute input to
+#' reset to NA after each added row.
 #' @import sf
 #' @import leaflet
 #' @import mapview
@@ -71,7 +72,7 @@ library(dplyr)
 #' mapview(st_as_sfc(zoomto_area$bbox))
 #'
 #' }
-geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
+geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
   if (missing(dat)) {
     dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...')
@@ -235,6 +236,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
 
 
       # reset input table
+      if(isTRUE(reset)){
       for (i in 1:length(df$types)) {
         typ <- df$types[i]
         nm <- names(typ)
@@ -247,6 +249,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
           updateDateInput(session, nm, value = NA)
         }
 
+      }
       }
           }
     })
@@ -485,11 +488,5 @@ data <- data.frame(
   stringsAsFactors = FALSE
 )
 
-data_sf <- geo_attributes(data, zoomto = 'london', col_add = F)
-data_sf2 <- geo_attributes(data_sf, col_add = F)
-
-mapview(data_sf2)
-
-
-
+data_sf <- geo_attributes(breweries, col_add = T)
 
