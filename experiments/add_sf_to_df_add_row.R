@@ -172,6 +172,41 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
                          data = data_copy,
                          zoom_to = zoomto)
 
+    #need to somehow update the list 'original_sf' on the fly
+    # making the original_sf list reactive to the df$data seems to work
+    # still testing...
+
+    original_sf_rec <- reactive({
+
+      og_sf <- df$data %>%
+        dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
+
+      og_sf <- st_sf(og_sf, crs = APP_CRS)
+      og_sf <- split(og_sf , f = og_sf$geo_type)
+      og_sf
+    }
+    )
+
+
+    observe({
+      edits <- callModule(
+        editMod,
+        leafmap = {if (!is.null(original_sf)) {
+          mapv <- mapview(original_sf_rec(), color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
+        } else if ('sf' %in% class(dat)){
+          mapv <- mapview(df$data, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
+        } else {
+          mapv <- mapview(df$zoom_to)@map %>%
+            leaflet::hideGroup('df$zoom_to')
+        }
+          mapv
+        },
+        id = "map"
+      )
+    })
+
+
+    proxy_map <- leaflet::leafletProxy('map-map', session)
 
     observeEvent(input$col_add, {
 
@@ -261,42 +296,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
     addRowOrDrawObserve(EVT_ADD_ROW, id = NA)
     addRowOrDrawObserve(EVT_DRAW, id = 'map')
 
-    observe({
-      edits <- callModule(
-      editMod,
-      leafmap = {if (!is.null(original_sf)) {
-                   mapv <- mapview(original_sf_rec(), color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
-                 } else if ('sf' %in% class(dat)){
-                   mapv <- mapview(df$data, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
-                 } else {
-                   mapv <- mapview(df$zoom_to)@map %>%
-                     leaflet::hideGroup('df$zoom_to')
-                 }
-                 mapv
-        },
-      id = "map"
-      )
-      })
 
-
-    #need to somehow update the list 'original_sf' on the fly
-    # making the original_sf list reactive to the df$data seems to work
-    # still testing...
-
-    original_sf_rec <- reactive({
-
-      og_sf <- df$data %>%
-        dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
-
-      og_sf <- st_sf(og_sf, crs = APP_CRS)
-      og_sf <- split(og_sf , f = og_sf$geo_type)
-      og_sf
-      }
-    )
-
-
-
-    proxy_map <- leaflet::leafletProxy('map-map', session)
 
     observe({
 
