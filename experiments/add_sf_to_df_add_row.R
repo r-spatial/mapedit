@@ -35,7 +35,8 @@ library(dplyr)
 #' code below.
 #' @param col_add boolean option to add columns. Set to false if you don't want to allow a user to modify
 #' the data structure.
-#'
+#' @param reset boolean option to reset attribute input. Set to false if you don't want the attribute input to
+#' reset to NA after each added row.
 #' @import sf
 #' @import leaflet
 #' @import mapview
@@ -71,10 +72,11 @@ library(dplyr)
 #' mapview(st_as_sfc(zoomto_area$bbox))
 #'
 #' }
-geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
+geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
+
 
   if (missing(dat)) {
-    dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...')
+    dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...') %>% mutate(leaf_id = 1)
   }
 
   APP_CRS <- 4326
@@ -83,8 +85,10 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
   # (TODO: works but original geom continues to display. method works nicely except if editing replacing existing geoms)
   original_sf <- NULL
   if (all(class(dat) == 'list')) {
-    original_sf <- dat
-    dat <- bind_rows(dat)
+    original_sf <- lapply(dat, function(df){
+      df %>% mutate(leaf_id = 1:nrow(df))
+    })
+    dat <- bind_rows(dat) %>% mutate(leaf_id = 1:nrow(.))
   }
 
   if (!('sf' %in% class(dat))) {
@@ -153,7 +157,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
   server <- function(input, output, session) {
 
     if (all(class(dat) == 'data.frame')) {
-
+      dat <- dat %>% mutate(leaf_id = 1:nrow(dat))
       data_copy <- st_as_sf(
         dat,
         geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
@@ -161,6 +165,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
 
     } else if ('sf' %in% class(dat)) {
 
+      dat <- dat %>% mutate(leaf_id = 1:nrow(dat))
       data_copy <- dat # TODO check orig crs and transform to 4326
 
     }
@@ -169,6 +174,56 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
                          data = data_copy,
                          zoom_to = zoomto)
 
+    #need to somehow update the list 'original_sf' on the fly
+    # making the original_sf list reactive to the df$data seems to work
+    # still testing...
+
+    original_sf_rec <- reactive({
+
+      og_sf <- df$data %>%
+        dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
+
+      og_sf <- st_sf(og_sf, crs = APP_CRS)
+      og_sf <- split(og_sf , f = og_sf$geo_type)
+      og_sf
+    }
+    )
+
+    sf_reac <- reactive({
+
+      og_sf <- df$data %>%
+        dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
+
+      og_sf <- st_sf(og_sf, crs = APP_CRS)
+      og_sf <- split(og_sf , f = og_sf$geo_type)
+      og_sf
+
+
+    })
+
+
+    observe({
+      edits <- callModule(
+        editMod,
+        leafmap = {if (!is.null(original_sf)) {
+          mapv <- mapview(original_sf_rec(), color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
+        } else if ('sf' %in% class(dat)){
+          print('sf')
+          mapv <- mapview(color = 'red', col.regions = 'red', alpha.regions = 0.2)@map %>% leafem::addFeatures(sf_reac(), layerId = sf_reac()$leaf_id, group = 'editLayer')
+        } else {
+          mapv <- mapview(df$zoom_to)@map %>%
+            leaflet::hideGroup('df$zoom_to')
+        }
+          mapv
+        },
+        id = "map",
+        targetLayerId = 'editLayer',
+        sf = TRUE
+      )
+    })
+
+
+    proxy_map <- leaflet::leafletProxy('map-map', session)
 
     observeEvent(input$col_add, {
 
@@ -236,6 +291,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
 
 
       # reset input table
+      if(isTRUE(reset)){
       for (i in 1:length(df$types)) {
         typ <- df$types[i]
         nm <- names(typ)
@@ -249,6 +305,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
         }
 
       }
+      }
           }
     })
     }
@@ -256,24 +313,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
     addRowOrDrawObserve(EVT_ADD_ROW, id = NA)
     addRowOrDrawObserve(EVT_DRAW, id = 'map')
 
-    observe({
-      edits <- callModule(
-      editMod,
-      leafmap = {if (!is.null(original_sf)) {
-                   mapv <- mapview(original_sf, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
-                 } else if (is.null(df$zoom_to)){
-                   mapv <- mapview(df$data, color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
-                 } else {
-                   mapv <- mapview(df$zoom_to)@map %>%
-                     leaflet::hideGroup('df$zoom_to')
-                 }
-                 mapv
-        },
-      id = "map"
-      )
-      })
 
-    proxy_map <- leaflet::leafletProxy('map-map', session)
 
     observe({
 
@@ -303,7 +343,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
 
     output$tbl <- DT::renderDataTable({
 
-      n <- grep('geom', colnames(df$data)) # used to hide geometry column
+      n <- grep('leaf_id|geom', colnames(df$data)) # used to hide geometry/leaf_id column
 
       DT::datatable(
         df$data,
@@ -335,20 +375,63 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
         input[[nsm(event)]],
         {
           evt <- input[[nsm(event)]]
-          # for now if edit, just consider, first feature
-          #   of the FeatureCollection
-          if(event == EVT_DELETE) {
-            evt <- evt$features[1]
-          }
 
-          # get selected row
-          # below just determines whether to use 'row_add' or 'map_draw_feature' for adding geometries
+           # get selected row section
+          # pretty nasty if/else going on... not sure how to clean-up?
+
+
+          # this allows the user to edit geometries or delete and then save without selecting row.
+          # you can also select row and edit/delete as well but this gives the ability to not do so.
+          # a for-loop maybe not so good for unpacking large sf/df but for now it's fine for poc
+
+          if(event == EVT_DELETE) {
+
+            ids <- vector()
+            for(i in 1:length(evt$features)){
+
+              iter <- evt$features[[i]]$properties[['_leaflet_id']]
+
+              ids <- append(ids, iter)
+            }
+
+            df$data <- filter(df$data, !df$data$leaf_id %in% ids)
+
+          } else if (event == EVT_EDIT) {
+
+            for(i in 1:length(evt$features)){
+
+               evt_type <- evt$features[[i]]$geometry$type
+               leaf_id <- evt$features[[i]]$properties[['_leaflet_id']]
+               geom <- unlist(evt$features[[i]]$geometry$coordinates)
+
+               if (evt_type == 'Point') {
+
+                 sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_point(geom))
+
+               } else if (evt_type == 'Polygon'){
+
+                 geom <- matrix(geom, ncol = 2, byrow = T)
+                 sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_polygon(list(geom)))
+
+               } else if (evt_type == 'LineString'){
+
+                 geom <- matrix(geom, ncol = 2, byrow = T)
+
+                 sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_linestring(geom))
+               }
+
+            }
+
+          } else {
+
+            # below just determines whether to use 'row_add' or 'map_draw_feature' for adding geometries
+
           if(!is.null(input$tbl_rows_selected)) {
 
             selected <- isolate(input$tbl_rows_selected)
 
 
-          } else {
+          }  else if (event == EVT_DRAW){
 
             selected <- length(input$tbl_rows_all) + 1
 
@@ -362,14 +445,21 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
           # replace if draw or edit & evt has geom to save
           if(skip==FALSE & length(evt) > 2) {
             sf::st_geometry(df$data[selected,]) <- sf::st_geometry(
-              mapedit:::st_as_sfc.geo_list(evt)
-            )
+              mapedit:::st_as_sfc.geo_list(evt))
+
+              #adding the leaf_id when we draw or row_add
+              df$data[selected, 'leaf_id'] <- as.integer(evt$properties[['_leaflet_id']])
+          }
+
+
+
           }
         })
     }
 
     addDrawObserve(EVT_DRAW)
     addDrawObserve(EVT_EDIT)
+    addDrawObserve(EVT_DELETE)
 
     # zoom to if feature available on selected row
     observeEvent(
@@ -419,7 +509,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
         } else {
           stopApp({
 
-        out <- df$data %>%
+        out <- df$data %>% dplyr::select(-leaf_id) %>%
           dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
 
         out <- st_sf(out, crs = APP_CRS)
@@ -449,7 +539,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE){
           # clean bounding box just in case
           attr(st_geometry(out), "bbox") <- st_bbox(st_union(out$geometry))
 
-          out
+          out %>% dplyr::select(-leaf_id)
         })
       }
    }
@@ -470,10 +560,9 @@ data <- data.frame(
   stringsAsFactors = FALSE
 )
 
-data_sf <- geo_attributes(data, zoomto = 'london', col_add = F)
+data_sf2 <- geo_attributes(data, zoomto = 'Montana', col_add = T)
+sf_pts <- geo_attributes(data_sf2, zoomto = 'Montana', col_add = T)
 
-mapview(data_sf)
-
-
-
-
+mapview(data_sf2)
+mapview(sf_pts)
+mapview(geom_save)
