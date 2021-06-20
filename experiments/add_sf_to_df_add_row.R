@@ -76,7 +76,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
 
   if (missing(dat)) {
-    dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...') %>% mutate(leaf_id = NA_integer_)
+    dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...') %>% mutate(leaf_id = 1)
   }
 
   APP_CRS <- 4326
@@ -86,9 +86,9 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
   original_sf <- NULL
   if (all(class(dat) == 'list')) {
     original_sf <- lapply(dat, function(df){
-      df %>% mutate(leaf_id = NA_integer_)
+      df %>% mutate(leaf_id = 1:nrow(df))
     })
-    dat <- bind_rows(dat) %>% mutate(leaf_id = NA_integer_)
+    dat <- bind_rows(dat) %>% mutate(leaf_id = 1:nrow(.))
   }
 
   if (!('sf' %in% class(dat))) {
@@ -156,7 +156,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
   server <- function(input, output, session) {
 
     if (all(class(dat) == 'data.frame')) {
-      dat <- dat %>% mutate(leaf_id = NA_integer_)
+      dat <- dat %>% mutate(leaf_id = 1:nrow(dat))
       data_copy <- st_as_sf(
         dat,
         geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
@@ -164,7 +164,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
     } else if ('sf' %in% class(dat)) {
 
-      dat <- dat %>% mutate(leaf_id = NA_integer_)
+      dat <- dat %>% mutate(leaf_id = 1:nrow(dat))
       data_copy <- dat # TODO check orig crs and transform to 4326
 
     }
@@ -207,14 +207,17 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
         leafmap = {if (!is.null(original_sf)) {
           mapv <- mapview(original_sf_rec(), color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
         } else if ('sf' %in% class(dat)){
-          mapv <- mapview(sf_reac(), color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
+          print('sf')
+          mapv <- mapview(color = 'red', col.regions = 'red', alpha.regions = 0.2)@map %>% leafem::addFeatures(sf_reac(), layerId = sf_reac()$leaf_id, group = 'editLayer')
         } else {
           mapv <- mapview(df$zoom_to)@map %>%
             leaflet::hideGroup('df$zoom_to')
         }
           mapv
         },
-        id = "map"
+        id = "map",
+        targetLayerId = 'editLayer',
+        sf = TRUE
       )
     })
 
@@ -556,7 +559,7 @@ data <- data.frame(
   stringsAsFactors = FALSE
 )
 
-data_sf2 <- geo_attributes(zoomto = 'Montana', col_add = T)
+data_sf2 <- geo_attributes(data, zoomto = 'Montana', col_add = T)
 sf_pts <- geo_attributes(data_sf2, zoomto = 'Montana', col_add = T)
 
 mapview(data_sf2)
