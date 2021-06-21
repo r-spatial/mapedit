@@ -177,26 +177,50 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
     # making the original_sf list reactive to the df$data seems to work
     # still testing...
 
-    sf_reac <- reactive(df$data)
-
+    # sf_rec <- reactive(df$data)
+    # original_sf_rec <- reactive({
+    #
+    #   og_sf <- df$data %>%
+    #     dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
+    #
+    #   og_sf <- st_sf(og_sf, crs = APP_CRS)
+    #   og_sf <- split(og_sf , f = og_sf$geo_type)
+    #   og_sf
+    # }
+    # )
 
     observe({
+      print(df$data)
       edits <- callModule(
         editMod,
         leafmap = {
-          if ('sf' %in% class(dat)){
-          print('sf')
-          print(df$data)
-          mapv <- leaflet() %>%
-            addProviderTiles("OpenStreetMap") %>%
-            leafem::addFeatures(data = sf_reac(),
-                                layerId = sf_reac()$leaf_id,
-                                group = 'editLayer',
-                                popup = leafpop::popupTable(sf_reac()))
-        } else {
+         if ('sf' %in% class(dat)){
+           grp <- c("CartoDB.Positron","CartoDB.DarkMatter", "OpenTopoMap", "Esri.WorldImagery",
+                    "OpenStreetMap")
+
+           mapv <- leaflet::leaflet() %>%
+             leaflet::addProviderTiles(provider = grp[[1]],group = grp[[1]]) %>%
+             leaflet::addProviderTiles(provider = grp[[2]],
+                                       group = grp[[2]]) %>%
+             leaflet::addProviderTiles(provider = grp[[3]],
+                                       group = grp[[3]]) %>%
+             leaflet::addProviderTiles(provider = grp[[4]],
+                                       group = grp[[4]]) %>%
+             leaflet::addProviderTiles(provider = grp[[5]],
+                                       group = grp[[5]]) %>%
+             leaflet::addLayersControl(baseGroups = grp[1:5], position = 'topleft') %>%
+              leafem::addFeatures(data = df$data,
+                                  layerId = df$data$leaf_id,
+                                  group = 'editLayer',
+                                  popup = leafpop::popupTable(df$data))
+          } else {
           mapv <- mapview(df$zoom_to)@map %>%
-            leaflet::hideGroup('df$zoom_to')
-        }
+            leaflet::hideGroup('df$zoom_to') %>%
+            leafem::addFeatures(data = df$data,
+                                layerId = df$data$leaf_id,
+                                group = 'editLayer',
+                                popup = leafpop::popupTable(df$data))
+          }
           mapv
         },
         id = "map",
@@ -370,34 +394,28 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
           if(event == EVT_DELETE) {
 
             ids <- vector()
-            if('sf' %in% class(dat)){
-
-              for(i in 1:length(evt$features)){
-
-                iter <- evt$features[[i]]$properties[['layerId']]
-
-                ids <- append(ids, iter)
-              }
-            } else {
 
             for(i in 1:length(evt$features)){
 
-              iter <- evt$features[[i]]$properties[['_leaflet_id']]
+              iter <- evt$features[[i]]$properties[['layerId']]
 
               ids <- append(ids, iter)
-            }
-
             }
 
             df$data <- filter(df$data, !df$data$leaf_id %in% ids)
 
           } else if (event == EVT_EDIT) {
 
+
             for(i in 1:length(evt$features)){
 
-               evt_type <- evt$features[[i]]$geometry$type
-               leaf_id <- evt$features[[i]]$properties[['_leaflet_id']]
-               geom <- unlist(evt$features[[i]]$geometry$coordinates)
+              evt_type <- evt$features[[i]]$geometry$type
+              leaf_id <- evt$features[[i]]$properties[['layerId']]
+
+              geom <- unlist(evt$features[[i]]$geometry$coordinates)
+
+
+
 
                if (evt_type == 'Point') {
 
@@ -429,7 +447,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
           }  else if (event == EVT_DRAW){
 
             selected <- length(input$tbl_rows_all) + 1
-
+print(selected)
           }
 
           skip = FALSE
@@ -439,11 +457,15 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
           # replace if draw or edit
           if(skip==FALSE) {
+
             sf::st_geometry(df$data[selected,]) <- sf::st_geometry(
               mapedit:::st_as_sfc.geo_list(evt))
 
               #adding the leaf_id when we draw or row_add
+
               df$data[selected, 'leaf_id'] <- as.integer(evt$properties[['_leaflet_id']])
+
+
           }
 
 
@@ -557,6 +579,7 @@ data <- data.frame(
 
 data_sf2 <- geo_attributes(data, zoomto = 'Montana', col_add = T)
 sf_pts <- geo_attributes(data_sf2, zoomto = 'Montana', col_add = T)
+sf_pts2 <- geo_attributes(data_sf2, col_add = T)
 
 mapview(data_sf2)
 mapview(sf_pts)
