@@ -177,38 +177,22 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
     # making the original_sf list reactive to the df$data seems to work
     # still testing...
 
-    original_sf_rec <- reactive({
-
-      og_sf <- df$data %>%
-        dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
-
-      og_sf <- st_sf(og_sf, crs = APP_CRS)
-      og_sf <- split(og_sf , f = og_sf$geo_type)
-      og_sf
-    }
-    )
-
-    sf_reac <- reactive({
-
-      og_sf <- df$data %>%
-        dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
-
-      og_sf <- st_sf(og_sf, crs = APP_CRS)
-      og_sf <- split(og_sf , f = og_sf$geo_type)
-      og_sf
-
-
-    })
+    sf_reac <- reactive(df$data)
 
 
     observe({
       edits <- callModule(
         editMod,
-        leafmap = {if (!is.null(original_sf)) {
-          mapv <- mapview(original_sf_rec(), color = 'red', col.regions = 'red', alpha.regions = 0.2)@map
-        } else if ('sf' %in% class(dat)){
+        leafmap = {
+          if ('sf' %in% class(dat)){
           print('sf')
-          mapv <- mapview(color = 'red', col.regions = 'red', alpha.regions = 0.2)@map %>% leafem::addFeatures(sf_reac(), layerId = sf_reac()$leaf_id, group = 'editLayer')
+          print(df$data)
+          mapv <- leaflet() %>%
+            addProviderTiles("OpenStreetMap") %>%
+            leafem::addFeatures(data = sf_reac(),
+                                layerId = sf_reac()$leaf_id,
+                                group = 'editLayer',
+                                popup = leafpop::popupTable(sf_reac()))
         } else {
           mapv <- mapview(df$zoom_to)@map %>%
             leaflet::hideGroup('df$zoom_to')
@@ -386,11 +370,23 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
           if(event == EVT_DELETE) {
 
             ids <- vector()
+            if('sf' %in% class(dat)){
+
+              for(i in 1:length(evt$features)){
+
+                iter <- evt$features[[i]]$properties[['layerId']]
+
+                ids <- append(ids, iter)
+              }
+            } else {
+
             for(i in 1:length(evt$features)){
 
               iter <- evt$features[[i]]$properties[['_leaflet_id']]
 
               ids <- append(ids, iter)
+            }
+
             }
 
             df$data <- filter(df$data, !df$data$leaf_id %in% ids)
