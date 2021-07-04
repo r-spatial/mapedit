@@ -101,7 +101,6 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
     zoomto <- st_as_sfc(zoomto_area$bbox) %>% st_sf() %>% st_set_crs(APP_CRS)
   }
 
-
   ui <- tagList(
     # script_zoom,
     useSweetAlert(),
@@ -173,28 +172,13 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
                          data = data_copy,
                          zoom_to = zoomto)
 
-    #need to somehow update the list 'original_sf' on the fly
-    # making the original_sf list reactive to the df$data seems to work
-    # still testing...
-
-    # sf_rec <- reactive(df$data)
-    # original_sf_rec <- reactive({
-    #
-    #   og_sf <- df$data %>%
-    #     dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
-    #
-    #   og_sf <- st_sf(og_sf, crs = APP_CRS)
-    #   og_sf <- split(og_sf , f = og_sf$geo_type)
-    #   og_sf
-    # }
-    # )
-
     observe({
-      print(df$data)
       edits <- callModule(
-        editMod,
+        module = editMod,
         leafmap = {
-         if ('sf' %in% class(dat)){
+
+        if ('sf' %in% class(dat)){
+
            grp <- c("CartoDB.Positron","CartoDB.DarkMatter", "OpenTopoMap", "Esri.WorldImagery",
                     "OpenStreetMap")
 
@@ -230,7 +214,8 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
     })
 
 
-    proxy_map <- leaflet::leafletProxy('map-map', session)
+
+   proxy_map <- leaflet::leafletProxy('map-map', session)
 
     observeEvent(input$col_add, {
 
@@ -403,6 +388,8 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
             }
 
             df$data <- filter(df$data, !df$data$leaf_id %in% ids)
+            df$ids <- ids
+            print(ids)
 
           } else if (event == EVT_EDIT) {
 
@@ -435,6 +422,8 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
             }
 
+
+
           } else {
 
             # below just determines whether to use 'row_add' or 'map_draw_feature' for adding geometries
@@ -447,7 +436,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
           }  else if (event == EVT_DRAW){
 
             selected <- length(input$tbl_rows_all) + 1
-print(selected)
+
           }
 
           skip = FALSE
@@ -577,8 +566,10 @@ data <- data.frame(
   stringsAsFactors = FALSE
 )
 
+
+
 data_sf2 <- geo_attributes(data, zoomto = 'Montana', col_add = T)
-sf_pts <- geo_attributes(data_sf2, zoomto = 'Montana', col_add = T)
+sf_pts <- geo_attributes(sf_pts, zoomto = 'Montana', col_add = T)
 sf_pts2 <- geo_attributes(data_sf2, col_add = T)
 
 mapview(data_sf2)
