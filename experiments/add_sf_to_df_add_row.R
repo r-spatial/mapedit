@@ -37,6 +37,7 @@ library(dplyr)
 #' the data structure.
 #' @param reset boolean option to reset attribute input. Set to false if you don't want the attribute input to
 #' reset to NA after each added row.
+#' @param provider A character string indicating the provider tile of choice, e.g. 'Esri.WorldImagery' (default)
 #' @import sf
 #' @import leaflet
 #' @import mapview
@@ -72,9 +73,10 @@ library(dplyr)
 #' mapview(st_as_sfc(zoomto_area$bbox))
 #'
 #' }
-geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
+geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, provider = 'Esri.WorldImagery'){
 
 
+  #creat df if nothing in dat
   if (missing(dat)) {
     dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...') %>% mutate(leaf_id = 1)
   }
@@ -97,6 +99,8 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
 
   # Need to parse out spatial objects if input data is spatial
+  # reason is module doesn't like tibbles
+
   type <- c('sf', 'SpatVector')
 
   if (!any(type %in% dat_class)) {
@@ -112,7 +116,8 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
     if(dat_class[[1]] == 'sf'){class(dat) <- c('sf', 'data.frame')}
   }
 
-
+  # if data or empty (dat) need a zoom to place
+  # could go without but is nice to have as an arg
   if (!is.null(zoomto)) {
     zoomto_area <- tmaptools::geocode_OSM(zoomto)
     zoomto <- st_as_sfc(zoomto_area$bbox) %>% st_sf() %>% st_set_crs(APP_CRS)
@@ -121,6 +126,7 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
 
   # UI section
+  # i guess this could change to look more like mapedit if staying with mapedit
 
   ui <- tagList(
     # script_zoom,
@@ -178,28 +184,36 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
   server <- function(input, output, session) {
 
 
-
+    #adding leaf id to data and geometry to df
     if (all(dat_class == 'data.frame')) {
       dat <- dat %>% mutate(leaf_id = 1:nrow(dat))
+
       data_copy <- st_as_sf(
         dat,
         geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
       ) %>% st_set_crs(APP_CRS)
+
       le = TRUE
     } else if (any(type %in% dat_class)) {
 
       dat <- dat %>% mutate(leaf_id = 1:nrow(dat)) %>% sf::st_transform(4326)
       data_copy <- dat # TODO check orig crs and transform to 4326
 
+      # this is used to make sure the edit toolbar is disabled when these are inputs
+      # if not, then the app will hang and requires ending task.
+
       le <- !any(sf::st_geometry_type(dat) %in% c('MULTILINESTRING', 'MULTIPOLYGON'))
+
     }
 
+    # gather all up into reactiveValues
 
     df <- reactiveValues(types = sapply(dat, class),
                          data = data_copy,
                          zoom_to = zoomto,
                          edit_logic = le)
 
+    # mapedit module
     observe({
 
       edits <- callModule(
@@ -207,26 +221,19 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
         leafmap = {
 
           if (any(type %in% dat_class)){
-            grp <- c("CartoDB.Positron","CartoDB.DarkMatter", "OpenTopoMap", "Esri.WorldImagery",
-                     "OpenStreetMap")
 
             mapv <- leaflet::leaflet() %>%
-              leaflet::addProviderTiles(provider = grp[[1]],group = grp[[1]]) %>%
-              leaflet::addProviderTiles(provider = grp[[2]],
-                                        group = grp[[2]]) %>%
-              leaflet::addProviderTiles(provider = grp[[3]],
-                                        group = grp[[3]]) %>%
-              leaflet::addProviderTiles(provider = grp[[4]],
-                                        group = grp[[4]]) %>%
-              leaflet::addProviderTiles(provider = grp[[5]],
-                                        group = grp[[5]]) %>%
-              leaflet::addLayersControl(baseGroups = grp[1:5], position = 'topleft') %>%
+              leaflet::addProviderTiles(provider = provider,
+                                        group = provider) %>%
+              leaflet::addLayersControl(baseGroups = provider,
+                                        position = 'topleft') %>%
               leafem::addFeatures(data = df$data,
                                   layerId = df$data$leaf_id,
                                   group = 'editLayer',
                                   popup = leafpop::popupTable(df$data))
           } else {
-            mapv <- mapview(df$zoom_to)@map %>%
+            mapv <- mapview(df$zoom_to,
+                            map.types = provider)@map %>%
               leaflet::hideGroup('df$zoom_to') %>%
               leafem::addFeatures(data = df$data,
                                   layerId = df$data$leaf_id,
@@ -244,40 +251,9 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
 
 
+    #make a proxy map
     proxy_map <- leaflet::leafletProxy('map-map', session)
 
-    observeEvent(input[[nsm('map_draw_new_feature')]],{
-
-      click <- input[[nsm('map_draw_new_feature')]]
-
-      if (click$geometry$type == 'Point') {
-
-        clat <- click$geometry$coordinates[[2]]
-        clng <- click$geometry$coordinates[[1]]
-
-        proxy_map %>%
-          leaflet::setView(lng = clng, lat = clat, zoom = input[[nsm('map_zoom')]])
-
-      } else {
-
-        click_mat <- matrix(unlist(click$geometry$coordinates),ncol=2, byrow=TRUE)
-
-        if(click$geometry$type == 'LineString'){
-
-          clat <- click_mat[[1,2]]
-          clng <- click_mat[[1,1]]
-
-          proxy_map %>%
-            leaflet::setView(lng = clng, lat = clat, zoom = input[[nsm('map_zoom')]])
-
-        } else {
-          bb <- sf::st_bbox(sf::st_geometry(sf::st_polygon(x = list(click_mat))))
-
-          proxy_map %>%
-            leaflet::fitBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
-        }
-      }
-    })
     observeEvent(input$col_add, {
 
       if (nchar(input$new_name)==0) {
@@ -436,7 +412,6 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
 
           # this allows the user to edit geometries or delete and then save without selecting row.
           # you can also select row and edit/delete as well but this gives the ability to not do so.
-          # a for-loop maybe not so good for unpacking large sf/df but for now it's fine for poc
 
           if(event == EVT_DELETE) {
 
@@ -461,8 +436,6 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
               leaf_id <- evt$features[[i]]$properties[['layerId']]
 
               geom <- unlist(evt$features[[i]]$geometry$coordinates)
-
-
 
 
               if (evt_type == 'Point') {
@@ -528,7 +501,42 @@ geo_attributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE){
     addDrawObserve(EVT_EDIT)
     addDrawObserve(EVT_DELETE)
 
-    # zoom to if feature available on selected row
+    # this is used to keep the zoom of leaflet relavent
+
+    observeEvent(input[[nsm(EVT_DRAW)]],{
+
+      click <- input[[nsm('map_draw_new_feature')]]
+
+      if (click$geometry$type == 'Point') {
+
+        clat <- click$geometry$coordinates[[2]]
+        clng <- click$geometry$coordinates[[1]]
+
+        proxy_map  %>%
+          leaflet::setView(lng = clng, lat = clat, zoom = input[[nsm('map_zoom')]])
+
+      } else {
+
+        click_mat <- matrix(unlist(click$geometry$coordinates),ncol=2, byrow=TRUE)
+
+        if(click$geometry$type == 'LineString'){
+
+          clat <- click_mat[[1,2]]
+          clng <- click_mat[[1,1]]
+
+          proxy_map %>%
+            leaflet::setView(lng = clng, lat = clat, zoom = input[[nsm('map_zoom')]])
+
+        } else {
+          bb <- sf::st_bbox(sf::st_geometry(sf::st_polygon(x = list(click_mat))))
+
+          proxy_map %>%
+            leaflet::fitBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
+        }
+      }
+    })
+
+    # zoom to if feature available on selected row, same as above but with DT selected rows
     observeEvent(
       input$tbl_rows_selected,
       {
@@ -632,7 +640,7 @@ data <- data.frame(
 
 
 
-data_sf2 <- geo_attributes(data, zoomto = 'Montana', col_add = T, reset = F)
+data_sf2 <- geo_attributes(zoomto = 'Montana', col_add = T, reset = F)
 sf_pts <- geo_attributes(data_sf2, zoomto = 'Montana', col_add = T, reset = F)
 
 mapview(data_sf2)
