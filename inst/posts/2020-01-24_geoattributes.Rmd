@@ -1,0 +1,40 @@
+---
+title: "Introduction to Geo Attributes"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to Geo Attributes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Basic Example
+
+```{r}
+
+# let's create a fake site list
+data <- data.frame(
+  name = c('SiteA', 'SiteB'),
+  type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
+  size = c(35, 45),
+  stringsAsFactors = FALSE
+)
+
+
+
+data_sf2 <- geo_attributes(zoomto = 'Montana', col_add = T, reset = F)
+
+sf_pts <- geo_attributes(data_sf2, zoomto = 'Montana', col_add = T, reset = F)
+
+mapview(data_sf2)
+mapview(sf_pts)
+```
+
