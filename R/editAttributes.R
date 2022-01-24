@@ -32,14 +32,13 @@
 #' @import sf
 #' @import leaflet
 #' @import mapview
-#' @import mapedit
 #' @import leafem
 #' @import leafpop
 #' @import dplyr
-#' @import DT
 #' @import shiny
 #' @import htmltools
-#' @importFrom shinyWidgets actionButtn show_alert useSweetAlert
+#' @importFrom DT dataTableOutput renderDataTable datatable replaceData dataTableProxy
+#' @importFrom shinyWidgets actionBttn show_alert useSweetAlert
 #' @importFrom tmaptools geocode_OSM
 #'
 #' @return sf data.frame
