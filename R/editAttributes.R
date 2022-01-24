@@ -273,6 +273,18 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     })
 
 
+    # modify namespace to get map ID
+    nsm <- function(event="", id="map") {
+      paste0(session$ns(id), "-", event)
+    }
+
+    # unfortunately I did not implement last functionality
+    # for editMap, so do it the hard way
+    # last seems useful, so I might circle back and add that
+    EVT_DRAW <- "map_draw_new_feature"
+    EVT_EDIT <- "map_draw_edited_features"
+    EVT_DELETE <- "map_draw_deleted_features"
+
     #create a vector input for 'row_add'
     EVT_ADD_ROW <- "row_add"
 
@@ -380,17 +392,6 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     })
 
     proxy = dataTableProxy('tbl')
-
-    # unfortunately I did not implement last functionality
-    # for editMap, so do it the hard way
-    # last seems useful, so I might circle back and add that
-    EVT_DRAW <- "map_draw_new_feature"
-    EVT_EDIT <- "map_draw_edited_features"
-    EVT_DELETE <- "map_draw_deleted_features"
-
-    nsm <- function(event="", id="map") {
-      paste0(session$ns(id), "-", event)
-    }
 
     addDrawObserve <- function(event) {
       observeEvent(
