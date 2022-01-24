@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 ## Basic Example
 
-```{r}
+```r
 
 # let's create a fake site list
 data <- data.frame(
@@ -30,9 +30,9 @@ data <- data.frame(
 
 
 
-data_sf2 <- geo_attributes(zoomto = 'Montana', col_add = T, reset = F)
+data_sf2 <- editAttributes(zoomto = 'Montana', col_add = T, reset = F)
 
-sf_pts <- geo_attributes(data_sf2, zoomto = 'Montana', col_add = T, reset = F)
+sf_pts <- editAttributes(data_sf2, zoomto = 'Montana', col_add = T, reset = F)
 
 mapview(data_sf2)
 mapview(sf_pts)

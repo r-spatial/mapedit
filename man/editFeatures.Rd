@@ -8,9 +8,17 @@
 \usage{
 editFeatures(x, ...)
 
-\method{editFeatures}{sf}(x, map = NULL, mergeOrder = c("add", "edit",
-  "delete"), record = FALSE, viewer = shiny::paneViewer(),
-  crs = 4326, label = NULL, title = "Edit Map", ...)
+\method{editFeatures}{sf}(
+  x,
+  map = NULL,
+  mergeOrder = c("add", "edit", "delete"),
+  record = FALSE,
+  viewer = shiny::paneViewer(),
+  crs = 4326,
+  label = NULL,
+  title = "Edit Map",
+  ...
+)
 
 \method{editFeatures}{Spatial}(x, ...)
 }

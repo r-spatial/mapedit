@@ -4,8 +4,14 @@
 \alias{drawFeatures}
 \title{Draw (simple) features on a map}
 \usage{
-drawFeatures(map = NULL, sf = TRUE, record = FALSE,
-  viewer = shiny::paneViewer(), title = "Draw Features", ...)
+drawFeatures(
+  map = NULL,
+  sf = TRUE,
+  record = FALSE,
+  viewer = shiny::paneViewer(),
+  title = "Draw Features",
+  ...
+)
 }
 \arguments{
 \item{map}{a background \code{leaflet} or \code{mapview} map

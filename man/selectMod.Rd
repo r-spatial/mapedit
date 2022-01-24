@@ -4,9 +4,14 @@
 \alias{selectMod}
 \title{Shiny Module Server for Geo Selection}
 \usage{
-selectMod(input, output, session, leafmap, styleFalse = list(fillOpacity
-  = 0.2, weight = 1, opacity = 0.4), styleTrue = list(fillOpacity = 0.7,
-  weight = 3, opacity = 0.7))
+selectMod(
+  input,
+  output,
+  session,
+  leafmap,
+  styleFalse = list(fillOpacity = 0.2, weight = 1, opacity = 0.4),
+  styleTrue = list(fillOpacity = 0.7, weight = 3, opacity = 0.7)
+)
 }
 \arguments{
 \item{input}{Shiny server function input}
