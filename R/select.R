@@ -57,7 +57,7 @@ selectFeatures.sf = function(
 ) {
 
   nm = deparse(substitute(x))
-  x = mapview:::checkAdjustProjection(x)
+  x = checkAdjustProjection(x)
   x$edit_id = as.character(1:nrow(x))
 
   mode = match.arg(mode)
@@ -65,11 +65,11 @@ selectFeatures.sf = function(
   if (mode == "click") {
 
     if (is.null(map)) {
-      map = mapview::mapView(...)@map
-      map = mapview::addFeatures(
+      map = initMap(proj4str = sf::st_crs(x)$proj4string)
+      map = leafem::addFeatures(
         map, data = x, layerId = ~x$edit_id, label = label, ...
       )
-      ext = mapview:::createExtent(x)
+      ext = createExtent(x)
       map = leaflet::fitBounds(
         map,
         lng1 = ext[1],
@@ -77,12 +77,12 @@ selectFeatures.sf = function(
         lng2 = ext[2],
         lat2 = ext[4]
       )
-      map = mapview::addHomeButton(map = map, ext = ext)
+      map = leafem::addHomeButton(map = map, ext = ext)
     } else {
       if(inherits(map, "mapview")) {
         map = map@map
       }
-      map = mapview::addFeatures(
+      map = leafem::addFeatures(
         map, data=x, layerId=~x$edit_id, label=label
       )
     }

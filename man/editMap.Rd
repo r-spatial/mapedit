@@ -18,6 +18,8 @@ editMap(x, ...)
   viewer = shiny::paneViewer(),
   crs = 4326,
   title = "Edit Map",
+  editor = c("leaflet.extras", "leafpm"),
+  editorOptions = list(),
   ...
 )
 
@@ -30,15 +32,17 @@ editMap(x, ...)
   viewer = shiny::paneViewer(),
   crs = 4326,
   title = "Edit Map",
+  editor = c("leaflet.extras", "leafpm"),
+  editorOptions = list(),
   ...
 )
 
-\method{editMap}{`NULL`}(x, ...)
+\method{editMap}{`NULL`}(x, editor = c("leaflet.extras", "leafpm"), editorOptions = list(), ...)
 }
 \arguments{
 \item{x}{\code{leaflet} or \code{mapview} map to edit}
 
-\item{...}{other arguments for \code{mapview::addFeatures()} when
+\item{...}{other arguments for \code{leafem::addFeatures()} when
 using \code{editMap.NULL} or \code{selectFeatures}}
 
 \item{targetLayerId}{\code{string} name of the map layer group to use with edit}
@@ -62,6 +66,12 @@ behaviour in Firefox.}
 
 \item{title}{\code{string} to customize the title of the UI window.  The default
 is "Edit Map".}
+
+\item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
+
+\item{editorOptions}{\code{list} of options suitable for passing to
+either \code{leaflet.extras::addDrawToolbar} or
+\code{leafpm::addPmToolbar}.}
 }
 \value{
 \code{sf} simple features or \code{GeoJSON}

@@ -17,6 +17,8 @@ editFeatures(x, ...)
   crs = 4326,
   label = NULL,
   title = "Edit Map",
+  editor = c("leaflet.extras", "leafpm"),
+  editorOptions = list(),
   ...
 )
 
@@ -51,6 +53,12 @@ content that will appear in label/tooltip.}
 
 \item{title}{\code{string} to customize the title of the UI window.  The default
 is "Edit Map".}
+
+\item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
+
+\item{editorOptions}{\code{list} of options suitable for passing to
+either \code{leaflet.extras::addDrawToolbar} or
+\code{leafpm::addPmToolbar}.}
 }
 \description{
 Interactively Edit Map Features

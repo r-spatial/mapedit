@@ -40,6 +40,13 @@ Useful links:
 Authors:
 \itemize{
   \item Kenton Russell
+  \item Lorenzo Busetto
+}
+
+Other contributors:
+\itemize{
+  \item Josh O'Brien [contributor]
+  \item Jakob Gutschlhofer [contributor]
 }
 
 }
