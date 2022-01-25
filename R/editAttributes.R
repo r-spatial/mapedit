@@ -236,8 +236,8 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
         },
         id = "map",
         targetLayerId = 'editLayer',
-        sf = TRUE#,
-        #editorOptions = list(editOptions = leaflet.extras::editToolbarOptions(edit = df$edit_logic)),
+        sf = TRUE,
+        editorOptions = list(editOptions = leaflet.extras::editToolbarOptions(edit = df$edit_logic)),
       )
     })
 
