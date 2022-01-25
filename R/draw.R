@@ -15,6 +15,10 @@
 #'          Firefox is an exception. See Details for instructions on how to enable this
 #'          behaviour in Firefox.
 #' @param title \code{string} to customize the title of the UI window.
+#' @param editor \code{character} either "leaflet.extras" or "leafpm"
+#' @param editorOptions \code{list} of options suitable for passing to
+#'     either \code{leaflet.extras::addDrawToolbar} or
+#'     \code{leafpm::addPmToolbar}.
 #' @param ... additional arguments passed on to \code{\link{editMap}}.
 #'
 #' @details
@@ -33,12 +37,16 @@ drawFeatures = function(map = NULL,
                         record = FALSE,
                         viewer = shiny::paneViewer(),
                         title = "Draw Features",
+                        editor = c("leaflet.extras", "leafpm"),
+                        editorOptions = list(),
                         ...) {
   res = editMap(x = map,
                 sf = sf,
                 record = record,
                 viewer = viewer,
                 title = title,
+                editor = editor,
+                editorOptions = editorOptions,
                 ...)
   if (!inherits(res, "sf") && is.list(res)) res = res$finished
   return(res)

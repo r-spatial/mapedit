@@ -43,7 +43,7 @@ playback <- function(x, origsf = NULL) {
     lapply(rec,function(x){x$feature})
   ))
 
-  x = mapview:::checkAdjustProjection(sf_all)
+  x = checkAdjustProjection(sf_all)
 
   if(!is.null(origsf)) {
     sf_all = c(
@@ -52,7 +52,7 @@ playback <- function(x, origsf = NULL) {
     )
   }
 
-  ext = mapview:::createExtent(sf_all)
+  ext = createExtent(sf_all)
   map = leaflet::fitBounds(
     map,
     lng1 = ext[1],
@@ -63,7 +63,7 @@ playback <- function(x, origsf = NULL) {
 
   orig_gj <- NULL
   if(!is.null(origsf)) {
-    origsf = mapview:::checkAdjustProjection(origsf)
+    origsf = checkAdjustProjection(origsf)
     origsf$edit_id = as.character(1:nrow(origsf))
     orig_gj = geojsonio::geojson_list(origsf)
   }
@@ -71,7 +71,6 @@ playback <- function(x, origsf = NULL) {
   scr <-  sprintf(
 "
 function(el, x) {
-  debugger;
   var map = this;
   var feat = %s;
   var feat_lookup = {};

@@ -87,23 +87,29 @@ $(document).on('shiny:disconnected', function() {
 
     observe({selections()})
 
-    shiny::observeEvent(input$done, {
-      shiny::stopApp(
-        selections()
-      )
-    })
-
-    shiny::observeEvent(input$cancel, { shiny::stopApp (NULL) })
-
     # if browser viewer and user closes tab/window
     #  then Shiny does not stop so we will stopApp
     #  when a session ends.  This works fine unless a user might
     #  have two sessions open.  Closing one will also close the
     #  other.
-    session$onSessionEnded(function() {
+    sessionEnded <- session$onSessionEnded(function() {
       # should this be a cancel where we send NULL
       #  or a done where we send crud()
       shiny::stopApp(isolate(selections()))
+    })
+
+    shiny::observeEvent(input$done, {
+      shiny::stopApp(
+        selections()
+      )
+      # cancel session ended handler to prevent https://github.com/r-spatial/mapedit/issues/83
+      sessionEnded()
+    })
+
+    shiny::observeEvent(input$cancel, {
+      shiny::stopApp (NULL)
+      # cancel session ended handler to prevent https://github.com/r-spatial/mapedit/issues/83
+      sessionEnded()
     })
   }
 
