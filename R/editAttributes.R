@@ -368,7 +368,9 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
             } else if (df$types[n] == 'Date') {
               dateInput(name, label, width = '100%', value = NA)
             }
-          })
+          }),
+          # we don't want to see this element but it is needed to form data structure
+          htmltools::tags$script("document.getElementById('leaf_id-label').hidden = true; document.getElementById('leaf_id').style.visibility = 'hidden';")
         )
 
       })
