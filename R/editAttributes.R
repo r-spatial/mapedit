@@ -37,7 +37,7 @@
 #' @import dplyr
 #' @import shiny
 #' @import htmltools
-#' @importFrom DT dataTableOutput renderDataTable datatable replaceData dataTableProxy
+#' @importFrom DT dataTableOutput renderDataTable datatable replaceData dataTableProxy editData
 #' @importFrom shinyWidgets actionBttn show_alert useSweetAlert
 #' @importFrom tmaptools geocode_OSM
 #'
@@ -387,7 +387,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
         # could support multi but do single for now
         selection = "single",
         height = 200,
-        editable = 'column',
+        editable = TRUE,
       )
     })
 
