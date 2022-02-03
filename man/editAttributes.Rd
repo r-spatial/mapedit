@@ -2,7 +2,7 @@
 % Please edit documentation in R/editAttributes.R
 \name{editAttributes}
 \alias{editAttributes}
-\title{Geo Attributes}
+\title{Edit Feature Attributes}
 \usage{
 editAttributes(
   dat,
@@ -16,8 +16,8 @@ editAttributes(
 \item{dat}{input data source, can be a `data.frame` or an `sf data.frame`, or it can be left empty.
 When nothing is passed to `dat` a basic `data.frame` is generated with `id` and `comment` fields.}
 
-\item{zoomto}{character area of interest. The area is defined using \link{\code{tmaptools::geocode_OSM}},
-which uses \link{OSM Nominatim}{https://nominatim.org/}. The area can be as ambiguous as a country, or
+\item{zoomto}{character area of interest. The area is defined using \link[tmaptools]{geocode_OSM},
+which uses \href{https://nominatim.org/}{OSM Nominatim}. The area can be as ambiguous as a country, or
 as specific as a street address. You can test the area of interest using the application or the example
 code below.}
 
@@ -45,7 +45,7 @@ The application can dynamically handle: character, numeric, integer, factor and 
 
 When the input data set is an `sf data.frame` the map automatically zooms to the extent of the `sf` object.
 When the input has no spatial data, you must tell the function where to zoom. The function uses
-\link{\code{tmaptools::geocode_OSM}} to identify the coordinates of your area of interest.
+\link[tmaptools]{geocode_OSM} to identify the coordinates of your area of interest.
 }
 \examples{
 \dontrun{
