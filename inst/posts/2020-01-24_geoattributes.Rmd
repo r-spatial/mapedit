@@ -11,16 +11,46 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
 
-## Basic Example
+## Tests
 
-```r
+These tests are designed to step through and manually check different features of the application. For each test within the app you will create and modify geometry and attributes. Then using `mapview` check that the outputs are as expected.
 
-# let's create a fake site list
+### Start with no input
+
+1. Launch app with no input 
+2. add a new row
+3. add geometry to both rows
+4. add a column
+5. edit attributes
+
+
+```{r}
+
+library(mapedit)
+
+sf1 <- editAttributes(zoomto = 'Montana', col_add = T, reset = F)
+
+mapview::mapview(sf1)
+
+```
+
+
+### Start with a `data.frame`
+
+1. Launch app with `data.frame`
+2. add geometry to each row
+3. add a column
+4. add a new row
+5. edit attributes
+
+```{r}
+
 data <- data.frame(
   name = c('SiteA', 'SiteB'),
   type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
@@ -28,13 +58,80 @@ data <- data.frame(
   stringsAsFactors = FALSE
 )
 
+sf2 <- editAttributes(data, zoomto = 'Montana', col_add = T, reset = F)
 
+mapview::mapview(sf2)
 
-data_sf2 <- editAttributes(zoomto = 'Montana', col_add = T, reset = F)
-
-sf_pts <- editAttributes(data_sf2, zoomto = 'Montana', col_add = T, reset = F)
-
-mapview(data_sf2)
-mapview(sf_pts)
 ```
+
+
+
+### Start with an existing `sf` object
+
+1. Launch app with `sf` object
+2. add a column
+3. add a new row
+4. edit attributes
+5. edit geometry
+
+```{r}
+
+sf3 <- editAttributes(sf2, col_add = T, reset = F)
+
+mapview::mapview(sf3)
+
+```
+
+
+
+
+
+### Add features or rows without using `New Row` button
+
+1. Launch app with `sf` object
+2. add geometry feature without clicking `Row` button
+3. edit attributes
+
+```{r}
+
+sf4 <- editAttributes(sf2, col_add = T, reset = F)
+
+mapview::mapview(sf4)
+
+```
+
+
+
+
+### Create object with multiple geometry types
+
+1. Launch app with no input
+2. add geometry features without clicking `Row` button
+
+
+```{r}
+
+sf5 <- editAttributes(zoomto = 'Montana', col_add = T, reset = F)
+
+mapview::mapview(sf5)
+
+```
+
+
+
+### Edit object with multiple geometry types
+
+1. Launch app with previous input
+2. edit geometry features 
+
+
+```{r}
+
+sf6 <- editAttributes(sf5, col_add = T, reset = F)
+
+mapview::mapview(sf6)
+
+```
+
+
 
