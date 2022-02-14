@@ -133,12 +133,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
   }
 
 
-
-  # UI section
-  # i guess this could change to look more like mapedit if staying with mapedit
-
   ui <- tagList(
-    # script_zoom,
     useSweetAlert(),
     fluidPage(
       fluidRow(
@@ -188,8 +183,6 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     )
   )
 
-  #Server section
-
   server <- function(input, output, session) {
 
     # gather all up into reactiveValues
@@ -234,11 +227,10 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
       )
     })
 
-
-
     #make a proxy map
     proxy_map <- leaflet::leafletProxy('map-map', session)
 
+    # watch for NEW COLUMN button clicks
     observeEvent(input$col_add, {
 
       if (nchar(input$new_name)==0) {
@@ -247,14 +239,13 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
                                  'this column is missing a name, this must be entered before adding a column',
                                  type = 'warning')
       } else {
-        #TODO: add checks for missing inputs
+
         add_col <- df$data
 
         add_col[[input$new_name]] <- do.call(paste0('as.', input$new_type), list(NA))
 
         df$data <- add_col
 
-        # add input$new_name to df$type
         ntype <- input$new_type
         names(ntype) <- input$new_name
 
