@@ -205,7 +205,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
         module = editMod,
         leafmap = {
 
-          if (any(type %in% dat_class)){
+          if (any(type %in% class(dat))){
 
             mapv <- leaflet::leaflet() %>%
               leaflet::addProviderTiles(provider = provider,
@@ -518,8 +518,9 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
         } else {
           bb <- sf::st_bbox(sf::st_geometry(sf::st_polygon(x = list(click_mat))))
 
-          proxy_map %>%
-            leaflet::fitBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
+            proxy_map %>%
+              leaflet::fitBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
+
         }
       }
     })
@@ -545,8 +546,9 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
             } else {
 
               bb <- st_bbox(sf::st_geometry(rowsel))
-              proxy_map %>%
-                flyToBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
+
+                proxy_map %>%
+                  flyToBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
 
             }
 
