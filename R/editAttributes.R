@@ -73,40 +73,57 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...') %>% mutate(leaf_id = 1)
   }
 
-
   APP_CRS <- 4326
 
-  dat_class <- class(dat)
+  # Need to parse out spatial objects if input data is spatial
+  # reason is module doesn't like tibbles
+  type <- c('sf', 'SpatVector')
 
-  # trying to accept list of sf data.frames with multiple geom types
+
+  # accept list of sf data.frames with multiple geom types
   # (TODO: works but original geom continues to display. method works nicely except if editing
   #        replacing existing geoms)
   original_sf <- NULL
-  if (all(dat_class == 'list')) {
+  if (all(class(dat) == 'list')) {
+
     original_sf <- lapply(dat, function(df){
       df %>% mutate(leaf_id = 1:nrow(df))
     })
     dat <- bind_rows(dat) %>% mutate(leaf_id = 1:nrow(.))
+
   }
 
+  if (all(class(dat) == 'data.frame')) {
+    dat <- dat %>% mutate(leaf_id = 1:nrow(dat))
 
-  # Need to parse out spatial objects if input data is spatial
-  # reason is module doesn't like tibbles
+    data_copy <- st_as_sf(
+      dat,
+      geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
+    ) %>% st_set_crs(APP_CRS)
 
-  type <- c('sf', 'SpatVector')
+    user_crs <- APP_CRS
+    le = TRUE
 
-  if (!any(type %in% dat_class)) {
-    user_crs <- 4326
+  } else if (any(type %in% class(dat))) {
+
+    dat <- dat %>% mutate(leaf_id = 1:nrow(dat)) %>% sf::st_transform(APP_CRS)
+    data_copy <- dat # TODO check orig crs and transform to 4326
+
+    if(is.na(sf::st_crs(dat))){dat <- dat %>% sf::st_set_crs(APP_CRS)}
+    if(class(dat)[[1]] == 'SpatVector'){dat <- sf::st_as_sf(dat)}
+    #if(class(dat)[[1]] == 'sf'){class(dat) <- c('sf', 'data.frame')}
+
+    user_crs <- sf::st_crs(dat)
+
+    # this is used to make sure the edit toolbar is disabled when these are inputs
+    # if not, then the app will hang and requires ending task.
+    le <- !any(sf::st_geometry_type(dat) %in% c('MULTILINESTRING', 'MULTIPOLYGON'))
+
+  } else if (!any(type %in% class(dat))) {
     assertthat::assert_that(!(is.null(zoomto)),
                             msg = 'If your input is a non-spatial data.frame you must define a zoomto location')
   }
 
-  if (any(type %in% dat_class)) {
-    if(is.na(sf::st_crs(dat))){dat <- dat %>% sf::st_set_crs(4326)}
-    user_crs <- sf::st_crs(dat)
-    if(dat_class[[1]] == 'SpatVector'){dat <- sf::st_as_sf(dat)}
-    if(dat_class[[1]] == 'sf'){class(dat) <- c('sf', 'data.frame')}
-  }
 
   # if data or empty (dat) need a zoom to place
   # could go without but is nice to have as an arg
@@ -175,31 +192,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
   server <- function(input, output, session) {
 
-
-    #adding leaf id to data and geometry to df
-    if (all(dat_class == 'data.frame')) {
-      dat <- dat %>% mutate(leaf_id = 1:nrow(dat))
-
-      data_copy <- st_as_sf(
-        dat,
-        geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
-      ) %>% st_set_crs(APP_CRS)
-
-      le = TRUE
-    } else if (any(type %in% dat_class)) {
-
-      dat <- dat %>% mutate(leaf_id = 1:nrow(dat)) %>% sf::st_transform(4326)
-      data_copy <- dat # TODO check orig crs and transform to 4326
-
-      # this is used to make sure the edit toolbar is disabled when these are inputs
-      # if not, then the app will hang and requires ending task.
-
-      le <- !any(sf::st_geometry_type(dat) %in% c('MULTILINESTRING', 'MULTIPOLYGON'))
-
-    }
-
     # gather all up into reactiveValues
-
     df <- reactiveValues(types = sapply(dat, class),
                          data = data_copy,
                          zoom_to = zoomto,
