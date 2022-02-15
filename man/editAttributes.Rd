@@ -21,11 +21,11 @@ which uses \href{https://nominatim.org/}{OSM Nominatim}. The area can be as ambi
 as specific as a street address. You can test the area of interest using the application or the example
 code below.}
 
-\item{col_add}{boolean option to add columns. Set to false if you don't want to allow a user to modify
+\item{col_add}{boolean option to enable add columns form. Set to false if you don't want to allow a user to modify
 the data structure.}
 
 \item{reset}{boolean option to reset attribute input. Set to false if you don't want the attribute input to
-reset to NA after each added row.}
+reset to NA after each added row. Use this option when features share common attributes}
 
 \item{provider}{A character string indicating the provider tile of choice, e.g. 'Esri.WorldImagery' (default)}
 }
@@ -33,35 +33,43 @@ reset to NA after each added row.}
 sf data.frame
 }
 \description{
-Geo Attributes launches a `shiny` application where you can add and edit spatial geometry
-and attributes. Starting with a `data.frame` or an `sf data.frame`, a list of `sf data.frames` or nothing
+Launches a `shiny` application where you can add and edit spatial geometry
+and attributes. Geometry is created or edited within the interactive map, while feature attributes
+can be added to and edited within the editable table.
+
+Starting with a `data.frame` or an `sf data.frame`, a list of `sf data.frames` or nothing
 at all. You can add columns, and rows and geometry for each row. Clicking on a row with geometry you can
 zoom across the map between features.
 
 When you are done, your edits are saved to an `sf data.frame` for
-use in R or to be saved to formats such as `geojson`.
+use in R or to be saved to anyformat you wish via \link[sf]{st_write}.
 
 The application can dynamically handle: character, numeric, integer, factor and date fields.
 
 When the input data set is an `sf data.frame` the map automatically zooms to the extent of the `sf` object.
+
 When the input has no spatial data, you must tell the function where to zoom. The function uses
 \link[tmaptools]{geocode_OSM} to identify the coordinates of your area of interest.
+}
+\note{
+Editing of feature geometries does not work for multi-geometry inputs. For this use case it is advisable to
+split the data set by geometry type and edit separately
 }
 \examples{
 \dontrun{
 
 # with no input
-data_sf <- geo_attributes(zoomto = 'germany')
+data_sf <- editAttributes(zoomto = 'germany')
 
 # a data.frame input
 dat <- data.frame(name = c('SiteA', 'SiteB'),
                   type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
                   size = c(35, 45))
 
-data_sf <- geo_attributes(dat, zoomto = 'berlin')
+data_sf <- editAttributes(dat, zoomto = 'berlin')
 
 # an sf data.frame input
-data_sf <- geo_attributes(data_sf)
+data_sf <- editAttributes(data_sf)
 
 # test zoomto area of interest
 zoomto_area <- tmaptools::geocode_OSM('paris')
