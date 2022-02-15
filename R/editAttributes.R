@@ -4,17 +4,21 @@
 
 #' @title Edit Feature Attributes
 #'
-#' @description Geo Attributes launches a `shiny` application where you can add and edit spatial geometry
-#' and attributes. Starting with a `data.frame` or an `sf data.frame`, a list of `sf data.frames` or nothing
+#' @description Launches a `shiny` application where you can add and edit spatial geometry
+#' and attributes. Geometry is created or edited within the interactive map, while feature attributes
+#' can be added to and edited within the editable table.
+#'
+#' Starting with a `data.frame` or an `sf data.frame`, a list of `sf data.frames` or nothing
 #' at all. You can add columns, and rows and geometry for each row. Clicking on a row with geometry you can
 #' zoom across the map between features.
 #'
 #' When you are done, your edits are saved to an `sf data.frame` for
-#' use in R or to be saved to formats such as `geojson`.
+#' use in R or to be saved to anyformat you wish via \link[sf]{st_write}.
 #'
 #' The application can dynamically handle: character, numeric, integer, factor and date fields.
 #'
 #' When the input data set is an `sf data.frame` the map automatically zooms to the extent of the `sf` object.
+#'
 #' When the input has no spatial data, you must tell the function where to zoom. The function uses
 #' \link[tmaptools]{geocode_OSM} to identify the coordinates of your area of interest.
 #'
@@ -24,11 +28,15 @@
 #' which uses \href{https://nominatim.org/}{OSM Nominatim}. The area can be as ambiguous as a country, or
 #' as specific as a street address. You can test the area of interest using the application or the example
 #' code below.
-#' @param col_add boolean option to add columns. Set to false if you don't want to allow a user to modify
+#' @param col_add boolean option to enable add columns form. Set to false if you don't want to allow a user to modify
 #' the data structure.
 #' @param reset boolean option to reset attribute input. Set to false if you don't want the attribute input to
-#' reset to NA after each added row.
+#' reset to NA after each added row. Use this option when features share common attributes
 #' @param provider A character string indicating the provider tile of choice, e.g. 'Esri.WorldImagery' (default)
+#'
+#' @note Editing of feature geometries does not work for multi-geometry inputs. For this use case it is advisable to
+#' split the data set by geometry type and edit separately
+#'
 #' @import sf
 #' @import leaflet
 #' @import mapview
@@ -48,17 +56,17 @@
 #' \dontrun{
 #'
 #' # with no input
-#' data_sf <- geo_attributes(zoomto = 'germany')
+#' data_sf <- editAttributes(zoomto = 'germany')
 #'
 #' # a data.frame input
 #' dat <- data.frame(name = c('SiteA', 'SiteB'),
 #'                   type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
 #'                   size = c(35, 45))
 #'
-#' data_sf <- geo_attributes(dat, zoomto = 'berlin')
+#' data_sf <- editAttributes(dat, zoomto = 'berlin')
 #'
 #' # an sf data.frame input
-#' data_sf <- geo_attributes(data_sf)
+#' data_sf <- editAttributes(data_sf)
 #'
 #' # test zoomto area of interest
 #' zoomto_area <- tmaptools::geocode_OSM('paris')
@@ -68,7 +76,7 @@
 editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, provider = 'Esri.WorldImagery'){
 
 
-  #creat df if nothing in dat
+  #create base df if dat missing
   if (missing(dat)) {
     dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...') %>% mutate(leaf_id = 1)
   }
@@ -76,26 +84,19 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
   APP_CRS <- 4326
 
   # Need to parse out spatial objects if input data is spatial
-  # reason is module doesn't like tibbles
   type <- c('sf', 'SpatVector')
 
-
   # accept list of sf data.frames with multiple geom types
-  # (TODO: works but original geom continues to display. method works nicely except if editing
-  #        replacing existing geoms)
   original_sf <- NULL
   if (all(class(dat) == 'list')) {
-
     original_sf <- lapply(dat, function(df){
       df %>% mutate(leaf_id = 1:nrow(df))
     })
     dat <- bind_rows(dat) %>% mutate(leaf_id = 1:nrow(.))
-
   }
 
   if (all(class(dat) == 'data.frame')) {
     dat <- dat %>% mutate(leaf_id = 1:nrow(dat))
-
     data_copy <- st_as_sf(
       dat,
       geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
@@ -104,7 +105,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     user_crs <- APP_CRS
     le = TRUE
 
-  } else if (any(type %in% class(dat))) {
+   } else if (any(type %in% class(dat))) {
 
     dat <- dat %>% mutate(leaf_id = 1:nrow(dat)) %>% sf::st_transform(APP_CRS)
     data_copy <- dat # TODO check orig crs and transform to 4326
@@ -124,9 +125,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
                             msg = 'If your input is a non-spatial data.frame you must define a zoomto location')
   }
 
-
   # if data or empty (dat) need a zoom to place
-  # could go without but is nice to have as an arg
   if (!is.null(zoomto)) {
     zoomto_area <- tmaptools::geocode_OSM(zoomto)
     zoomto <- st_as_sfc(zoomto_area$bbox) %>% st_sf() %>% st_set_crs(APP_CRS)
@@ -185,7 +184,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
   server <- function(input, output, session) {
 
-    # gather all up into reactiveValues
+    # gather all data into reactiveValues
     df <- reactiveValues(types = sapply(dat, class),
                          data = data_copy,
                          zoom_to = zoomto,
@@ -234,21 +233,17 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     observeEvent(input$col_add, {
 
       if (nchar(input$new_name)==0) {
-
         shinyWidgets::show_alert('Missing Column Name',
                                  'this column is missing a name, this must be entered before adding a column',
                                  type = 'warning')
       } else {
 
         add_col <- df$data
-
         add_col[[input$new_name]] <- do.call(paste0('as.', input$new_type), list(NA))
 
         df$data <- add_col
-
         ntype <- input$new_type
         names(ntype) <- input$new_name
-
         df$types <- c(df$types, ntype)
 
         updateTextInput(session, 'new_name', value = NA)
@@ -257,81 +252,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     })
 
 
-    # modify namespace to get map ID
-    nsm <- function(event="", id="map") {
-      paste0(session$ns(id), "-", event)
-    }
-
-    # unfortunately I did not implement last functionality
-    # for editMap, so do it the hard way
-    # last seems useful, so I might circle back and add that
-    EVT_DRAW <- "map_draw_new_feature"
-    EVT_EDIT <- "map_draw_edited_features"
-    EVT_DELETE <- "map_draw_deleted_features"
-
-    #create a vector input for 'row_add'
-    EVT_ADD_ROW <- "row_add"
-
-    # determines whether to use 'row_add' or 'map_draw_feature'
-    # also, if rows are selected then it won't trigger the 'map_draw_feature'
-
-    addRowOrDrawObserve <- function(event, id) {
-      observeEvent(
-        if(is.na(id)){
-
-          input[[event]]
-
-        } else {
-
-          input[[nsm(event, id = id)]]},{
-
-            if(!is.null(input$tbl_rows_selected)){
-
-            } else {
-
-              # creates first column and row (must be more elegant way)
-              new_row <- data.frame(X = input[[names(df$types[1])]])
-              colnames(new_row) <- names(df$types[1])
-
-              # remaining columns will be correct size
-              for (i in 2:length(df$types)) {
-                new_row[names(df$types[i])] <- input[[names(df$types[i])]]
-              }
-
-              new_row <- st_as_sf(new_row, geometry = st_sfc(st_point()), crs = APP_CRS)
-
-              # add to data_copy data.frame and update visible table
-              df$data <- df$data %>%
-                rbind(new_row)
-
-              showNotification('Added New Row')
-
-
-              # reset input table
-              if(isTRUE(reset)){
-                for (i in 1:length(df$types)) {
-                  typ <- df$types[i]
-                  nm <- names(typ)
-
-                  if (typ == 'character') {
-                    updateTextInput(session, nm, value = NA)
-                  } else if (typ %in% c('numeric','integer')) {
-                    updateNumericInput(session, nm, value = NA)
-                  } else if (typ == 'Date') {
-                    updateDateInput(session, nm, value = NA)
-                  }
-
-                }
-              }
-            }
-          })
-    }
-
-    addRowOrDrawObserve(EVT_ADD_ROW, id = NA)
-    addRowOrDrawObserve(EVT_DRAW, id = 'map')
-
-
-
+    # render new row form based on the existing data structure
     observe({
 
       output$dyn_form <- renderUI({
@@ -360,6 +281,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
       })
     })
 
+    # render editable data table
     output$tbl <- DT::renderDataTable({
 
       n <- grep('leaf_id|geom', colnames(df$data)) # used to hide geometry/leaf_id column
@@ -379,27 +301,92 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
     proxy = dataTableProxy('tbl')
 
+
+    # modify namespace to get map ID
+    nsm <- function(event="", id="map") {
+      paste0(session$ns(id), "-", event)
+    }
+
+    # unfortunately I did not implement last functionality
+    # for editMap, so do it the hard way
+    # last seems useful, so I might circle back and add that
+    EVT_DRAW <- "map_draw_new_feature"
+    EVT_EDIT <- "map_draw_edited_features"
+    EVT_DELETE <- "map_draw_deleted_features"
+
+    #create a vector input for 'row_add'
+    EVT_ADD_ROW <- "row_add"
+
+    # determines whether to use 'row_add' or 'map_draw_feature'
+    # also, if rows are selected then it won't trigger the 'map_draw_feature'
+    addRowOrDrawObserve <- function(event, id) {
+      observeEvent(
+        if(is.na(id)){
+
+          input[[event]]
+
+        } else {
+
+          input[[nsm(event, id = id)]]},{
+
+            if(!is.null(input$tbl_rows_selected)){
+
+            } else {
+
+              # creates first column and row (must be more elegant way)
+              new_row <- data.frame(X = input[[names(df$types[1])]])
+              colnames(new_row) <- names(df$types[1])
+
+              # remaining columns will be correct size
+              for (i in 2:length(df$types)) {
+                new_row[names(df$types[i])] <- input[[names(df$types[i])]]
+              }
+
+              new_row <- st_as_sf(new_row, geometry = st_sfc(st_point()), crs = APP_CRS)
+
+              suppressWarnings({
+                # add to data_copy data.frame and update visible table
+                df$data <- df$data %>%
+                  rbind(new_row)
+              })
+
+              # reset input table
+              if(isTRUE(reset)){
+                for (i in 1:length(df$types)) {
+                  typ <- df$types[i]
+                  nm <- names(typ)
+
+                  if (typ == 'character') {
+                    updateTextInput(session, nm, value = NA)
+                  } else if (typ %in% c('numeric','integer')) {
+                    updateNumericInput(session, nm, value = NA)
+                  } else if (typ == 'Date') {
+                    updateDateInput(session, nm, value = NA)
+                  }
+
+                }
+              }
+            }
+          })
+    }
+
+    addRowOrDrawObserve(EVT_ADD_ROW, id = NA)
+    addRowOrDrawObserve(EVT_DRAW, id = 'map')
+
     addDrawObserve <- function(event) {
       observeEvent(
         input[[nsm(event)]],
         {
           evt <- input[[nsm(event)]]
 
-          # get selected row section
-          # pretty nasty if/else going on... not sure how to clean-up?
-
-
           # this allows the user to edit geometries or delete and then save without selecting row.
           # you can also select row and edit/delete as well but this gives the ability to not do so.
-
           if(event == EVT_DELETE) {
 
             ids <- vector()
 
             for(i in 1:length(evt$features)){
-
               iter <- evt$features[[i]]$properties[['layerId']]
-
               ids <- append(ids, iter)
             }
 
@@ -408,70 +395,46 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
           } else if (event == EVT_EDIT) {
 
-
             for(i in 1:length(evt$features)){
 
               evt_type <- evt$features[[i]]$geometry$type
               leaf_id <- evt$features[[i]]$properties[['layerId']]
-
               geom <- unlist(evt$features[[i]]$geometry$coordinates)
 
-
               if (evt_type == 'Point') {
-
                 sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_point(geom))
-
               } else if (evt_type == 'Polygon'){
-
                 geom <- matrix(geom, ncol = 2, byrow = T)
                 sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_polygon(list(geom)))
-
               } else if (evt_type == 'LineString'){
-
                 geom <- matrix(geom, ncol = 2, byrow = T)
-
                 sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_linestring(geom))
               }
-
             }
-
-
 
           } else {
 
-            # below just determines whether to use 'row_add' or 'map_draw_feature' for adding geometries
-
+            # below determines whether to use 'row_add' or 'map_draw_feature' for adding geometries
             if(!is.null(input$tbl_rows_selected)) {
-
               selected <- isolate(input$tbl_rows_selected)
-
-
             }  else if (event == EVT_DRAW){
-
               selected <- length(input$tbl_rows_all) + 1
-
             }
 
             skip = FALSE
+
             # ignore if selected is null
-            #  not great but good enough for poc
             if(is.null(selected)) {skip = TRUE}
 
             # replace if draw or edit
             if(skip==FALSE) {
-
               sf::st_geometry(df$data[selected,]) <- sf::st_geometry(
                 mapedit:::st_as_sfc.geo_list(evt))
 
               #adding the leaf_id when we draw or row_add
-
               df$data[selected, 'leaf_id'] <- as.integer(evt$properties[['_leaflet_id']])
 
-
             }
-
-
-
           }
         })
     }
@@ -480,8 +443,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     addDrawObserve(EVT_EDIT)
     addDrawObserve(EVT_DELETE)
 
-    # this is used to keep the zoom of leaflet relavent
-
+    # this is used to keep the zoom of leaflet relevant
     observeEvent(input[[nsm(EVT_DRAW)]],{
 
       click <- input[[nsm('map_draw_new_feature')]]
@@ -490,7 +452,6 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
         clat <- click$geometry$coordinates[[2]]
         clng <- click$geometry$coordinates[[1]]
-
         proxy_map  %>%
           leaflet::setView(lng = clng, lat = clat, zoom = input[[nsm('map_zoom')]])
 
@@ -499,18 +460,14 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
         click_mat <- matrix(unlist(click$geometry$coordinates),ncol=2, byrow=TRUE)
 
         if(click$geometry$type == 'LineString'){
-
           clat <- click_mat[[1,2]]
           clng <- click_mat[[1,1]]
-
           proxy_map %>%
             leaflet::setView(lng = clng, lat = clat, zoom = input[[nsm('map_zoom')]])
-
         } else {
           bb <- sf::st_bbox(sf::st_geometry(sf::st_polygon(x = list(click_mat))))
-
-            proxy_map %>%
-              leaflet::fitBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
+          proxy_map %>%
+            leaflet::fitBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
 
         }
       }
@@ -529,18 +486,13 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
           if (all(!is.na(sf::st_coordinates(sf::st_geometry(rowsel)[[1]])))) {
 
             if (st_geometry_type(rowsel) == 'POINT') {
-
               pnt <- st_coordinates(rowsel) %>% as.data.frame()
               proxy_map %>%
                 leaflet::flyTo(lng = pnt$X, lat = pnt$Y, zoom = input[[nsm('map_zoom')]])
-
             } else {
-
               bb <- st_bbox(sf::st_geometry(rowsel))
-
-                proxy_map %>%
-                  flyToBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
-
+              proxy_map %>%
+                flyToBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
             }
 
           }
@@ -552,7 +504,6 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     observeEvent(input$tbl_cell_edit, {
 
       df$data <- editData(df$data, input$tbl_cell_edit, 'tbl', resetPaging = F)
-
       DT::replaceData(proxy, df$data, rownames = FALSE, resetPaging = FALSE)
 
     })
@@ -568,10 +519,8 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
                                    type = 'warning')
         } else {
           stopApp({
-
             out <- df$data %>% dplyr::select(-leaf_id) %>%
               dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
-
             out <- st_sf(out, crs = user_crs)
             out <- split(out , f = out$geo_type)
 
@@ -593,12 +542,11 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
                                    type = 'warning')
         } else {
           stopApp({
-            # ensure export is sf and correct crs
+            # ensure export is sf and same as input crs
             out <- st_sf(df$data,crs=user_crs)
 
             # clean bounding box just in case
             attr(st_geometry(out), "bbox") <- st_bbox(st_union(out$geometry))
-
             out %>% dplyr::select(-leaf_id)
           })
         }
@@ -608,6 +556,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
   }
 
   return(runApp(shinyApp(ui,server)))
+
 }
 
 
