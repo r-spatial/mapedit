@@ -9,7 +9,8 @@ editAttributes(
   zoomto = NULL,
   col_add = TRUE,
   reset = TRUE,
-  provider = "Esri.WorldImagery"
+  provider = "Esri.WorldImagery",
+  testing = FALSE
 )
 }
 \arguments{

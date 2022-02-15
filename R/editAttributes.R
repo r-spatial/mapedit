@@ -73,7 +73,7 @@
 #' mapview(st_as_sfc(zoomto_area$bbox))
 #'
 #' }
-editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, provider = 'Esri.WorldImagery'){
+editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, provider = 'Esri.WorldImagery', testing = FALSE){
 
 
   #create base df if dat missing
@@ -511,6 +511,8 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     # provide mechanism to return after all done
     observeEvent(input$donebtn, {
 
+      if (testing) stopApp()
+
       if(grepl(class(df$data$geometry)[[1]], "sfc_GEOMETRY")){
 
         if (any(st_is_empty(df$data$geometry))) {
@@ -555,7 +557,13 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
   }
 
-  return(runApp(shinyApp(ui,server)))
+  # this allows shinytest to record
+  if (testing) {
+    return(shinyApp(ui,server))
+  } else {
+    return(runApp(shinyApp(ui,server)))
+  }
+
 
 }
 
