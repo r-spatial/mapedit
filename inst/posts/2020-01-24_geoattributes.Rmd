@@ -1,0 +1,188 @@
+---
+title: "Introduction to Geo Attributes"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to Geo Attributes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+
+## Tests
+
+These tests are designed to step through and manually check different features of the application. For each test within the app you will create and modify geometry and attributes. Then using `mapview` check that the outputs are as expected.
+
+### Start with no input
+
+1. Launch app with no input 
+2. add a new row
+3. add geometry to both rows
+4. add a column
+5. edit attributes
+
+
+```{r}
+
+library(mapedit)
+
+sf1 <- editAttributes(zoomto = 'Montana')
+
+mapview::mapview(sf1)
+
+```
+
+
+### Start with a `data.frame`
+
+1. Launch app with `data.frame`
+2. add geometry to each row
+3. add a column
+4. add a new row (ensure new row form clears after button click)
+5. edit attributes
+
+```{r}
+
+data <- data.frame(
+  name = c('SiteA', 'SiteB'),
+  type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
+  size = c(35, 45),
+  stringsAsFactors = FALSE
+)
+
+sf2 <- editAttributes(data, zoomto = 'Montana')
+
+mapview::mapview(sf2)
+
+```
+
+
+
+### Start with an existing `sf` object
+
+1. Launch app with `sf` object
+2. add a column
+3. add a new row
+4. edit attributes
+5. edit geometry
+
+```{r}
+
+sf3 <- editAttributes(sf2)
+
+mapview::mapview(sf3)
+
+```
+
+
+
+
+
+### Add features or rows without using `New Row` button
+
+Use this option when features don't share any attributes
+
+1. Launch app with `sf` object
+2. add geometry feature without clicking `Row` button
+3. edit attributes
+
+```{r}
+
+sf4 <- editAttributes(sf2)
+
+mapview::mapview(sf4)
+
+```
+
+
+
+
+### Delete Existing Features
+
+1. Launch app with `sf` object
+2. click on the bin icon
+3. select feature to delete
+
+```{r}
+
+sf5 <- editAttributes(sf2)
+
+mapview::mapview(sf5)
+```
+
+
+
+### Create object with multiple geometry types
+
+1. Launch app with no input
+2. add geometry features without clicking `Row` button
+
+
+```{r}
+
+sf6 <- editAttributes(zoomto = 'Montana')
+
+mapview::mapview(sf6)
+
+```
+
+
+
+### Edit object with multiple geometry types
+
+Editing existing features from a multi-geometry input does not work with lines or points. 
+
+1. Launch app with previous input
+2. edit geometry features 
+
+
+```{r}
+
+sf7 <- editAttributes(sf6)
+
+mapview::mapview(sf7)
+
+```
+
+
+
+
+### Hide New Column Form
+
+1. Launch app with previous input
+2. check the new column form is missing
+
+
+```{r}
+
+sf8 <- editAttributes(sf7, col_add = FALSE)
+
+mapview::mapview(sf8)
+
+```
+
+
+### Don't Reset New Row form after click
+
+Use this option when creating features that have common attributes
+
+1. Launch app with previous input
+2. add rows using form (fields should not clear after button click)
+
+
+
+```{r}
+
+sf9 <- editAttributes(sf8, reset = FALSE)
+
+mapview::mapview(sf9)
+
+```
