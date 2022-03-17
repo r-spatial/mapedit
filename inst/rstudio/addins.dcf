@@ -1,0 +1,4 @@
+Name: Create Spatial Data
+Description: Create spatial data using mapedit
+Binding: mapeditAddin
+Interactive: true
