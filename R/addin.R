@@ -6,11 +6,11 @@
 #' can then be saved to file types such as \code{.geojson} or \code{.shp}.
 #' Objects are also output to the console and can be assigned to a variable
 #' using `.Last.value`. If you wish to pass the output directly to a variable
-#' simply call the addin function, ie. \code{new_sf <- mapeditAddin()}.
+#' simply call the addin function, ie. \code{new_sf <- createFeatures()}.
 #'
 #' An existing sf \code{data.frame} can also be passed either indirectly by
 #' selecting text in RStudio with the name of the object, or directly by
-#' passing the existing sf object to \code{new_sf <- mapeditAddin(existing_sf)}.
+#' passing the existing sf object to \code{new_sf <- createFeatures(existing_sf)}.
 #' When passing an existing sf object you can only add and edit additional features,
 #' the existing features cannot be changed.
 #'
@@ -27,7 +27,7 @@
 #' @importFrom rstudioapi getActiveDocumentContext
 #' @export
 #'
-mapeditAddin <- function(SF_OBJECT = NULL) {
+createFeatures <- function(SF_OBJECT = NULL) {
 
   ui <- miniPage(
     gadgetTitleBar("Edit Map"),

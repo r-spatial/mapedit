@@ -1,6 +1,6 @@
 Name: Create Spatial Data
 Description: Create spatial data using mapedit
-Binding: mapeditAddin
+Binding: createFeatures
 Interactive: true
 
 Name: Edit Spatial Data and Attributes
