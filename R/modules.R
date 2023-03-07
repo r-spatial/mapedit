@@ -17,6 +17,7 @@ selectModUI <- function(id, ...) {
 #' @param input Shiny server function input
 #' @param output Shiny server function output
 #' @param session Shiny server function session
+#' @param leafmap leaflet map to use for Selection
 #' @param styleFalse named \code{list} of valid \code{CSS} for non-selected features
 #' @param styleTrue named \code{list} of valid \code{CSS} for selected features
 #'
