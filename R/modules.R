@@ -17,7 +17,6 @@ selectModUI <- function(id, ...) {
 #' @param input Shiny server function input
 #' @param output Shiny server function output
 #' @param session Shiny server function session
-#' @param leafmap leaflet map to use for Selection
 #' @param styleFalse named \code{list} of valid \code{CSS} for non-selected features
 #' @param styleTrue named \code{list} of valid \code{CSS} for selected features
 #'
@@ -184,7 +183,7 @@ editMod <- function(
     # now modify finished to match edited
     lapply(deleted$features, function(x) {
       loc <- match(x$properties$`_leaflet_id`, ids)
-      if(length(loc) > 0) {
+      if(!is.null(loc) && length(loc) > 0) {
         ids <<- ids[-loc]
         featurelist$finished[loc] <<- NULL
       }
