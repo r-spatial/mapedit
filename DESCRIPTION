@@ -1,23 +1,23 @@
 Package: mapedit
 Title: Interactive Editing of Spatial Data in R
-Description: Suite of interactive functions and helpers for selecting and editing
-    geospatial data.
 Version: 0.6.1.9002
 Date: 2020-04-13
 Authors@R: c(
-    person("Tim", "Appelhans", role = c("aut", "cre"), email = "tim.appelhans@gmail.com"),
-    person("Kenton", "Russell", role = c("aut")),
-    person("Lorenzo", "Busetto", role = c("aut")),
-    person("Josh", "O'Brien", role = c("ctb")),
-    person("Jakob", "Gutschlhofer", role = c("ctb"))
+    person("Tim", "Appelhans", , "tim.appelhans@gmail.com", role = c("aut", "cre")),
+    person("Kenton", "Russell", role = "aut"),
+    person("Lorenzo", "Busetto", role = "aut"),
+    person("Josh", "O'Brien", role = "ctb"),
+    person("Jakob", "Gutschlhofer", role = "ctb")
   )
+Description: Suite of interactive functions and helpers for selecting and
+    editing geospatial data.
+License: MIT + file LICENSE
 URL: https://github.com/r-spatial/mapedit
 BugReports: https://github.com/r-spatial/mapedit/issues
-License: MIT + file LICENSE
 Depends:
     R (>= 3.1.0)
 Imports:
-    assertthat,
+    cli,
     dplyr,
     DT,
     htmltools (>= 0.3),
@@ -25,22 +25,25 @@ Imports:
     jsonlite,
     leafem,
     leaflet (>= 2.0.1),
-    leaflet.extras (>= 1.0),
     leafpm,
-    leafpop,
     mapview,
     methods,
-    miniUI,
     raster,
+    rlang,
     scales,
     sf (>= 0.5-2),
     shiny,
-    tmaptools,
-    shinyWidgets (>= 0.4.3)
-Suggests:
-    crayon
-Enhances:
-    geojsonio
+    shinyWidgets (>= 0.4.3),
+    sp,
+    utils
+Suggests: 
+    geojsonio,
+    leaflet.extras (>= 1.0),
+    leafpop,
+    mapdeck,
+    miniUI,
+    stars,
+    tmaptools
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3

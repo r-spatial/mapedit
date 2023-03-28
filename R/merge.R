@@ -14,7 +14,8 @@
 #'          will only use the first name
 #'          and first value of the vector for matching.
 #' @keywords internal
-
+#' @importFrom sf st_geometry_type st_geometry st_cast st_sfc
+#' @importFrom cli cli_warn
 merge_edit <- function(
   orig = NULL, edits = NULL, by = c("id" = "layerId")
 ) {
@@ -51,9 +52,10 @@ merge_edit <- function(
         )),
         error = function(e) {
           sf::st_geometry(orig2)[matched_id_row] <<- ed
-          warning(
-            paste0("Unable to cast back to original type - ", e$message, " - but this is often caused by intermediate step."),
-            call. = FALSE
+          cli::cli_warn(
+            "Unable to cast back to original type but this is
+            often caused by intermediate step.",
+            parent = e
           )
         }
       )

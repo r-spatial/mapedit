@@ -22,30 +22,31 @@ selectMap(x, ...)
 
 \item{...}{other arguments}
 
-\item{styleFalse, styleTrue}{names \code{list} of CSS styles used
-for selected (\code{styleTrue}) and deselected (\code{styleFalse})}
+\item{styleFalse, styleTrue}{names \code{list} of CSS styles used for selected
+(\code{styleTrue}) and deselected (\code{styleFalse})}
 
-\item{ns}{\code{string} name for the Shiny \code{namespace} to use.  The \code{ns}
-is unlikely to require a change.}
+\item{ns}{\code{string} name for the Shiny \code{namespace} to use.  The
+\code{ns} is unlikely to require a change.}
 
-\item{viewer}{\code{function} for the viewer. See Shiny \code{\link[shiny]{viewer}}.
-NOTE: when using \code{browserViewer(browser = getOption("browser"))} to
-open the app in the default browser, the browser window will automatically
-close when closing the app (by pressing "done" or "cancel") in most browsers.
-Firefox is an exception. See Details for instructions on how to enable this
-behaviour in Firefox.}
+\item{viewer}{\code{function} for the viewer. See Shiny
+\code{\link[shiny]{viewer}}. NOTE: when using \code{browserViewer(browser =
+getOption("browser"))} to open the app in the default browser, the browser
+window will automatically close when closing the app (by pressing "done" or
+"cancel") in most browsers. Firefox is an exception. See Details for
+instructions on how to enable this behaviour in Firefox.}
 
-\item{title}{\code{string} to customize the title of the UI window.  The default
-is "Select features".}
+\item{title}{\code{string} to customize the title of the UI window.  The
+default is "Select features".}
 }
 \description{
 Interactively Select Map Features
 }
 \details{
-When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
-  the systems default browser is Firefox, the browser window will likely not
-  automatically close when the app is closed (by pressing "done" or "cancel").
-  To enable automatic closing of tabs/windows in Firefox try the following:
+When setting \code{viewer = browserViewer(browser = getOption("browser"))}
+  and the systems default browser is Firefox, the browser window will likely
+  not automatically close when the app is closed (by pressing "done" or
+  "cancel"). To enable automatic closing of tabs/windows in Firefox try the
+  following:
   \itemize{
     \item{input "about:config " to your firefox address bar and hit enter}
     \item{make sure your "dom.allow_scripts_to_close_windows" is true}

@@ -50,6 +50,7 @@ editMap <- function(x, ...) {
 #'   }
 #'
 #' @export
+#' @importFrom shiny paneViewer stopApp observeEvent runGadget
 editMap.leaflet <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
@@ -59,13 +60,11 @@ editMap.leaflet <- function(
   editorOptions = list(),
   ...
 ) {
-  stopifnot(!is.null(x), inherits(x, "leaflet"))
+  check_leaflet(x)
 
-  stopifnot(
-    requireNamespace("leaflet"),
-    requireNamespace("leaflet.extras"),
-    requireNamespace("shiny"),
-    requireNamespace("miniUI")
+  rlang::check_installed(
+    c("leaflet.extras",
+      "miniUI")
   )
 
   ui <- miniUI::miniPage(
@@ -146,6 +145,7 @@ $(document).on('shiny:disconnected', function() {
 
 #' @name editMap
 #' @export
+#' @importFrom shiny paneViewer
 editMap.mapview <- function(
   x = NULL, targetLayerId = NULL, sf = TRUE,
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
@@ -155,7 +155,7 @@ editMap.mapview <- function(
   editorOptions = list(),
   ...
 ) {
-  stopifnot(!is.null(x), inherits(x, "mapview"), inherits(x@map, "leaflet"))
+  check_mapview(x)
 
   editMap.leaflet(
     x@map, targetLayerId = targetLayerId, sf = sf,
@@ -168,6 +168,8 @@ editMap.mapview <- function(
 
 #' @name editMap
 #' @export
+#' @importFrom mapview mapview
+#' @importFrom leaflet fitBounds
 editMap.NULL = function(x, editor = c("leaflet.extras", "leafpm"),
                         editorOptions = list(), ...) {
   m = mapview::mapview()@map
@@ -233,6 +235,13 @@ editFeatures = function(x, ...) {
 #'   }
 #'
 #' @export
+#' @importFrom shiny paneViewer
+#' @importFrom sf st_crs st_transform st_is_valid
+#' @importFrom mapview mapview
+#' @importFrom leafem addFeatures addHomeButton
+#' @importFrom leaflet labelOptions fitBounds
+#' @importFrom dplyr select all_of
+#' @importFrom cli cli_warn
 editFeatures.sf = function(
   x,
   map = NULL,
@@ -250,10 +259,13 @@ editFeatures.sf = function(
   # store original projection of edited object ----
   orig_proj <- sf::st_crs(x)
   if (is.na(orig_proj)) {
-    stop("The CRS of the input object is not set. Aborting. `mapedit` does not currently
-         allow editing objects with arbitrary coordinates system. Please set the
-         CRS of the input using `sf::st_set_crs()` (for `sf` objects) or `proj4string()
-         for `sp` objects", call. = FALSE)
+    cli_abort(
+      c("The CRS of the input object is not set.",
+      "i" = "{.pkg mapedit} does not currently allow editing objects with arbitrary coordinates system.",
+      "*" = "Please set the CRS of the input using {.fn sf::st_set_crs()} (for {.cls sf} objects)
+      or {.fn proj4string()} for {.cls sp} objects."
+      )
+    )
   }
 
   x$edit_id = as.character(1:nrow(x))
@@ -277,7 +289,7 @@ editFeatures.sf = function(
     )
     map = leafem::addHomeButton(map = map, ext = ext)
   } else {
-    if(inherits(map, "mapview")) {
+    if(is_mapview(map)) {
       map = map@map
     }
     map = leafem::addFeatures(
@@ -288,7 +300,7 @@ editFeatures.sf = function(
     )
   }
 
-  if(inherits(map, "mapview")) map = map@map
+  if(is_mapview(map)) map = map@map
 
   crud = editMap(
     map, targetLayerId = "toedit",
@@ -330,7 +342,7 @@ editFeatures.sf = function(
     init = x
   )
 
-  merged <- dplyr::select_(merged, "-edit_id")
+  merged <- dplyr::select(merged, -dplyr::all_of("edit_id"))
 
   # re-transform to original projection if needed ----
   if (sf::st_crs(merged) != orig_proj) {
@@ -339,7 +351,10 @@ editFeatures.sf = function(
 
   # warn if anything is not valid
   if(!all(sf::st_is_valid(merged))) {
-    warning("returned features do not appear valid; please inspect closely", call. = FALSE)
+    cli::cli_warn(
+      c("Returned features do not appear valid.",
+      "i" = "Please inspect closely.")
+      )
   }
 
   # return merged features

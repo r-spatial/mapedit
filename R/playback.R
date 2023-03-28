@@ -1,17 +1,23 @@
 #' Playback a Recorded 'mapedit' Session on Leaflet Map
 #'
 #' @param x a recorded mapedit session from \code{editFeatures(..., record=TRUE)}
-#' @import htmltools
 #' @keywords internal
+#' @importFrom mapview mapview
+#' @importFrom sf st_geometry
+#' @importFrom leaflet fitBounds
+#' @importFrom jsonlite toJSON
+#' @importFrom htmlwidgets onRender
 
 playback <- function(x, origsf = NULL) {
   if(is.null(x)) {
-    stop("x is NULL.  Please provide x for playback.", call. =  FALSE)
+    cli_abort(
+      c("{.arg x} is {.code NULL}.",
+      "*" = "Please provide {.arg x} for playback."
+      )
+    )
   }
 
-  if(!requireNamespace("geojsonio")) {
-    stop("Playback requires geojsonio.  Please install.packages('geojsonio') and try again.", .call = FALSE)
-  }
+  rlang::check_installed("geojsonio")
 
   view_orig <- getOption("viewer")
   on.exit(options(viewer=view_orig))
@@ -19,7 +25,10 @@ playback <- function(x, origsf = NULL) {
 
   rec <- attr(x, "recorder", exact=TRUE)
   if(is.null(rec)) {
-    stop("Did not find recorder.  Please use record=TRUE with edit functions.", call. = FALSE)
+    cli_abort(
+      c("Recorder can't be found in {.arg x}.",
+      "*" = "Please use {.code record = TRUE} with edit functions.")
+    )
   }
   # check for original in recorder
   #  and use that if origsf not provided

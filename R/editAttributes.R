@@ -1,49 +1,49 @@
 #' @title Edit Feature Attributes
 #'
-#' @description Launches a `shiny` application where you can add and edit spatial geometry
-#' and attributes. Geometry is created or edited within the interactive map, while feature attributes
-#' can be added to and edited within the editable table.
+#' @description Launches a `shiny` application where you can add and edit
+#'   spatial geometry and attributes. Geometry is created or edited within the
+#'   interactive map, while feature attributes can be added to and edited within
+#'   the editable table.
 #'
-#' Starting with a `data.frame` or an `sf data.frame`, a list of `sf data.frames` or nothing
-#' at all. You can add columns, and rows and geometry for each row. Clicking on a row with geometry you can
-#' zoom across the map between features.
+#'   Starting with a `data.frame` or an `sf data.frame`, a list of `sf
+#'   data.frames` or nothing at all. You can add columns, and rows and geometry
+#'   for each row. Clicking on a row with geometry you can zoom across the map
+#'   between features.
 #'
-#' When you are done, your edits are saved to an `sf data.frame` for
-#' use in R or to be saved to anyformat you wish via \link[sf]{st_write}.
+#'   When you are done, your edits are saved to an `sf data.frame` for use in R
+#'   or to be saved to anyformat you wish via \link[sf]{st_write}.
 #'
-#' The application can dynamically handle: character, numeric, integer, factor and date fields.
+#'   The application can dynamically handle: character, numeric, integer, factor
+#'   and date fields.
 #'
-#' When the input data set is an `sf data.frame` the map automatically zooms to the extent of the `sf` object.
+#'   When the input data set is an `sf data.frame` the map automatically zooms
+#'   to the extent of the `sf` object.
 #'
-#' When the input has no spatial data, you must tell the function where to zoom. The function uses
-#' \link[tmaptools]{geocode_OSM} to identify the coordinates of your area of interest.
+#'   When the input has no spatial data, you must tell the function where to
+#'   zoom. The function uses \link[tmaptools]{geocode_OSM} to identify the
+#'   coordinates of your area of interest.
 #'
-#' @param dat input data source, can be a `data.frame` or an `sf data.frame`, or it can be left empty.
-#' When nothing is passed to `dat` a basic `data.frame` is generated with `id` and `comment` fields.
-#' @param zoomto character area of interest. The area is defined using \link[tmaptools]{geocode_OSM},
-#' which uses \href{https://nominatim.org/}{OSM Nominatim}. The area can be as ambiguous as a country, or
-#' as specific as a street address. You can test the area of interest using the application or the example
-#' code below.
-#' @param col_add boolean option to enable add columns form. Set to false if you don't want to allow a user to modify
-#' the data structure.
-#' @param reset boolean option to reset attribute input. Set to false if you don't want the attribute input to
-#' reset to NA after each added row. Use this option when features share common attributes
-#' @param provider A character string indicating the provider tile of choice, e.g. 'Esri.WorldImagery' (default)
+#' @param dat input data source, can be a `data.frame` or an `sf data.frame`, or
+#'   it can be left empty. When nothing is passed to `dat` a basic `data.frame`
+#'   is generated with `id` and `comment` fields.
+#' @param zoomto character area of interest. The area is defined using
+#'   \link[tmaptools]{geocode_OSM}, which uses \href{https://nominatim.org/}{OSM
+#'   Nominatim}. The area can be as ambiguous as a country, or as specific as a
+#'   street address. You can test the area of interest using the application or
+#'   the example code below.
+#' @param col_add boolean option to enable add columns form. Set to false if you
+#'   don't want to allow a user to modify the data structure.
+#' @param reset boolean option to reset attribute input. Set to false if you
+#'   don't want the attribute input to reset to `NA` after each added row. Use
+#'   this option when features share common attributes
+#' @param provider A character string indicating the provider tile of choice,
+#'   e.g. 'Esri.WorldImagery' (default)
+#' @param testing If `TRUE`, stop before launching Shiny application. Defaults
+#'   to `FALSE`.
 #'
-#' @note Editing of feature geometries does not work for multi-geometry inputs. For this use case it is advisable to
-#' split the data set by geometry type and edit separately
-#'
-#' @import sf
-#' @import leaflet
-#' @import mapview
-#' @import leafem
-#' @import leafpop
-#' @import dplyr
-#' @import shiny
-#' @import htmltools
-#' @import DT
-#' @importFrom shinyWidgets actionBttn show_alert useSweetAlert
-#' @importFrom tmaptools geocode_OSM
+#' @note Editing of feature geometries does not work for multi-geometry inputs.
+#'   For this use case it is advisable to split the data set by geometry type
+#'   and edit separately
 #'
 #' @return sf data.frame
 #' @export
@@ -55,9 +55,14 @@
 #' data_sf <- editAttributes(zoomto = 'germany')
 #'
 #' # a data.frame input
-#' dat <- data.frame(name = c('SiteA', 'SiteB'),
-#'                   type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
-#'                   size = c(35, 45))
+#' dat <- data.frame(
+#'   name = c("SiteA", "SiteB"),
+#'   type = factor(
+#'     c("park", "zoo"),
+#'     levels = c("park", "factory", "zoo", "warehouse")
+#'   ),
+#'   size = c(35, 45)
+#' )
 #'
 #' data_sf <- editAttributes(dat, zoomto = 'berlin')
 #'
@@ -69,10 +74,33 @@
 #' mapview(st_as_sfc(zoomto_area$bbox))
 #'
 #' }
-editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, provider = 'Esri.WorldImagery', testing = FALSE){
+#'
+#' @importFrom sf st_as_sf st_sfc st_point st_set_crs st_transform st_crs
+#'   st_geometry_type st_as_sfc st_sf st_geometry st_polygon st_linestring
+#'   st_bbox st_coordinates st_is_empty st_union
+#' @importFrom shinyWidgets useSweetAlert actionBttn show_alert
+#' @importFrom shiny fluidPage fluidRow column wellPanel h3 uiOutput icon
+#'   textInput radioButtons div reactiveValues observe callModule observeEvent
+#'   updateTextInput showNotification renderUI tagList selectInput numericInput
+#'   dateInput updateNumericInput updateDateInput isolate stopApp shinyApp
+#'   runApp
+#' @importFrom DT dataTableOutput renderDataTable datatable dataTableProxy
+#'   editData replaceData
+#' @importFrom leaflet leaflet addProviderTiles addLayersControl hideGroup
+#'   leafletProxy setView fitBounds flyTo flyToBounds
+#' @importFrom leafem addFeatures
+#' @importFrom mapview mapview
+#' @importFrom htmltools tags
+#' @importFrom dplyr filter select mutate
+editAttributes <- function(dat,
+                           zoomto = NULL,
+                           col_add = TRUE,
+                           reset = TRUE,
+                           provider = "Esri.WorldImagery",
+                           testing = FALSE) {
+  rlang::check_installed("leaflet.extras")
 
-
-  #create base df if dat missing
+  # create base df if dat missing
   if (missing(dat)) {
     dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...') %>% mutate(leaf_id = 1)
   }
@@ -88,7 +116,11 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     original_sf <- lapply(dat, function(df){
       df %>% mutate(leaf_id = 1:nrow(df))
     })
-    dat <- bind_rows(dat) %>% mutate(leaf_id = 1:nrow(.))
+
+    dat <- bind_rows(dat)
+
+    data <- dat %>%
+      mutate(leaf_id = 1:nrow(dat))
   }
 
   if (all(class(dat) == 'data.frame')) {
@@ -117,12 +149,19 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     le <- !any(sf::st_geometry_type(dat) %in% c('MULTILINESTRING', 'MULTIPOLYGON'))
 
   } else if (!any(type %in% class(dat))) {
-    assertthat::assert_that(!(is.null(zoomto)),
-                            msg = 'If your input is a non-spatial data.frame you must define a zoomto location')
+
+    if (!is.null(zoomto)) {
+      cli_abort(
+        "A {.arg zoomto} location must be defined when {.arg dat} is a
+        non-spatial {.cls data.frame}."
+      )
+    }
+
   }
 
   # if data or empty (dat) need a zoom to place
   if (!is.null(zoomto)) {
+    rlang::check_installed("tmaptools")
     zoomto_area <- tmaptools::geocode_OSM(zoomto)
     zoomto <- sf::st_as_sfc(zoomto_area$bbox) %>% sf::st_sf() %>% sf::st_set_crs(APP_CRS)
   }
@@ -192,8 +231,8 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
       edits <- shiny::callModule(
         module = editMod,
         leafmap = {
-
-          if (any(type %in% class(dat))){
+          if (any(type %in% class(dat))) {
+            rlang::check_installed("leafpop")
 
             mapv <- leaflet::leaflet() %>%
               leaflet::addProviderTiles(provider = provider,
