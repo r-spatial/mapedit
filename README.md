@@ -3,11 +3,19 @@
 
 # mapedit
 
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/mapedit)](https://cran.r-project.org/package=mapedit)
+<!-- badges: start -->
+
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/mapedit)](https://cran.r-project.org/package=mapedit)
 [![monthly](http://cranlogs.r-pkg.org/badges/mapedit)](https://www.rpackages.io/package/mapedit)
 [![total](http://cranlogs.r-pkg.org/badges/grand-total/mapedit)](https://www.rpackages.io/package/mapedit)
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![License: GPL
+v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+<!-- badges: end -->
 
-Interactive editing of spatial data in R | an
+Interactive editing of spatial data in R \| an
 [RConsortium](https://www.r-consortium.org/) funded
 [project](https://www.r-consortium.org/projects/awarded-projects). For
 additional detail, please see the original
@@ -16,7 +24,7 @@ additional detail, please see the original
 ### Status
 
 `mapedit` is still in active development. We would very much appreciate
-feedback, ideas, and use cases. The API has stabilized, and wee will use
+feedback, ideas, and use cases. The API has stabilized, and we will use
 semantic versioning with Github tagged releases to track changes and
 progress. All changes will also be documented in NEWS.md.
 
@@ -26,8 +34,8 @@ progress. All changes will also be documented in NEWS.md.
 mapedit](http://r-spatial.org/r/2017/01/30/mapedit_intro.html) January
 30, 2017
 
-[mapedit updates
-in 0.2.0](http://r-spatial.org/r/2017/06/09/mapedit_0-2-0.html) June 12,
+[mapedit updates in
+0.2.0](http://r-spatial.org/r/2017/06/09/mapedit_0-2-0.html) June 12,
 2017
 
 [mapedit 0.5.0 and
@@ -36,19 +44,19 @@ March 31, 2019
 
 ### Talks
 
-[Tim Appelhans at
-useR 2017](https://channel9.msdn.com/events/useR-international-R-User-conferences/useR-International-R-User-2017-Conference/mapedit-interactive-manipulation-of-spatial-objects?term=tim%20appelhans)
+[Tim Appelhans at useR
+2017](https://channel9.msdn.com/events/useR-international-R-User-conferences/useR-International-R-User-2017-Conference/mapedit-interactive-manipulation-of-spatial-objects?term=tim%20appelhans)
 July 2017
 
 ### Install
 
 As the CRAN badge above indicates, `mapedit` has achieved CRAN status.
 To install, please use `install.packages`, or for the cutting edge, use
-`devtools::install_github`.
+`pak::pkg_install`.
 
     install.packages("mapedit")
     # cutting edge
-    # remotes::install_github("r-spatial/mapedit@develop")
+    # pak::pkg_install("r-spatial/mapedit@develop")
 
 ### Examples
 
@@ -58,9 +66,9 @@ We can interactively CRD (create, update, delete) features on a map with
     library(mapedit)
     library(leaflet)
     library(mapview)
-    
+
     editMap(leaflet() %>% addTiles())
-    
+
     editMap(
       mapview(breweries91),
       targetLayerId = "breweries91"
@@ -72,7 +80,7 @@ We can interactively CRD (create, update, delete) features on a map with
     library(mapedit)
     library(leaflet)
     library(mapview)
-    
+
     selectMap(
       leaflet(breweries91) %>%
         addTiles() %>%
