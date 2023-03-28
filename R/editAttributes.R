@@ -556,8 +556,10 @@ editAttributes <- function(dat,
                                    type = 'warning')
         } else {
           shiny::stopApp({
-            out <- df$data %>% dplyr::select(-leaf_id) %>%
-              dplyr::mutate(geo_type = as.character(sf::st_geometry_type(.)))
+            out <- df$data %>% dplyr::select(-leaf_id)
+
+            out <- out %>%
+              dplyr::mutate(geo_type = as.character(sf::st_geometry_type(out)))
             out <- sf::st_sf(out, crs = user_crs)
             out <- split(out , f = out$geo_type)
 
