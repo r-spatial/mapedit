@@ -419,8 +419,8 @@ scalePolygonsCoordinates <- function(x) {
 
   x@polygons <- pols
 
-  x_rng <- range(sapply(pols, function(i) bbox(i)[1, ]))
-  y_rng <- range(sapply(pols, function(i) bbox(i)[2, ]))
+  x_rng <- range(sapply(pols, function(i) sp::bbox(i)[1, ]))
+  y_rng <- range(sapply(pols, function(i) sp::bbox(i)[2, ]))
   x@bbox <- matrix(c(x_rng[1], x_rng[2], y_rng[1], y_rng[2]),
                    ncol = 2, byrow = TRUE)
   return(x)
@@ -486,8 +486,8 @@ scaleLinesCoordinates <- function(x) {
 
   x@lines <- lins
 
-  x_rng <- range(sapply(lins, function(i) bbox(i)[1, ]))
-  y_rng <- range(sapply(lins, function(i) bbox(i)[2, ]))
+  x_rng <- range(sapply(lins, function(i) sp::bbox(i)[1, ]))
+  y_rng <- range(sapply(lins, function(i) sp::bbox(i)[2, ]))
   x@bbox <- matrix(c(x_rng[1], x_rng[2], y_rng[1], y_rng[2]),
                    ncol = 2, byrow = TRUE)
   return(x)

@@ -137,8 +137,8 @@ spCheckAdjustProjection <- function(x) {
   if (is.na(raster::projection(x))) {
     warning(non_proj_warning)
     if (class(x)[1] %in% c("SpatialPointsDataFrame", "SpatialPoints")) {
-      methods::slot(x, "coords") <- scaleCoordinates(coordinates(x)[, 1],
-                                                     coordinates(x)[, 2])
+      methods::slot(x, "coords") <- scaleCoordinates(sp::coordinates(x)[, 1],
+                                                     sp::coordinates(x)[, 2])
     } else if (class(x)[1] %in% c("SpatialPolygonsDataFrame",
                                   "SpatialPolygons")) {
       x <- scalePolygonsCoordinates(x)
