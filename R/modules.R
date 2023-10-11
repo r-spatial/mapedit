@@ -6,6 +6,8 @@
 #'
 #' @return ui for Shiny module
 #' @export
+#' @importFrom shiny NS
+#' @importFrom leaflet leafletOutput
 selectModUI <- function(id, ...) {
   ns <- shiny::NS(id)
   leaflet::leafletOutput(ns("map"), ...)
@@ -24,6 +26,8 @@ selectModUI <- function(id, ...) {
 #' @return server function for Shiny module
 # #' @importFrom shiny NS observeEvent
 #' @export
+#' @importFrom leaflet renderLeaflet
+#' @importFrom shiny reactive
 selectMod <- function(
   input, output, session,
   leafmap,
@@ -46,7 +50,7 @@ selectMod <- function(
   df <- data.frame()
 
   # a container for our selections
-  selections <- reactive({
+  selections <- shiny::reactive({
     # when used in modules, we get an event with blank id
     #  on initialize so also make sure we have an id
     id = as.character(input[[select_evt]]$id)
@@ -83,6 +87,8 @@ selectMod <- function(
 #' @return ui for Shiny module
 # #' @importFrom shiny NS observeEvent
 #' @export
+#' @importFrom shiny NS
+#' @importFrom leaflet leafletOutput
 editModUI <- function(id, ...) {
   ns <- shiny::NS(id)
   leaflet::leafletOutput(ns("map"), ...)
@@ -107,6 +113,8 @@ editModUI <- function(id, ...) {
 #' @return server function for Shiny module
 # #' @importFrom shiny NS observeEvent
 #' @export
+#' @importFrom leaflet renderLeaflet
+#' @importFrom shiny observeEvent reactive
 editMod <- function(
   input, output, session,
   leafmap,
@@ -145,7 +153,7 @@ editMod <- function(
     featurelist$drawn <- c(featurelist$drawn, list(input[[EVT_DRAW]]))
     if (any(unlist(input[[EVT_DRAW]]$geometry$coordinates) < -180) ||
         any(unlist(input[[EVT_DRAW]]$geometry$coordinates) > 180))
-      insane_longitude_warning()
+      invalid_longitude_warning()
     featurelist$finished <- c(featurelist$finished, list(input[[EVT_DRAW]]))
   })
 
@@ -157,7 +165,7 @@ editMod <- function(
     # now modify drawn to match edited
     lapply(edited$features, function(x) {
       loc <- match(x$properties$`_leaflet_id`, ids)
-      if(length(loc) > 0) {
+      if(!is.null(loc) && length(loc) > 0) {
         featurelist$finished[loc] <<- list(x)
       }
     })
@@ -184,7 +192,7 @@ editMod <- function(
     # now modify finished to match edited
     lapply(deleted$features, function(x) {
       loc <- match(x$properties$`_leaflet_id`, ids)
-      if(length(loc) > 0) {
+      if(!is.null(loc) && length(loc) > 0) {
         ids <<- ids[-loc]
         featurelist$finished[loc] <<- NULL
       }
@@ -197,7 +205,7 @@ editMod <- function(
     featurelist$all <- list(input[[EVT_ALL]])
     if (any(unlist(input[[EVT_ALL]]$geometry$coordinates) < -180) ||
         any(unlist(input[[EVT_ALL]]$geometry$coordinates) > 180))
-      insane_longitude_warning()
+      invalid_longitude_warning()
   })
 
   # record events if record = TRUE
@@ -205,7 +213,7 @@ editMod <- function(
     lapply(
       c(EVT_DRAW, EVT_EDIT, EVT_DELETE, EVT_ALL),
       function(evt) {
-        observeEvent(input[[evt]], {
+        shiny::observeEvent(input[[evt]], {
           recorder <<- c(
             recorder,
             list(
@@ -224,7 +232,7 @@ editMod <- function(
 
   # collect all of the the features into a list
   #  by action
-  returnlist <- reactive({
+  returnlist <- shiny::reactive({
     workinglist <- list(
       drawn = featurelist$drawn,
       edited = featurelist$edited_all,
