@@ -363,6 +363,7 @@ scaleExtent <- function(x) {
 # Scale unprojected SpatialPolygons* objects ------------------------------
 
 scalePolygonsCoordinates <- function(x) {
+  rlang::check_installed("sp")
 
   coord_lst <- lapply(methods::slot(x, "polygons"), function(x) {
     lapply(methods::slot(x, "Polygons"), function(y) methods::slot(y, "coords"))
@@ -429,6 +430,7 @@ scalePolygonsCoordinates <- function(x) {
 # Scale unprojected SpatialLines* objects ------------------------------
 
 scaleLinesCoordinates <- function(x) {
+  rlang::check_installed("sp")
 
   coord_lst <- lapply(methods::slot(x, "lines"), function(x) {
     lapply(methods::slot(x, "Lines"), function(y) methods::slot(y, "coords"))
@@ -580,6 +582,7 @@ updateOverlayGroups = function(map, group) {
 # Check sp objects --------------------------------------------------------
 
 spCheckObject <- function(x) {
+  rlang::check_installed("sp")
 
   ## convert chracter columns to factor columns
   for (i in names(x)) {

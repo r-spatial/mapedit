@@ -31,6 +31,5 @@
 #' @importFrom rlang check_installed check_required caller_env
 #' @importFrom scales rescale
 #' @importFrom shinyWidgets actionBttn show_alert useSweetAlert
-#' @importFrom sp bbox coordinates
 ## usethis namespace: end
 NULL

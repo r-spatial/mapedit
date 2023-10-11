@@ -1,6 +1,5 @@
 #' @keywords internal
 #' @importFrom raster extent projectExtent xmin xmax ymin ymax
-#' @importFrom sp CRS
 #' @importFrom sf st_bbox
 createExtent <- function(x, offset = NULL) {
   if (is_extent(x)) {
@@ -8,6 +7,7 @@ createExtent <- function(x, offset = NULL) {
   }
 
   if (is_raster(x)) {
+    rlang::check_installed("sp")
     ext <- raster::extent(
       raster::projectExtent(x, crs = sp::CRS("+init=epsg:4326"))
     )

@@ -34,7 +34,6 @@ Imports:
     sf (>= 0.5-2),
     shiny,
     shinyWidgets (>= 0.4.3),
-    sp,
     utils
 Suggests: 
     geojsonio,
@@ -42,6 +41,7 @@ Suggests:
     leafpop,
     mapdeck,
     miniUI,
+    sp,
     stars,
     tmaptools
 Encoding: UTF-8
