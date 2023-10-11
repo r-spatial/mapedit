@@ -73,7 +73,7 @@
 * add new function drawFeatures
 
 
-# mapedit 0.3.2
+## mapedit 0.3.2
 
 ### Bug Fix
 
@@ -85,13 +85,13 @@
 
 * fix merge_edit to only consider last edit when there are multiple edits per layerId
 
-# mapedit 0.3.1
+## mapedit 0.3.1
 
 ### Bug Fix
 
 * multiple edits and deletes resulting in multiple FeatureCollections not handled properly causing some actions to not be considered when converting to `sf`; thanks @tim-salabim for identifying
 
-# mapedit 0.3.0
+## mapedit 0.3.0
 
 ### API Changes
 
@@ -114,11 +114,11 @@ within one RStudio window/context.
 * document more thoroughly
 * pass trial CRAN check
 
-## Bug Fixes
+### Bug Fixes
 
 * fix internal `combine_list_of_sf` with length 0 `list`; found when `editFeatures()` and save with no changes
 
-# mapedit 0.2.0
+## mapedit 0.2.0
 
 * add Shiny module functionality
 * add selectFeatures function for easy selection of features from simple features (sf)
@@ -130,19 +130,19 @@ within one RStudio window/context.
 * uses newly exported mapview::addFeatures()
 
 
-# mapedit 0.1.0
+## mapedit 0.1.0
 
 **API breaking change**
 
 * camelCase `editMap` and `selectMap`
 
-# mapedit 0.0.2
+## mapedit 0.0.2
 
 * add dependency on `dplyr`
 * add dependency on `sf`
 * `edit_map()` now returns `sf` instead of `geojson` by default.  Toggle
     behavior with the `sf` argument.
 
-# mapedit 0.0.1
+## mapedit 0.0.1
 
 * first release with proof-of-concept functionality
