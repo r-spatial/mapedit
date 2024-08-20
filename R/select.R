@@ -44,6 +44,11 @@ selectFeatures = function(x, ...) {
 #'   }
 #'
 #' @export
+#' @importFrom sf st_intersects st_crs st_transform
+#' @importFrom shiny paneViewer
+#' @importFrom leafem addFeatures addHomeButton
+#' @importFrom leaflet fitBounds
+#' @importFrom mapview mapView
 selectFeatures.sf = function(
   x = NULL,
   mode = c("click", "draw"),
@@ -79,7 +84,7 @@ selectFeatures.sf = function(
       )
       map = leafem::addHomeButton(map = map, ext = ext)
     } else {
-      if(inherits(map, "mapview")) {
+      if(is_mapview(map)) {
         map = map@map
       }
       map = leafem::addFeatures(
@@ -102,7 +107,7 @@ selectFeatures.sf = function(
 
   } else {
 
-    stopifnot(requireNamespace("sf"))
+    rlang::check_installed("sf")
 
     drawn = editMap(mapview::mapView(x, map = map, layer.name = nm, ...), title = title)
 
@@ -127,6 +132,7 @@ selectFeatures.sf = function(
 
 #' @name selectFeatures
 #' @export
+#' @importFrom sf st_as_sf
 selectFeatures.Spatial = function(x, ...) {
   selectFeatures(x = sf::st_as_sf(x), ...)
 }

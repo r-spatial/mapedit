@@ -1,3 +1,5 @@
+check_installed(c("maps", "sp", "maptools", "sf", "dplyr",
+                  "leaflet", "htmltools", "crosstalk"))
 library(maps)
 library(sp)
 library(maptools)
@@ -10,7 +12,7 @@ library(crosstalk)
 
 usa <- map("state", fill = TRUE)
 IDs <- sapply(strsplit(usa$names, ":"), function(x) x[1])
-usa <- map2SpatialPolygons(usa, IDs=IDs, proj4string=CRS("+proj=longlat +datum=WGS84"))
+usa <- map2SpatialPolygons(usa, IDs=IDs, proj4string= sp::CRS("+proj=longlat +datum=WGS84"))
 
 # convert to simple features
 usa_sf <- st_as_sf(usa)

@@ -31,6 +31,9 @@ processOpts <- function(fun, args) {
 ##'     use with edit
 ##' @return The leaflet map supplied to \code{leafmap}, now with an
 ##'     added toolbar.
+##' @importFrom utils modifyList
+##' @importFrom leafpm addPmToolbar pmToolbarOptions pmDrawOptions pmEditOptions
+##'   pmCutOptions
 addToolbar <- function(leafmap, editorOptions, editor,
                        targetLayerId) {
     ## Set up this package's defaults
@@ -51,6 +54,8 @@ addToolbar <- function(leafmap, editorOptions, editor,
         }
     }
     if (editor == "leaflet.extras") {
+      rlang::check_installed("leaflet.extras")
+
         editorDefaults <-
             list(polylineOptions = list(repeatMode = TRUE),
                  polygonOptions = list(repeatMode = TRUE),
