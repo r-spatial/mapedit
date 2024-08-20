@@ -57,7 +57,7 @@ checkAdjustProjection.sf <-
 
 # Project Raster* objects for mapView =====================================
 rasterCheckAdjustProjection <- function(x, method = "bilinear") {
-  rlang::check_installed("sp")
+  rlang::check_installed(c("sp", "raster"))
 
   is.fact <- raster::is.factor(x)[1]
 
@@ -132,7 +132,7 @@ sfCheckAdjustProjection <- function(x) {
 
 # Check and potentially adjust projection of Spatial* objects =============
 spCheckAdjustProjection <- function(x) {
-  rlang::check_installed("sp")
+  rlang::check_installed(c("sp", "raster"))
 
   if (is.na(raster::projection(x))) {
     warning(non_proj_warning)

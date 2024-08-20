@@ -84,8 +84,6 @@
 #'   updateTextInput showNotification renderUI tagList selectInput numericInput
 #'   dateInput updateNumericInput updateDateInput isolate stopApp shinyApp
 #'   runApp
-#' @importFrom DT dataTableOutput renderDataTable datatable dataTableProxy
-#'   editData replaceData
 #' @importFrom leaflet leaflet addProviderTiles addLayersControl hideGroup
 #'   leafletProxy setView fitBounds flyTo flyToBounds
 #' @importFrom leafem addFeatures
@@ -98,7 +96,7 @@ editAttributes <- function(dat,
                            reset = TRUE,
                            provider = "Esri.WorldImagery",
                            testing = FALSE) {
-  rlang::check_installed("leaflet.extras")
+  rlang::check_installed(c("leaflet.extras", "DT"))
 
   # create base df if dat missing
   if (missing(dat)) {
@@ -166,6 +164,7 @@ editAttributes <- function(dat,
     zoomto <- sf::st_as_sfc(zoomto_area$bbox) %>% sf::st_sf() %>% sf::st_set_crs(APP_CRS)
   }
 
+  rlang::check_installed("DT")
 
   ui <- tagList(
     shinyWidgets::useSweetAlert(),

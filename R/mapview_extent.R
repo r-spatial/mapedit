@@ -1,10 +1,11 @@
 #' @keywords internal
-#' @importFrom raster extent projectExtent xmin xmax ymin ymax
 #' @importFrom sf st_bbox
 createExtent <- function(x, offset = NULL) {
   if (is_extent(x)) {
     return(x)
   }
+
+  rlang::check_installed("raster")
 
   if (is_raster(x)) {
     rlang::check_installed("sp")
@@ -18,8 +19,8 @@ createExtent <- function(x, offset = NULL) {
       raster::ymin(x),
       raster::ymax(x)
     )
-  } else if (inherits(x, "sfc") | inherits(x, "sf") |
-    inherits(x, "XY") | inherits(x, "stars")) {
+  } else if (inherits(x, "sfc") || inherits(x, "sf") ||
+    inherits(x, "XY") || inherits(x, "stars")) {
     bb <- sf::st_bbox(x)
     ext <- raster::extent(bb[1], bb[3], bb[2], bb[4])
   }

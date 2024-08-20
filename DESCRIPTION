@@ -7,7 +7,8 @@ Authors@R: c(
     person("Kenton", "Russell", role = "aut"),
     person("Lorenzo", "Busetto", role = "aut"),
     person("Josh", "O'Brien", role = "ctb"),
-    person("Jakob", "Gutschlhofer", role = "ctb")
+    person("Jakob", "Gutschlhofer", role = "ctb"),
+    person("Eli", "Pousson", role = "ctb", comment = c(ORCID = "0000-0001-8280-1706"))
   )
 Description: Suite of interactive functions and helpers for selecting and
     editing geospatial data.
@@ -19,7 +20,6 @@ Depends:
 Imports:
     cli,
     dplyr,
-    DT,
     htmltools (>= 0.3),
     htmlwidgets,
     jsonlite,
@@ -28,7 +28,6 @@ Imports:
     leafpm,
     mapview,
     methods,
-    raster,
     rlang,
     scales,
     sf (>= 0.5-2),
@@ -36,14 +35,16 @@ Imports:
     shinyWidgets (>= 0.4.3),
     utils
 Suggests: 
+    DT,
     geojsonio,
     leaflet.extras (>= 1.0),
     leafpop,
     mapdeck,
     miniUI,
+    raster,
     sp,
     stars,
     tmaptools
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2

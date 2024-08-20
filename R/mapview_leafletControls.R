@@ -191,11 +191,13 @@ removeDuplicatedMapDependencies <- function(map) {
 
 
 rasterCheckSize<- function(x, maxpixels) {
+  rlang::check_installed("raster")
+
   if (maxpixels < raster::ncell(x)) {
     warning(paste("maximum number of pixels for Raster* viewing is",
-                  maxpixels, "; \nthe supplied Raster* has", ncell(x), "\n",
+                  maxpixels, "; \nthe supplied Raster* has", raster::ncell(x), "\n",
                   "... decreasing Raster* resolution to", maxpixels, "pixels\n",
-                  "to view full resolution set 'maxpixels = ", ncell(x), "'"))
+                  "to view full resolution set 'maxpixels = ", raster::ncell(x), "'"))
     x <- raster::sampleRegular(x, maxpixels, asRaster = TRUE, useGDAL = TRUE)
   }
   return(x)
@@ -352,6 +354,8 @@ scaleCoordinates <- function(x.coords, y.coords) {
 # Scale extent ------------------------------------------------------------
 
 scaleExtent <- function(x) {
+  rlang::check_installed("raster")
+
   ratio <- raster::nrow(x) / raster::ncol(x)
   x_sc <- scales::rescale(c(x@extent@xmin, x@extent@xmax), c(0, 1))
   y_sc <- scales::rescale(c(x@extent@ymin, x@extent@ymax), c(0, 1)) * ratio

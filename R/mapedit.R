@@ -27,7 +27,6 @@
 #'   leafletSizingPolicy providerTileOptions `%>%`
 #' @importFrom mapview mapview mapviewGetOption
 #' @importFrom methods slot slotNames as
-#' @importFrom raster nrow ncol extent ncell
 #' @importFrom rlang check_installed check_required caller_env
 #' @importFrom scales rescale
 #' @importFrom shinyWidgets actionBttn show_alert useSweetAlert
