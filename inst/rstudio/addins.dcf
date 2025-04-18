@@ -1,0 +1,9 @@
+Name: Create Spatial Data
+Description: Create spatial data using mapedit
+Binding: createFeatures
+Interactive: true
+
+Name: Edit Spatial Data and Attributes
+Description: Create and edit spatial data and attributes
+Binding: editAttributes
+Interactive: true
