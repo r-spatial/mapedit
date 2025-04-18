@@ -2,7 +2,7 @@ Package: mapedit
 Title: Interactive Editing of Spatial Data in R
 Description: Suite of interactive functions and helpers for selecting and editing
     geospatial data.
-Version: 0.6.1
+Version: 0.6.1.9002
 Date: 2020-04-13
 Authors@R: c(
     person("Tim", "Appelhans", role = c("aut", "cre"), email = "tim.appelhans@gmail.com"),
@@ -17,7 +17,9 @@ License: MIT + file LICENSE
 Depends:
     R (>= 3.1.0)
 Imports:
+    assertthat,
     dplyr,
+    DT,
     htmltools (>= 0.3),
     htmlwidgets,
     jsonlite,
@@ -25,6 +27,7 @@ Imports:
     leaflet (>= 2.0.1),
     leaflet.extras (>= 1.0),
     leafpm,
+    leafpop,
     mapview,
     methods,
     miniUI,
@@ -32,7 +35,7 @@ Imports:
     scales,
     sf (>= 0.5-2),
     shiny,
-    rstudioapi (>= 0.8),
+    tmaptools,
     shinyWidgets (>= 0.4.3)
 Suggests:
     crayon
@@ -40,5 +43,4 @@ Enhances:
     geojsonio
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
-
+RoxygenNote: 7.1.2
