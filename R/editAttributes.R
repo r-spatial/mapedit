@@ -71,10 +71,16 @@
 #' }
 editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, provider = 'Esri.WorldImagery', testing = FALSE){
 
+  DEFAULT_ZOOM <- 'africa'
+  MSG <- 'When neither sf object nor zoomto is default, map will zoom to Africa'
 
   #create base df if dat missing
   if (missing(dat)) {
     dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...') %>% mutate(leaf_id = 1)
+    if (is.null(zoomto)) {
+      message(MSG)
+      zoomto <- DEFAULT_ZOOM
+    }
   }
 
   APP_CRS <- 4326
@@ -100,6 +106,11 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
     user_crs <- APP_CRS
     le = TRUE
+
+    if (is.null(zoomto)) {
+      message(MSG)
+      zoomto <- DEFAULT_ZOOM
+    }
 
    } else if (any(type %in% class(dat))) {
 
