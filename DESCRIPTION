@@ -3,7 +3,6 @@ Title: Interactive Editing of Spatial Data in R
 Description: Suite of interactive functions and helpers for selecting and editing
     geospatial data.
 Version: 0.6.1.9002
-Date: 2020-04-13
 Authors@R: c(
     person("Tim", "Appelhans", role = c("aut", "cre"), email = "tim.appelhans@gmail.com"),
     person("Kenton", "Russell", role = c("aut")),
