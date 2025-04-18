@@ -48,7 +48,7 @@ createFeatures <- function(SF_OBJECT = NULL) {
   server <- function(input, output, session) {
 
     # get values from rstudio
-    ct <- getActiveDocumentContext()
+    ct <- rstudioapi::getActiveDocumentContext()
 
     TEXT <- ct$selection[[1]]$text
     OBJECTNAME <- ifelse(TEXT == '', 'geom', TEXT)

@@ -32,15 +32,16 @@ Imports:
     methods,
     miniUI,
     raster,
+    rstudioapi,
     scales,
     sf (>= 0.5-2),
     shiny,
     tmaptools,
     shinyWidgets (>= 0.4.3)
 Suggests:
-    crayon
+    crayon,
+    sp
 Enhances:
     geojsonio
 Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2

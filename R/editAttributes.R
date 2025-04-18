@@ -29,6 +29,7 @@
 #' @param reset boolean option to reset attribute input. Set to false if you don't want the attribute input to
 #' reset to NA after each added row. Use this option when features share common attributes
 #' @param provider A character string indicating the provider tile of choice, e.g. 'Esri.WorldImagery' (default)
+#' @param testing Only relevant for internal testing using shinytest.
 #'
 #' @note Editing of feature geometries does not work for multi-geometry inputs. For this use case it is advisable to
 #' split the data set by geometry type and edit separately
@@ -41,7 +42,6 @@
 #' @import dplyr
 #' @import shiny
 #' @import htmltools
-#' @import DT
 #' @importFrom shinyWidgets actionBttn show_alert useSweetAlert
 #' @importFrom tmaptools geocode_OSM
 #'
@@ -56,7 +56,10 @@
 #'
 #' # a data.frame input
 #' dat <- data.frame(name = c('SiteA', 'SiteB'),
-#'                   type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
+#'                   type = factor(
+#'                     c('park', 'zoo')
+#'                     , levels = c('park', 'factory', 'zoo', 'warehouse')
+#'                   ),
 #'                   size = c(35, 45))
 #'
 #' data_sf <- editAttributes(dat, zoomto = 'berlin')
@@ -73,6 +76,8 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
   DEFAULT_ZOOM <- 'africa'
   MSG <- 'When neither sf object nor zoomto is default, map will zoom to Africa'
+
+  leaf_id = NULL
 
   #create base df if dat missing
   if (missing(dat)) {
@@ -94,7 +99,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     original_sf <- lapply(dat, function(df){
       df %>% mutate(leaf_id = 1:nrow(df))
     })
-    dat <- bind_rows(dat) %>% mutate(leaf_id = 1:nrow(.))
+    dat <- bind_rows(dat) %>% mutate(leaf_id = 1:nrow(dat))
   }
 
   if (all(class(dat) == 'data.frame')) {
@@ -529,7 +534,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
         } else {
           shiny::stopApp({
             out <- df$data %>% dplyr::select(-leaf_id) %>%
-              dplyr::mutate(geo_type = as.character(sf::st_geometry_type(.)))
+              dplyr::mutate(geo_type = as.character(sf::st_geometry_type(df$data)))
             out <- sf::st_sf(out, crs = user_crs)
             out <- split(out , f = out$geo_type)
 

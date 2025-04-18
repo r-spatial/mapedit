@@ -29,6 +29,8 @@ the data structure.}
 reset to NA after each added row. Use this option when features share common attributes}
 
 \item{provider}{A character string indicating the provider tile of choice, e.g. 'Esri.WorldImagery' (default)}
+
+\item{testing}{Only relevant for internal testing using shinytest.}
 }
 \value{
 sf data.frame
@@ -64,7 +66,10 @@ data_sf <- editAttributes(zoomto = 'germany')
 
 # a data.frame input
 dat <- data.frame(name = c('SiteA', 'SiteB'),
-                  type = factor(c('park', 'zoo'), levels = c('park', 'factory', 'zoo', 'warehouse')),
+                  type = factor(
+                    c('park', 'zoo')
+                    , levels = c('park', 'factory', 'zoo', 'warehouse')
+                  ),
                   size = c(35, 45))
 
 data_sf <- editAttributes(dat, zoomto = 'berlin')

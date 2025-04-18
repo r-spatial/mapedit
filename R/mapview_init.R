@@ -41,40 +41,66 @@ initMap <- function(map = NULL,
           )
         )
       } else {
-        m <- initBaseMaps(map.types, canvas = canvas, viewer.suppress = viewer.suppress)
+        m <- initBaseMaps(
+          map.types
+          , canvas = canvas
+          , viewer.suppress = viewer.suppress
+        )
       }
     } else {
       m <- map
     }
 
-  } else if (platform == "mapdeck") {
-
-    map.types = map.types[1]
-
-    if (is.null(map)) {
-      if (is.null(map.types)) {
-        map.types <- mapviewGetOption("basemaps")[1]
-      }
-
-      md_args = try(
-        match.arg(
-          nms,
-          names(as.list(args(mapdeck::mapdeck))),
-          several.ok = TRUE
-        )
-        , silent = TRUE
-      )
-      if (!inherits(md_args, "try-error")) {
-        md_args = ls[md_args]
-        md_args$style = map.types
-        m = do.call(mapdeck::mapdeck, Filter(Negate(is.null), md_args))
-      } else {
-        m = mapdeck::mapdeck(style = map.types)
-      }
-    } else {
-      m = map
-    }
   }
 
   return(m)
+}
+
+
+initBaseMaps <- function(map.types, canvas = FALSE, viewer.suppress = FALSE) {
+  ## create base map using specified map types
+  if (missing(map.types)) map.types <- mapviewGetOption("basemaps")
+  leafletHeight <- mapviewGetOption("leafletHeight")
+  leafletWidth <- mapviewGetOption("leafletWidth")
+  lid <- 1:length(map.types)
+  m <- leaflet::leaflet(
+    height = leafletHeight,
+    width = leafletWidth,
+    options = leaflet::leafletOptions(
+      minZoom = 1,
+      maxZoom = 52,
+      bounceAtZoomLimits = FALSE,
+      maxBounds = list(
+        list(c(-90, -370)),
+        list(c(90, 370))),
+      preferCanvas = canvas),
+    sizingPolicy = leafletSizingPolicy(
+      viewer.suppress = viewer.suppress,
+      browser.external = viewer.suppress
+    )
+  )
+  if (!(is.null(map.types))) {
+    m <- leaflet::addProviderTiles(m, provider = map.types[1],
+                                   layerId = map.types[1], group = map.types[1],
+                                   options = providerTileOptions(
+                                     pane = "tilePane"
+                                   ))
+    if (length(map.types) > 1) {
+      for (i in 2:length(map.types)) {
+        m <- leaflet::addProviderTiles(m, provider = map.types[i],
+                                       layerId = map.types[i], group = map.types[i],
+                                       options = providerTileOptions(
+                                         pane = "tilePane"
+                                       ))
+        m = removeDuplicatedMapDependencies(m)
+      }
+    }
+  }
+  return(m)
+}
+
+removeDuplicatedMapDependencies <- function(map) {
+  ind <- duplicated(map$dependencies)
+  if (any(ind)) map$dependencies[ind] <- NULL
+  return(map)
 }
