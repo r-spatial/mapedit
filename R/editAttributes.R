@@ -1,7 +1,3 @@
-
-
-
-
 #' @title Edit Feature Attributes
 #'
 #' @description Launches a `shiny` application where you can add and edit spatial geometry
@@ -45,7 +41,7 @@
 #' @import dplyr
 #' @import shiny
 #' @import htmltools
-#' @importFrom DT dataTableOutput renderDataTable datatable replaceData dataTableProxy editData
+#' @import DT
 #' @importFrom shinyWidgets actionBttn show_alert useSweetAlert
 #' @importFrom tmaptools geocode_OSM
 #'
@@ -103,10 +99,10 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
   if (all(class(dat) == 'data.frame')) {
     dat <- dat %>% mutate(leaf_id = 1:nrow(dat))
-    data_copy <- st_as_sf(
+    data_copy <- sf::st_as_sf(
       dat,
-      geometry = st_sfc(lapply(seq_len(nrow(dat)),function(i){st_point()}))
-    ) %>% st_set_crs(APP_CRS)
+      geometry = sf::st_sfc(lapply(seq_len(nrow(dat)),function(i){sf::st_point()}))
+    ) %>% sf::st_set_crs(APP_CRS)
 
     user_crs <- APP_CRS
     le = TRUE
@@ -139,56 +135,56 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
   # if data or empty (dat) need a zoom to place
   if (!is.null(zoomto)) {
     zoomto_area <- tmaptools::geocode_OSM(zoomto)
-    zoomto <- st_as_sfc(zoomto_area$bbox) %>% st_sf() %>% st_set_crs(APP_CRS)
+    zoomto <- sf::st_as_sfc(zoomto_area$bbox) %>% sf::st_sf() %>% sf::st_set_crs(APP_CRS)
   }
 
 
   ui <- tagList(
-    useSweetAlert(),
-    fluidPage(
-      fluidRow(
-        column(12, editModUI("map"))
+    shinyWidgets::useSweetAlert(),
+    shiny::fluidPage(
+      shiny::fluidRow(
+        shiny::column(12, editModUI("map"))
       ),
       tags$hr(),
-      fluidRow(
-        column(ifelse(col_add, 6, 9),
+      shiny::fluidRow(
+        shiny::column(ifelse(col_add, 6, 9),
                DT::dataTableOutput("tbl",width="100%", height=200)),
-        column(3,
-               wellPanel(
-                 h3('Add New Row'),
-                 uiOutput('dyn_form'),
-                 shinyWidgets::actionBttn("row_add", "Row",
-                                          icon = icon('plus'),
-                                          style = 'material-flat',
-                                          block = TRUE,
-                                          color = 'primary',
-                                          size = 'md'))
+        shiny::column(3,
+                      shiny::wellPanel(
+                        shiny::h3('Add New Row'),
+                        shiny::uiOutput('dyn_form'),
+                        shinyWidgets::actionBttn("row_add", "Row",
+                                                 icon = shiny::icon('plus'),
+                                                 style = 'material-flat',
+                                                 block = TRUE,
+                                                 color = 'primary',
+                                                 size = 'md'))
         ),
         {if (col_add) {
-          column(3,
-                 wellPanel(
-                   h3('Add New Column'),
-                   shiny::textInput('new_name', 'New Column Name', width = '100%'),
-                   shiny::radioButtons('new_type', 'Column Type', choices = c('character', 'numeric', 'integer', 'Date')),
-                   shinyWidgets::actionBttn("col_add", "Column",
-                                            icon = icon('plus'),
-                                            style = 'material-flat',
-                                            block = TRUE,
-                                            color = 'primary',
-                                            size = 'md'))
+          shiny::column(3,
+                        shiny::wellPanel(
+                          shiny::h3('Add New Column'),
+                          shiny::textInput('new_name', 'New Column Name', width = '100%'),
+                          shiny::radioButtons('new_type', 'Column Type', choices = c('character', 'numeric', 'integer', 'Date')),
+                          shinyWidgets::actionBttn("col_add", "Column",
+                                                   icon = shiny::icon('plus'),
+                                                   style = 'material-flat',
+                                                   block = TRUE,
+                                                   color = 'primary',
+                                                   size = 'md'))
           )} else {
             NULL
           }
         }
       ),
-      fluidRow(tags$hr(),
-               div(style = 'padding: 20px',
-                   shinyWidgets::actionBttn("donebtn", "Done",
-                                            icon = icon('check-circle'),
-                                            style = 'material-flat',
-                                            block = TRUE,
-                                            color = 'success',
-                                            size = 'lg')))
+      shiny::fluidRow(tags$hr(),
+                      shiny::div(style = 'padding: 20px',
+                                 shinyWidgets::actionBttn("donebtn", "Done",
+                                                          icon = shiny::icon('check-circle'),
+                                                          style = 'material-flat',
+                                                          block = TRUE,
+                                                          color = 'success',
+                                                          size = 'lg')))
 
     )
   )
@@ -196,15 +192,15 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
   server <- function(input, output, session) {
 
     # gather all data into reactiveValues
-    df <- reactiveValues(types = sapply(dat, class),
-                         data = data_copy,
-                         zoom_to = zoomto,
-                         edit_logic = le)
+    df <- shiny::reactiveValues(types = sapply(dat, class),
+                                data = data_copy,
+                                zoom_to = zoomto,
+                                edit_logic = le)
 
     # mapedit module
-    observe({
+    shiny::observe({
 
-      edits <- callModule(
+      edits <- shiny::callModule(
         module = editMod,
         leafmap = {
 
@@ -220,8 +216,8 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
                                   group = 'editLayer',
                                   popup = leafpop::popupTable(df$data))
           } else {
-            mapv <- mapview(df$zoom_to,
-                            map.types = provider)@map %>%
+            mapv <- mapview::mapview(df$zoom_to,
+                                     map.types = provider)@map %>%
               leaflet::hideGroup('df$zoom_to') %>%
               leafem::addFeatures(data = df$data,
                                   layerId = df$data$leaf_id,
@@ -241,7 +237,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     proxy_map <- leaflet::leafletProxy('map-map', session)
 
     # watch for NEW COLUMN button clicks
-    observeEvent(input$col_add, {
+    shiny::observeEvent(input$col_add, {
 
       if (nchar(input$new_name)==0) {
         shinyWidgets::show_alert('Missing Column Name',
@@ -257,32 +253,32 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
         names(ntype) <- input$new_name
         df$types <- c(df$types, ntype)
 
-        updateTextInput(session, 'new_name', value = NA)
-        showNotification('Added New Column')
+        shiny::updateTextInput(session, 'new_name', value = NA)
+        shiny::showNotification('Added New Column')
       }
     })
 
 
     # render new row form based on the existing data structure
-    observe({
+    shiny::observe({
 
-      output$dyn_form <- renderUI({
+      output$dyn_form <- shiny::renderUI({
 
-        tagList(
+        shiny::tagList(
           lapply(1:length(df$types), function(n){
             name <- names(df$types[n])
             label <- paste0(names(df$types[n]), ' (', df$types[n], ')')
             if (df$types[n] == 'character') {
-              textInput(name, label, width = '100%')
+              shiny::textInput(name, label, width = '100%')
             } else if (df$types[n] == 'factor') {
-              selectInput(name, label, width = '100%',
-                          choices = levels(dat[[names(df$types[n])]]),
-                          selected = NULL,
-                          selectize = TRUE)
+              shiny::selectInput(name, label, width = '100%',
+                                 choices = levels(dat[[names(df$types[n])]]),
+                                 selected = NULL,
+                                 selectize = TRUE)
             } else if (df$types[n] %in% c('numeric','integer')) {
-              numericInput(name, label, width = '100%', value = NA)
+              shiny::numericInput(name, label, width = '100%', value = NA)
             } else if (df$types[n] == 'Date') {
-              dateInput(name, label, width = '100%', value = NA)
+              shiny::dateInput(name, label, width = '100%', value = NA)
             }
           }),
           # we don't want to see this element but it is needed to form data structure
@@ -310,7 +306,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
       )
     })
 
-    proxy = dataTableProxy('tbl')
+    proxy = DT::dataTableProxy('tbl')
 
 
     # modify namespace to get map ID
@@ -331,7 +327,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     # determines whether to use 'row_add' or 'map_draw_feature'
     # also, if rows are selected then it won't trigger the 'map_draw_feature'
     addRowOrDrawObserve <- function(event, id) {
-      observeEvent(
+      shiny::observeEvent(
         if(is.na(id)){
 
           input[[event]]
@@ -353,7 +349,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
                 new_row[names(df$types[i])] <- input[[names(df$types[i])]]
               }
 
-              new_row <- st_as_sf(new_row, geometry = st_sfc(st_point()), crs = APP_CRS)
+              new_row <- sf::st_as_sf(new_row, geometry = sf::st_sfc(sf::st_point()), crs = APP_CRS)
 
               suppressWarnings({
                 # add to data_copy data.frame and update visible table
@@ -368,11 +364,11 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
                   nm <- names(typ)
 
                   if (typ == 'character') {
-                    updateTextInput(session, nm, value = NA)
+                    shiny::updateTextInput(session, nm, value = NA)
                   } else if (typ %in% c('numeric','integer')) {
-                    updateNumericInput(session, nm, value = NA)
+                    shiny::updateNumericInput(session, nm, value = NA)
                   } else if (typ == 'Date') {
-                    updateDateInput(session, nm, value = NA)
+                    shiny::updateDateInput(session, nm, value = NA)
                   }
 
                 }
@@ -385,7 +381,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     addRowOrDrawObserve(EVT_DRAW, id = 'map')
 
     addDrawObserve <- function(event) {
-      observeEvent(
+      shiny::observeEvent(
         input[[nsm(event)]],
         {
           evt <- input[[nsm(event)]]
@@ -401,7 +397,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
               ids <- append(ids, iter)
             }
 
-            df$data <- filter(df$data, !df$data$leaf_id %in% ids)
+            df$data <- dplyr::filter(df$data, !df$data$leaf_id %in% ids)
             df$ids <- ids
 
           } else if (event == EVT_EDIT) {
@@ -413,13 +409,13 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
               geom <- unlist(evt$features[[i]]$geometry$coordinates)
 
               if (evt_type == 'Point') {
-                sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_point(geom))
+                sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- sf::st_sfc(sf::st_point(geom))
               } else if (evt_type == 'Polygon'){
                 geom <- matrix(geom, ncol = 2, byrow = T)
-                sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_polygon(list(geom)))
+                sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- sf::st_sfc(sf::st_polygon(list(geom)))
               } else if (evt_type == 'LineString'){
                 geom <- matrix(geom, ncol = 2, byrow = T)
-                sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- st_sfc(st_linestring(geom))
+                sf::st_geometry(df$data[df$data$leaf_id %in% leaf_id,]) <- sf::st_sfc(sf::st_linestring(geom))
               }
             }
 
@@ -427,7 +423,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
             # below determines whether to use 'row_add' or 'map_draw_feature' for adding geometries
             if(!is.null(input$tbl_rows_selected)) {
-              selected <- isolate(input$tbl_rows_selected)
+              selected <- shiny::isolate(input$tbl_rows_selected)
             }  else if (event == EVT_DRAW){
               selected <- length(input$tbl_rows_all) + 1
             }
@@ -440,7 +436,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
             # replace if draw or edit
             if(skip==FALSE) {
               sf::st_geometry(df$data[selected,]) <- sf::st_geometry(
-                mapedit:::st_as_sfc.geo_list(evt))
+                st_as_sfc.geo_list(evt))
 
               #adding the leaf_id when we draw or row_add
               df$data[selected, 'leaf_id'] <- as.integer(evt$properties[['_leaflet_id']])
@@ -455,7 +451,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     addDrawObserve(EVT_DELETE)
 
     # this is used to keep the zoom of leaflet relevant
-    observeEvent(input[[nsm(EVT_DRAW)]],{
+    shiny::observeEvent(input[[nsm(EVT_DRAW)]],{
 
       click <- input[[nsm('map_draw_new_feature')]]
 
@@ -485,7 +481,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     })
 
     # zoom to if feature available on selected row, same as above but with DT selected rows
-    observeEvent(
+    shiny::observeEvent(
       input$tbl_rows_selected,
       {
         selected <- input$tbl_rows_selected
@@ -496,14 +492,14 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
           #   and leaflet id populated
           if (all(!is.na(sf::st_coordinates(sf::st_geometry(rowsel)[[1]])))) {
 
-            if (st_geometry_type(rowsel) == 'POINT') {
-              pnt <- st_coordinates(rowsel) %>% as.data.frame()
+            if (sf::st_geometry_type(rowsel) == 'POINT') {
+              pnt <- sf::st_coordinates(rowsel) %>% as.data.frame()
               proxy_map %>%
                 leaflet::flyTo(lng = pnt$X, lat = pnt$Y, zoom = input[[nsm('map_zoom')]])
             } else {
               bb <- st_bbox(sf::st_geometry(rowsel))
               proxy_map %>%
-                flyToBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
+                leaflet::flyToBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
             }
 
           }
@@ -512,34 +508,34 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
     )
 
     # update table cells with double click on cell
-    observeEvent(input$tbl_cell_edit, {
+    shiny::observeEvent(input$tbl_cell_edit, {
 
-      df$data <- editData(df$data, input$tbl_cell_edit, 'tbl', resetPaging = F)
+      df$data <- DT::editData(df$data, input$tbl_cell_edit, 'tbl', resetPaging = F)
       DT::replaceData(proxy, df$data, rownames = FALSE, resetPaging = FALSE)
 
     })
 
     # provide mechanism to return after all done
-    observeEvent(input$donebtn, {
+    shiny::observeEvent(input$donebtn, {
 
-      if (testing) stopApp()
+      if (testing) shiny::stopApp()
 
       if(grepl(class(df$data$geometry)[[1]], "sfc_GEOMETRY")){
 
-        if (any(st_is_empty(df$data$geometry))) {
+        if (any(sf::st_is_empty(df$data$geometry))) {
           shinyWidgets::show_alert('Missing Geometry',
                                    'some features are missing geometry, these must be entered before saving',
                                    type = 'warning')
         } else {
-          stopApp({
+          shiny::stopApp({
             out <- df$data %>% dplyr::select(-leaf_id) %>%
-              dplyr::mutate(geo_type = as.character(st_geometry_type(.)))
-            out <- st_sf(out, crs = user_crs)
+              dplyr::mutate(geo_type = as.character(sf::st_geometry_type(.)))
+            out <- sf::st_sf(out, crs = user_crs)
             out <- split(out , f = out$geo_type)
 
             # clean bounding box just in case
             for(i in 1:length(out)){
-              attr(st_geometry(out[[i]]), "bbox") <- st_bbox(st_union(out[[i]]$geometry))
+              attr(sf::st_geometry(out[[i]]), "bbox") <- sf::st_bbox(sf::st_union(out[[i]]$geometry))
             }
 
             out
@@ -549,17 +545,17 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
       } else {
 
-        if (any(st_is_empty(df$data$geometry))) {
+        if (any(sf::st_is_empty(df$data$geometry))) {
           shinyWidgets::show_alert('Missing Geometry',
                                    'some features are missing geometry, these must be entered before saving',
                                    type = 'warning')
         } else {
-          stopApp({
+          shiny::stopApp({
             # ensure export is sf and same as input crs
-            out <- st_sf(df$data,crs=user_crs)
+            out <- sf::st_sf(df$data,crs=user_crs)
 
             # clean bounding box just in case
-            attr(st_geometry(out), "bbox") <- st_bbox(st_union(out$geometry))
+            attr(sf::st_geometry(out), "bbox") <- sf::st_bbox(sf::st_union(out$geometry))
             out %>% dplyr::select(-leaf_id)
           })
         }
@@ -570,9 +566,9 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
   # this allows shinytest to record
   if (testing) {
-    return(shinyApp(ui,server))
+    return(shiny::shinyApp(ui,server))
   } else {
-    return(runApp(shinyApp(ui,server)))
+    return(shiny::runApp(shiny::shinyApp(ui,server)))
   }
 
 
