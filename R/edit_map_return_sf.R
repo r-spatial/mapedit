@@ -73,9 +73,9 @@ combine_list_of_sf <- function(sf_list, crs = sf::st_crs(sf_list[[1]])) {
     lapply(
       sf_list,
       function(x) {
-        dplyr::select_(
+        dplyr::select(
           as.data.frame(x, stringsAsFactors=FALSE),
-          paste0("-",attr(x, "sf_column", exact=TRUE))
+          -dplyr::all_of(attr(x, "sf_column", exact=TRUE))
         )
       }
     )

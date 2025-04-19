@@ -330,7 +330,7 @@ editFeatures.sf = function(
     init = x
   )
 
-  merged <- dplyr::select_(merged, "-edit_id")
+  merged <- dplyr::select(merged, -dplyr::all_of("edit_id"))
 
   # re-transform to original projection if needed ----
   if (sf::st_crs(merged) != orig_proj) {

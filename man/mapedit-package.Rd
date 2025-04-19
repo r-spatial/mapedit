@@ -47,6 +47,7 @@ Other contributors:
 \itemize{
   \item Josh O'Brien [contributor]
   \item Jakob Gutschlhofer [contributor]
+  \item Eli Pousson (\href{https://orcid.org/0000-0001-8280-1706}{ORCID}) [contributor]
 }
 
 }
