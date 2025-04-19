@@ -1,4 +1,4 @@
-# mapedit 0.6.2.9001 (2025-04-19)
+# mapedit 0.6.2.9002 (2025-04-19)
 
 #### ✨ features and improvements
 
