@@ -6,3 +6,4 @@
 ^experiments
 ^cran-comments\.md$
 ^\.github$
+^LICENSE\.md$
