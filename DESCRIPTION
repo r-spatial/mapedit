@@ -9,6 +9,7 @@ Authors@R: c(
     person("Lorenzo", "Busetto", role = c("aut")),
     person("Josh", "O'Brien", role = c("ctb")),
     person("Jakob", "Gutschlhofer", role = c("ctb")),
+    person("Matt", "Johnson", role = c("ctb")),
     person("Eli", "Pousson", role = "ctb", comment = c(ORCID = "0000-0001-8280-1706"))
   )
 URL: https://github.com/r-spatial/mapedit

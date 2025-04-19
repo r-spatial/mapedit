@@ -2,7 +2,11 @@
 
 #### ✨ features and improvements
 
+* add editAttributes app and RStudio addin #120
+
 #### 🐛 bug fixes
+
+* update deprecated dplyr::select_() calls #124
 
 #### 💬 documentation etc
 
