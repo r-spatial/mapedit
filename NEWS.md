@@ -1,3 +1,14 @@
+# mapedit 0.6.2.9000 (2025-04-19)
+
+#### ✨ features and improvements
+
+#### 🐛 bug fixes
+
+#### 💬 documentation etc
+
+#### 🍬 miscellaneous
+
+
 # mapedit 0.6.2 (2025-04-19)
 
 ### Bug Fix
