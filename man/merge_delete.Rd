@@ -22,6 +22,6 @@ and first value of the vector for matching.}
 }
 \description{
 Internal function used with \code{editFeatures} to apply deletes
-  to a \code{sf} object.
+to a \code{sf} object.
 }
 \keyword{internal}

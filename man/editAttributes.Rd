@@ -14,8 +14,8 @@ editAttributes(
 )
 }
 \arguments{
-\item{dat}{input data source, can be a `data.frame` or an `sf data.frame`, or it can be left empty.
-When nothing is passed to `dat` a basic `data.frame` is generated with `id` and `comment` fields.}
+\item{dat}{input data source, can be a \code{data.frame} or an \verb{sf data.frame}, or it can be left empty.
+When nothing is passed to \code{dat} a basic \code{data.frame} is generated with \code{id} and \code{comment} fields.}
 
 \item{zoomto}{character area of interest. The area is defined using \link[tmaptools]{geocode_OSM},
 which uses \href{https://nominatim.org/}{OSM Nominatim}. The area can be as ambiguous as a country, or
@@ -36,20 +36,20 @@ reset to NA after each added row. Use this option when features share common att
 sf data.frame
 }
 \description{
-Launches a `shiny` application where you can add and edit spatial geometry
+Launches a \code{shiny} application where you can add and edit spatial geometry
 and attributes. Geometry is created or edited within the interactive map, while feature attributes
 can be added to and edited within the editable table.
 
-Starting with a `data.frame` or an `sf data.frame`, a list of `sf data.frames` or nothing
+Starting with a \code{data.frame} or an \verb{sf data.frame}, a list of \verb{sf data.frames} or nothing
 at all. You can add columns, and rows and geometry for each row. Clicking on a row with geometry you can
 zoom across the map between features.
 
-When you are done, your edits are saved to an `sf data.frame` for
+When you are done, your edits are saved to an \verb{sf data.frame} for
 use in R or to be saved to anyformat you wish via \link[sf]{st_write}.
 
 The application can dynamically handle: character, numeric, integer, factor and date fields.
 
-When the input data set is an `sf data.frame` the map automatically zooms to the extent of the `sf` object.
+When the input data set is an \verb{sf data.frame} the map automatically zooms to the extent of the \code{sf} object.
 
 When the input has no spatial data, you must tell the function where to zoom. The function uses
 \link[tmaptools]{geocode_OSM} to identify the coordinates of your area of interest.

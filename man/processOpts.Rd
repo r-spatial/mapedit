@@ -16,8 +16,8 @@ editor is \code{"leaflet.extras"}) \code{FALSE}.}
 }
 \value{
 An object suitable for passing in as the supplied argument
-    to either \code{leaflet.extras::addDrawToolbar} or
-    \code{leafpm::addPmToolbar}.
+to either \code{leaflet.extras::addDrawToolbar} or
+\code{leafpm::addPmToolbar}.
 }
 \description{
 Prepare arguments for addDrawToolbar or addPmToolbar

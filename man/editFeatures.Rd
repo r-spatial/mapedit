@@ -65,13 +65,13 @@ Interactively Edit Map Features
 }
 \details{
 When setting \code{viewer = browserViewer(browser = getOption("browser"))} and
-  the systems default browser is Firefox, the browser window will likely not
-  automatically close when the app is closed (by pressing "done" or "cancel").
-  To enable automatic closing of tabs/windows in Firefox try the following:
-  \itemize{
-    \item{input "about:config " to your firefox address bar and hit enter}
-    \item{make sure your "dom.allow_scripts_to_close_windows" is true}
-  }
+the systems default browser is Firefox, the browser window will likely not
+automatically close when the app is closed (by pressing "done" or "cancel").
+To enable automatic closing of tabs/windows in Firefox try the following:
+\itemize{
+\item{input "about:config " to your firefox address bar and hit enter}
+\item{make sure your "dom.allow_scripts_to_close_windows" is true}
+}
 }
 \examples{
 \dontrun{

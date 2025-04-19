@@ -17,6 +17,6 @@ for symmetry with the other merge functions.}
 }
 \description{
 Internal function used with \code{editFeatures} to apply adds or drawn
-  to a \code{sf} object.
+to a \code{sf} object.
 }
 \keyword{internal}

@@ -8,7 +8,7 @@
 #' @param sf \code{logical} return simple features.  The default is \code{TRUE}.
 #'          If \code{sf = FALSE}, \code{GeoJSON} will be returned.
 #' @param record \code{logical} to record all edits for future playback.
-#' @param viewer \code{function} for the viewer.  See Shiny \code{\link[shiny]{viewer}}.
+#' @param viewer \code{function} for the viewer.  See Shiny \code{shiny::viewer}.
 #'          NOTE: when using \code{browserViewer(browser = getOption("browser"))} to
 #'          open the app in the default browser, the browser window will automatically
 #'          close when closing the app (by pressing "done" or "cancel") in most browsers.

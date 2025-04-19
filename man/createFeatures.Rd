@@ -16,7 +16,7 @@ sf object and/or saved to file
 Create and save spatial objects within the Rstudio IDE. Objects
 can then be saved to file types such as \code{.geojson} or \code{.shp}.
 Objects are also output to the console and can be assigned to a variable
-using `.Last.value`. If you wish to pass the output directly to a variable
+using \code{.Last.value}. If you wish to pass the output directly to a variable
 simply call the addin function, ie. \code{new_sf <- createFeatures()}.
 
 An existing sf \code{data.frame} can also be passed either indirectly by

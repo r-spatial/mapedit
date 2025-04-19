@@ -22,7 +22,7 @@ use with edit}
 }
 \value{
 The leaflet map supplied to \code{leafmap}, now with an
-    added toolbar.
+added toolbar.
 }
 \description{
 Add a (possibly customized) toolbar to a leaflet map
