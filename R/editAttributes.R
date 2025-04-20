@@ -134,13 +134,13 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
   }
 
 
-  ui <- tagList(
+  ui <- htmltools::tagList(
     shinyWidgets::useSweetAlert(),
     shiny::fluidPage(
       shiny::fluidRow(
         shiny::column(12, editModUI("map"))
       ),
-      tags$hr(),
+      htmltools::tags$hr(),
       shiny::fluidRow(
         shiny::column(ifelse(col_add, 6, 9),
                DT::dataTableOutput("tbl",width="100%", height=200)),
@@ -172,7 +172,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
           }
         }
       ),
-      shiny::fluidRow(tags$hr(),
+      shiny::fluidRow(htmltools::tags$hr(),
                       shiny::div(style = 'padding: 20px',
                                  shinyWidgets::actionBttn("donebtn", "Done",
                                                           icon = shiny::icon('check-circle'),
@@ -259,7 +259,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
       output$dyn_form <- shiny::renderUI({
 
-        shiny::tagList(
+        htmltools::tagList(
           lapply(1:length(df$types), function(n){
             name <- names(df$types[n])
             label <- paste0(names(df$types[n]), ' (', df$types[n], ')')

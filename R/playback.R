@@ -1,7 +1,6 @@
 #' Playback a Recorded 'mapedit' Session on Leaflet Map
 #'
 #' @param x a recorded mapedit session from \code{editFeatures(..., record=TRUE)}
-#' @import htmltools
 #' @keywords internal
 
 playback <- function(x, origsf = NULL) {
@@ -206,14 +205,14 @@ jsonlite::toJSON(
 )
   )
 
-  print(browsable(tagList(
-    tags$head(
-      tags$script(src="https://unpkg.com/d3"),
-      tags$script(src="https://unpkg.com/flubber@0.3.0"),
-      tags$script(src="https://cdn.rawgit.com/manubb/Leaflet.D3SvgOverlay/patch/L.D3SvgOverlay.js")
+  print(htmltools::browsable(htmltools::tagList(
+    htmltools::tags$head(
+      htmltools::tags$script(src="https://unpkg.com/d3"),
+      htmltools::tags$script(src="https://unpkg.com/flubber@0.3.0"),
+      htmltools::tags$script(src="https://cdn.rawgit.com/manubb/Leaflet.D3SvgOverlay/patch/L.D3SvgOverlay.js")
     ),
-    tags$script(HTML("d3.selectAll('html,body').style('height','100%')")),
-    tags$div(
+    htmltools::tags$script(htmltools::HTML("d3.selectAll('html,body').style('height','100%')")),
+    htmltools::tags$div(
       style="height:100%;",
       htmlwidgets::onRender(
         map,

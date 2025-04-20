@@ -77,7 +77,7 @@ editMap.leaflet <- function(
       title = title,
       right = miniUI::miniTitleBarButton("done", "Done", primary = TRUE)
     ),
-    tags$script(HTML(
+    htmltools::tags$script(htmltools::HTML(
       "
 // close browser window on session end
 $(document).on('shiny:disconnected', function() {
