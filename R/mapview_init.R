@@ -8,21 +8,21 @@ initMap <- function(map = NULL,
                     native.crs = FALSE,
                     canvas = FALSE,
                     viewer.suppress = FALSE,
-                    platform = mapviewGetOption("platform"),
+                    platform = mapview::mapviewGetOption("platform"),
                     ...) {
 
-  # if (missing(map.types)) map.types <- mapviewGetOption("basemaps")
+  # if (missing(map.types)) map.types <- mapview::mapviewGetOption("basemaps")
   ls = list(...)
   nms = names(ls)
 
   if (platform %in% c("leaflet", "leafgl")) {
 
     if (is.null(map) & is.null(map.types)) {
-      map.types <- mapviewGetOption("basemaps")
+      map.types <- mapview::mapviewGetOption("basemaps")
     }
 
-    leafletHeight <- mapviewGetOption("leafletHeight")
-    leafletWidth <- mapviewGetOption("leafletWidth")
+    leafletHeight <- mapview::mapviewGetOption("leafletHeight")
+    leafletWidth <- mapview::mapviewGetOption("leafletWidth")
 
     if (missing(proj4str)) proj4str <- NA
     ## create base map using specified map types
@@ -33,9 +33,9 @@ initMap <- function(map = NULL,
           width = leafletWidth,
           options = leaflet::leafletOptions(
             minZoom = -1000,
-            crs = leafletCRS(crsClass = "L.CRS.Simple"),
+            crs = leaflet::leafletCRS(crsClass = "L.CRS.Simple"),
             preferCanvas = canvas),
-          sizingPolicy = leafletSizingPolicy(
+          sizingPolicy = leaflet::leafletSizingPolicy(
             viewer.suppress = viewer.suppress,
             browser.external = viewer.suppress
           )
@@ -59,9 +59,9 @@ initMap <- function(map = NULL,
 
 initBaseMaps <- function(map.types, canvas = FALSE, viewer.suppress = FALSE) {
   ## create base map using specified map types
-  if (missing(map.types)) map.types <- mapviewGetOption("basemaps")
-  leafletHeight <- mapviewGetOption("leafletHeight")
-  leafletWidth <- mapviewGetOption("leafletWidth")
+  if (missing(map.types)) map.types <- mapview::mapviewGetOption("basemaps")
+  leafletHeight <- mapview::mapviewGetOption("leafletHeight")
+  leafletWidth <- mapview::mapviewGetOption("leafletWidth")
   lid <- 1:length(map.types)
   m <- leaflet::leaflet(
     height = leafletHeight,
@@ -74,7 +74,7 @@ initBaseMaps <- function(map.types, canvas = FALSE, viewer.suppress = FALSE) {
         list(c(-90, -370)),
         list(c(90, 370))),
       preferCanvas = canvas),
-    sizingPolicy = leafletSizingPolicy(
+    sizingPolicy = leaflet::leafletSizingPolicy(
       viewer.suppress = viewer.suppress,
       browser.external = viewer.suppress
     )
@@ -82,14 +82,14 @@ initBaseMaps <- function(map.types, canvas = FALSE, viewer.suppress = FALSE) {
   if (!(is.null(map.types))) {
     m <- leaflet::addProviderTiles(m, provider = map.types[1],
                                    layerId = map.types[1], group = map.types[1],
-                                   options = providerTileOptions(
+                                   options = leaflet::providerTileOptions(
                                      pane = "tilePane"
                                    ))
     if (length(map.types) > 1) {
       for (i in 2:length(map.types)) {
         m <- leaflet::addProviderTiles(m, provider = map.types[i],
                                        layerId = map.types[i], group = map.types[i],
-                                       options = providerTileOptions(
+                                       options = leaflet::providerTileOptions(
                                          pane = "tilePane"
                                        ))
         m = removeDuplicatedMapDependencies(m)

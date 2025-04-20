@@ -77,7 +77,7 @@ $(document).on('shiny:disconnected', function() {
   )
 
   server <- function(input, output, session) {
-    selections <- callModule(
+    selections <- shiny::callModule(
       selectMod,
       ns,
       x,
@@ -85,7 +85,7 @@ $(document).on('shiny:disconnected', function() {
       styleTrue = styleTrue
     )
 
-    observe({selections()})
+    shiny::observe({selections()})
 
     # if browser viewer and user closes tab/window
     #  then Shiny does not stop so we will stopApp
@@ -95,7 +95,7 @@ $(document).on('shiny:disconnected', function() {
     sessionEnded <- session$onSessionEnded(function() {
       # should this be a cancel where we send NULL
       #  or a done where we send crud()
-      shiny::stopApp(isolate(selections()))
+      shiny::stopApp(shiny::isolate(selections()))
     })
 
     shiny::observeEvent(input$done, {
