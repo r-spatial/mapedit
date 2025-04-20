@@ -38,7 +38,8 @@ Imports:
     sf (>= 0.5-2),
     shiny,
     tmaptools,
-    shinyWidgets (>= 0.4.3)
+    shinyWidgets (>= 0.4.3),
+    magrittr
 Suggests:
     crayon,
     sp
