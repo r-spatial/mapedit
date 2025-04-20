@@ -1,4 +1,4 @@
-# mapedit 0.6.2.9002 (2025-04-19)
+# mapedit 0.7.0 (2025-04-20)
 
 #### ✨ features and improvements
 
@@ -7,10 +7,6 @@
 #### 🐛 bug fixes
 
 * update deprecated dplyr::select_() calls #124
-
-#### 💬 documentation etc
-
-#### 🍬 miscellaneous
 
 
 # mapedit 0.6.2 (2025-04-19)
