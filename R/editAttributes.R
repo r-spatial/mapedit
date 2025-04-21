@@ -34,17 +34,6 @@
 #' @note Editing of feature geometries does not work for multi-geometry inputs. For this use case it is advisable to
 #' split the data set by geometry type and edit separately
 #'
-#' @import sf
-#' @import leaflet
-#' @import mapview
-#' @import leafem
-#' @import leafpop
-#' @import dplyr
-#' @import shiny
-#' @import htmltools
-#' @importFrom shinyWidgets actionBttn show_alert useSweetAlert
-#' @importFrom tmaptools geocode_OSM
-#'
 #' @return sf data.frame
 #' @export
 #'
@@ -81,7 +70,8 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
   #create base df if dat missing
   if (missing(dat)) {
-    dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...') %>% mutate(leaf_id = 1)
+    dat <- data.frame(id = 'CHANGE ME', comments = 'ADD COMMENTS...') %>%
+      dplyr::mutate(leaf_id = 1)
     if (is.null(zoomto)) {
       message(MSG)
       zoomto <- DEFAULT_ZOOM
@@ -97,13 +87,13 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
   original_sf <- NULL
   if (all(class(dat) == 'list')) {
     original_sf <- lapply(dat, function(df){
-      df %>% mutate(leaf_id = 1:nrow(df))
+      df %>% dplyr::mutate(leaf_id = 1:nrow(df))
     })
-    dat <- bind_rows(dat) %>% mutate(leaf_id = 1:nrow(dat))
+    dat <- dplyr::bind_rows(dat) %>% dplyr::mutate(leaf_id = 1:nrow(dat))
   }
 
   if (all(class(dat) == 'data.frame')) {
-    dat <- dat %>% mutate(leaf_id = 1:nrow(dat))
+    dat <- dat %>% dplyr::mutate(leaf_id = 1:nrow(dat))
     data_copy <- sf::st_as_sf(
       dat,
       geometry = sf::st_sfc(lapply(seq_len(nrow(dat)),function(i){sf::st_point()}))
@@ -119,7 +109,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
    } else if (any(type %in% class(dat))) {
 
-    dat <- dat %>% mutate(leaf_id = 1:nrow(dat)) %>% sf::st_transform(APP_CRS)
+    dat <- dat %>% dplyr::mutate(leaf_id = 1:nrow(dat)) %>% sf::st_transform(APP_CRS)
     data_copy <- dat # TODO check orig crs and transform to 4326
 
     if(is.na(sf::st_crs(dat))){dat <- dat %>% sf::st_set_crs(APP_CRS)}
@@ -144,13 +134,13 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
   }
 
 
-  ui <- tagList(
+  ui <- htmltools::tagList(
     shinyWidgets::useSweetAlert(),
     shiny::fluidPage(
       shiny::fluidRow(
         shiny::column(12, editModUI("map"))
       ),
-      tags$hr(),
+      htmltools::tags$hr(),
       shiny::fluidRow(
         shiny::column(ifelse(col_add, 6, 9),
                DT::dataTableOutput("tbl",width="100%", height=200)),
@@ -182,7 +172,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
           }
         }
       ),
-      shiny::fluidRow(tags$hr(),
+      shiny::fluidRow(htmltools::tags$hr(),
                       shiny::div(style = 'padding: 20px',
                                  shinyWidgets::actionBttn("donebtn", "Done",
                                                           icon = shiny::icon('check-circle'),
@@ -269,7 +259,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
 
       output$dyn_form <- shiny::renderUI({
 
-        shiny::tagList(
+        htmltools::tagList(
           lapply(1:length(df$types), function(n){
             name <- names(df$types[n])
             label <- paste0(names(df$types[n]), ' (', df$types[n], ')')
@@ -502,7 +492,7 @@ editAttributes <- function(dat, zoomto = NULL, col_add = TRUE, reset = TRUE, pro
               proxy_map %>%
                 leaflet::flyTo(lng = pnt$X, lat = pnt$Y, zoom = input[[nsm('map_zoom')]])
             } else {
-              bb <- st_bbox(sf::st_geometry(rowsel))
+              bb <- sf::st_bbox(sf::st_geometry(rowsel))
               proxy_map %>%
                 leaflet::flyToBounds(bb[['xmin']], bb[['ymin']], bb[['xmax']], bb[['ymax']])
             }
