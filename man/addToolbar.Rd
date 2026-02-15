@@ -4,18 +4,17 @@
 \alias{addToolbar}
 \title{Add a (possibly customized) toolbar to a leaflet map}
 \usage{
-addToolbar(leafmap, editorOptions, editor, targetLayerId)
+addToolbar(leafmap, editorOptions, editor = "leafpm", targetLayerId)
 }
 \arguments{
 \item{leafmap}{leaflet map to use for Selection}
 
-\item{editorOptions}{A list of options to be passed on to either
-\code{leaflet.extras::addDrawToolbar} or
+\item{editorOptions}{A list of options to be passed on to
 \code{leafpm::addPmToolbar}.}
 
 \item{editor}{Character string giving editor to be used for the
-current map. Either \code{"leafpm"} or
-\code{"leaflet.extras"}.}
+current map. Defaults to \code{"leafpm"} which is the only supported
+option at the moment.}
 
 \item{targetLayerId}{\code{string} name of the map layer group to
 use with edit}

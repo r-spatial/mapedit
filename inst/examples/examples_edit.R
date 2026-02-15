@@ -2,7 +2,6 @@
   # demonstrate Leaflet.Draw on a layer
   library(sf)
   library(mapview)
-  library(leaflet.extras)
   library(mapedit)
 
   # ?sf::sf

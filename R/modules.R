@@ -97,9 +97,8 @@ editModUI <- function(id, ...) {
 #'          \code{GeoJSON}.
 #' @param record \code{logical} to record all edits for future playback.
 #' @param crs see \code{\link[sf]{st_crs}}.
-#' @param editor \code{character} either "leaflet.extras" or "leafpm"
+#' @param editor \code{character} currently, only "leafpm" is supported.
 #' @param editorOptions \code{list} of options suitable for passing to
-#'     either \code{leaflet.extras::addDrawToolbar} or
 #'     \code{leafpm::addPmToolbar}.
 #'
 #' @return server function for Shiny module
@@ -111,7 +110,7 @@ editMod <- function(
   sf = TRUE,
   record = FALSE,
   crs = 4326,
-  editor = c("leaflet.extras", "leafpm"),
+  editor = "leafpm",
   editorOptions = list()
 ) {
   editor <- match.arg(editor)

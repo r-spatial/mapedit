@@ -46,7 +46,7 @@ selectMap.leaflet <- function(
 
   stopifnot(
     requireNamespace("leaflet"),
-    requireNamespace("leaflet.extras"),
+    # requireNamespace("leaflet.extras"),
     requireNamespace("shiny"),
     requireNamespace("miniUI")
   )

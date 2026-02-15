@@ -13,7 +13,7 @@ editMod(
   sf = TRUE,
   record = FALSE,
   crs = 4326,
-  editor = c("leaflet.extras", "leafpm"),
+  editor = "leafpm",
   editorOptions = list()
 )
 }
@@ -35,10 +35,9 @@ editMod(
 
 \item{crs}{see \code{\link[sf]{st_crs}}.}
 
-\item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
+\item{editor}{\code{character} currently, only "leafpm" is supported.}
 
 \item{editorOptions}{\code{list} of options suitable for passing to
-either \code{leaflet.extras::addDrawToolbar} or
 \code{leafpm::addPmToolbar}.}
 }
 \value{

@@ -2,23 +2,20 @@
 % Please edit documentation in R/addToolbar.R
 \name{processOpts}
 \alias{processOpts}
-\title{Prepare arguments for addDrawToolbar or addPmToolbar}
+\title{Prepare arguments for addPmToolbar}
 \usage{
 processOpts(fun, args)
 }
 \arguments{
-\item{fun}{Function used by editor package (leafpm or
-leaflet.extras) to set defaults}
+\item{fun}{Function used by editor package (leafpm) to set defaults}
 
 \item{args}{Either a (possibly nested) list of named options of
-the form suitable for passage to \code{fun} or (if the chosen
-editor is \code{"leaflet.extras"}) \code{FALSE}.}
+the form suitable for passage to \code{fun}.}
 }
 \value{
 An object suitable for passing in as the supplied argument
-to either \code{leaflet.extras::addDrawToolbar} or
-\code{leafpm::addPmToolbar}.
+to \code{leafpm::addPmToolbar}.
 }
 \description{
-Prepare arguments for addDrawToolbar or addPmToolbar
+Prepare arguments for addPmToolbar
 }

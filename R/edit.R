@@ -34,9 +34,8 @@ editMap <- function(x, ...) {
 #' @param crs see \code{\link[sf]{st_crs}}.
 #' @param title \code{string} to customize the title of the UI window.  The default
 #'          is "Edit Map".
-#' @param editor \code{character} either "leaflet.extras" or "leafpm"
+#' @param editor \code{character} currently, only "leafpm" is supported.
 #' @param editorOptions \code{list} of options suitable for passing to
-#'     either \code{leaflet.extras::addDrawToolbar} or
 #'     \code{leafpm::addPmToolbar}.
 #'
 #' @details
@@ -55,7 +54,7 @@ editMap.leaflet <- function(
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
   crs = 4326,
   title = "Edit Map",
-  editor = c("leaflet.extras", "leafpm"),
+  editor = "leafpm",
   editorOptions = list(),
   ...
 ) {
@@ -63,7 +62,7 @@ editMap.leaflet <- function(
 
   stopifnot(
     requireNamespace("leaflet"),
-    requireNamespace("leaflet.extras"),
+    # requireNamespace("leaflet.extras"),
     requireNamespace("shiny"),
     requireNamespace("miniUI")
   )
@@ -151,7 +150,7 @@ editMap.mapview <- function(
   ns = "mapedit-edit", record = FALSE, viewer = shiny::paneViewer(),
   crs = 4326,
   title = "Edit Map",
-  editor = c("leaflet.extras", "leafpm"),
+  editor = "leafpm",
   editorOptions = list(),
   ...
 ) {
@@ -168,7 +167,7 @@ editMap.mapview <- function(
 
 #' @name editMap
 #' @export
-editMap.NULL = function(x, editor = c("leaflet.extras", "leafpm"),
+editMap.NULL = function(x, editor = "leafpm",
                         editorOptions = list(), ...) {
   m = mapview::mapview()@map
   m = leaflet::fitBounds(
@@ -217,9 +216,8 @@ editFeatures = function(x, ...) {
 #' @param crs see \code{\link[sf]{st_crs}}.
 #' @param title \code{string} to customize the title of the UI window.  The default
 #'          is "Edit Map".
-#' @param editor \code{character} either "leaflet.extras" or "leafpm"
+#' @param editor \code{character} currently, only "leafpm" is supported.
 #' @param editorOptions \code{list} of options suitable for passing to
-#'     either \code{leaflet.extras::addDrawToolbar} or
 #'     \code{leafpm::addPmToolbar}.
 #'
 #' @details
@@ -242,7 +240,7 @@ editFeatures.sf = function(
   crs = 4326,
   label = NULL,
   title = "Edit Map",
-  editor = c("leaflet.extras", "leafpm"),
+  editor = "leafpm",
   editorOptions = list(),
   ...
 ) {

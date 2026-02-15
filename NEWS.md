@@ -2,6 +2,8 @@
 
 #### ✨ features and improvements
 
+* BREAKING CHANGE: due to the removal of `leaflet.extras` from CRAN, only `leafpm` supported as the editor.
+
 #### 🐛 bug fixes
 
 #### 💬 documentation etc

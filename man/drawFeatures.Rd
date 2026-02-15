@@ -10,7 +10,7 @@ drawFeatures(
   record = FALSE,
   viewer = shiny::paneViewer(),
   title = "Draw Features",
-  editor = c("leaflet.extras", "leafpm"),
+  editor = "leafpm",
   editorOptions = list(),
   ...
 )
@@ -34,10 +34,9 @@ behaviour in Firefox.}
 
 \item{title}{\code{string} to customize the title of the UI window.}
 
-\item{editor}{\code{character} either "leaflet.extras" or "leafpm"}
+\item{editor}{\code{character} currently, only "leafpm" is supported.}
 
 \item{editorOptions}{\code{list} of options suitable for passing to
-either \code{leaflet.extras::addDrawToolbar} or
 \code{leafpm::addPmToolbar}.}
 
 \item{...}{additional arguments passed on to \code{\link{editMap}}.}
