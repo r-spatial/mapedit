@@ -1,0 +1,55 @@
+Satellite-class         An S4 class to represent a complete satellite
+                        dataset
+SatelliteInfo-class     An S4 class to represent a satellite data file
+SatelliteLayers-class   An S4 class to represent satellite data
+SatelliteLog-class      An S4 class to represent satellite log data
+SatelliteMetaData-class
+                        An S4 class to represent satellite metadata
+alignGeometry           Align raster geometry between two data sets
+brick                   Convert selected layers of a Satellite object
+                        to a RasterBrick
+calcAtmosCorr           Atmospheric correction of remote sensing data
+calcDODN                Compile dark object DN for given sensor band
+calcEarthSunDist        Compute earth-sun distance based on day of the
+                        year
+calcPathRadDOS          Compute path radiance based on the dark object
+                        method
+calcTOAIrradModel       Compute top of atmosphere solar irradiance for
+                        sensor bands using LUTs
+calcTOAIrradRadRef      Compute top of atmosphere solar irradiance
+                        using radiation vs. reflection
+calcTOAIrradTable       Get top of atmosphere solar irradiance using
+                        readily tabulated values
+calcTopoCorr            Correct for topographic effects.
+compFilePathLandsat     Get filename, bands and metadata file for
+                        Landsat 7 and 8 standard 1B/T format
+compMetaLandsat         Get calibration information from Landsat 8
+                        standard level 1B/T filename
+convRad2BT              Convert a band's scaled counts to brightness
+                        temperature
+convRad2Ref             Convert a band's scaled counts or radiance
+                        values to reflectance
+convRef2RadLinear       Convert reflectance to radiance using linear
+                        function coefficients
+convSC2Rad              Convert a band's scaled counts to radiance
+convSC2Ref              Convert a band's scaled counts or radiance
+                        values to reflectance
+crop                    Crop Satellite object
+demTools                Compute terrain characteristics from digital
+                        elevation models
+extend                  Extend a Satellite object
+l7                      Landsat 7 sample data
+l8                      Landsat 8 sample data
+lutInfo                 Get or access internal LUT values used by
+                        various functions
+maskInvarFeatures       Identify pseudo-invariant features from a
+                        satellite scene
+names                   Get/set Satellite data layer names
+plot                    Plot a Satellite object
+satInfo                 Get or access Satellite object information used
+                        by various functions
+satellite               Create a Satellite object
+satellite-package       Smorgasboard for remote sensing functions.
+stack                   Convert selected layers of a Satellite object
+                        to a RasterStack
+subset                  Subset of Satellite object data layers

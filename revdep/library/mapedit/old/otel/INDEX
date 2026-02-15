@@ -1,0 +1,56 @@
+Environment Variables   Environment variables to configure otel
+Getting Started         Getting Started
+Zero Code Instrumentation
+                        Zero Code Instrumentation
+as_attributes           R objects as OpenTelemetry attributes
+counter_add             Increase an OpenTelemetry counter
+default_tracer_name     Default tracer name (and meter and logger name)
+                        for an R package
+end_span                End an OpenTelemetry span
+extract_http_context    Extract a span context from HTTP headers
+                        received from a client
+gauge_record            Record a value of an OpenTelemetry gauge
+get_active_span         Returns the active span, if any
+get_active_span_context
+                        Returns the active span context
+get_default_logger_provider
+                        Get the default logger provider
+get_default_meter_provider
+                        Get the default meter provider
+get_default_tracer_provider
+                        Get the default tracer provider
+get_logger              Get a logger from the default logger provider
+get_meter               Get a meter from the default meter provider
+get_tracer              Get a tracer from the default tracer provider
+histogram_record        Record a value of an OpenTelemetry histogram
+is_logging_enabled      Check whether OpenTelemetry logging is active
+is_measuring_enabled    Check whether OpenTelemetry metrics collection
+                        is active
+is_tracing_enabled      Check if tracing is active
+local_active_span       Activate an OpenTelemetry span for an R scope
+log                     Log an OpenTelemetry log message
+log_severity_levels     OpenTelemetry log severity levels
+meter_provider_noop     No-op Meter Provider
+otel_counter            OpenTelemetry Counter Object
+otel_gauge              OpenTelemetry Gauge Object
+otel_histogram          OpenTelemetry Histogram Object
+otel_logger             OpenTelemetry Logger Object
+otel_logger_provider    OpenTelemetry Logger Provider Object
+otel_meter              OpenTelemetry Meter Object
+otel_meter_provider     OpenTelemetry meter provider objects
+otel_span               OpenTelemetry Span Object
+otel_span_context       An OpenTelemetry Span Context object
+otel_tracer             OpenTelemetry Tracer Object
+otel_tracer_provider    OpenTelemetry Tracer Provider Object
+otel_up_down_counter    OpenTelemetry Up-Down Counter Object
+pack_http_context       Pack the currently active span context into
+                        standard HTTP OpenTelemetry headers
+start_local_active_span
+                        Start and activate a span
+start_span              Start an OpenTelemetry span.
+tracer_provider_noop    No-op tracer provider
+tracing-constants       OpenTelemetry tracing constants
+up_down_counter_add     Increase or decrease an OpenTelemetry up-down
+                        counter
+with_active_span        Evaluate R code with an active OpenTelemetry
+                        span

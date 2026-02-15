@@ -1,0 +1,235 @@
+---
+title: "sp evolution status: examples of migration from retiring packages"
+author: "Roger Bivand, Edzer Pebesma"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{sp evolution status: examples of migration from retiring packages}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(comment = "")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, paged.print=FALSE)
+```
+
+TOC
+
+[DOWNLOADHERE]
+
+**Summary**:
+
+This is the fourth report on the R-spatial evolution project and is addressed to maintainers of packages and workflows using `sp` classes, methods and functions. The project involves the retirement (archiving) of `rgdal`, `rgeos` and `maptools` during 2023. The [first report](https://r-spatial.org/r/2022/04/12/evolution.html) set out the main goals of the project. The [second report](https://r-spatial.org/r/2022/12/14/evolution2.html) covered progress so far, steps already taken, and those remaining to be accomplished. The [third](https://r-spatial.org/r/2023/04/10/evolution3.html) gave detailed guidance for maintainers of packages using the retiring packages.
+
+From June 2023 (`sp` version 2.0-0), the internal evolution status setting of `sp` will be changed from "business as usual" to "use `sf` instead of `rgdal` and `rgeos`". Packages depending on `sp` may need to add `sf` to their weak dependencies, and to monitor any changes in output. From this version 2.1-0, use of `rgdal` has been dropped, so setting the internal evolution status has been removed.
+
+The final step occurred during October 2023, `rgdal`, `rgeos` and `maptools` were archived on CRAN, and packages with strong dependencies on the retiring packages must be either upgraded to use `sf`, `terra` or other alternatives or work-arounds by or before that time.
+
+[This spreadsheet](https://github.com/r-spatial/evolution/blob/main/pkgapi_230502.csv) lists methods and functions in retiring packages and `sp` found by `pkgapi`. They are listed by function name as used by packages, and the analogous list by package may be found of functions is [here](https://github.com/r-spatial/evolution/blob/main/pkgapi_by_pkg_230502.csv).
+
+# `sp` evolution status
+
+Repeating from the second and third blogs:
+
+As mentioned in our first report, `sp` on CRAN has been provided with conditional code that prevents `sp` calling most code in `rgdal` or `rgeos`. This can be enabled *before* loading `sp` by setting e.g.:
+```
+options("sp_evolution_status"=2)
+library(sp)
+```
+for checking packages under status
+
+* `0`: business as usual, 
+* `1`: stop if `rgdal` or `rgeos` are absent, or 
+* `2`: use `sf` instead of `rgdal` (currently no use of `rgeos` is considered)
+
+or alternatively can be set as an environment variable read when `sp` is loaded, e.g. when running checks from the command line by
+```
+_SP_EVOLUTION_STATUS_=2 R CMD check
+```
+This construction should permit maintainers to detect potential problems in code. `devtools::check()` provides the `env_vars=` argument, which may be used for the same purpose.
+
+From `sp 1.6.0` published on CRAN 2023-01-19, these status settings may also be changed when `sp` is loaded, using `sp::get_evolution_status()` returning the current value, and `sp::set_evolution_status(value)`, where value can take the integer values `0L`, `1L` and `2L`.
+
+## Use of `sp` affected functions and methods
+
+Under evolution status `2`, which will become the default in June 2023, no use is made of `rgdal` in `sp::CRS`, `sp::is.projected`, and `sp::spTransform`, rather using `sf` to access `PROJ` through `GDAL`. A warning is given if `sf` is not available. This is similar to behaviour under legacy `sp` and evolution status `0` with regard to the use of `rgdal` to access `PROJ`. 
+
+`sp::CRS` is used by the following packages (`pkgapi` May 2, 2023):
+
+```
+adehabitatHR adehabitatHS adehabitatLT adehabitatMA AFM AGPRIS angstroms
+animaltracker anipaths antaresViz aqp AquaBEHER atakrig ausplotsR 
+
+bamlss bfsMaps biogeo bioRad biosurvey birdring birdscanR bivariatemaps 
+bRacatus briskaR 
+
+canadianmaps changeRangeR chronosphere cleangeo cmsafops cmsafvis 
+ConR CoordinateCleaner cruts ctmm 
+
+dartR DEPONS2R dggridR dismo dispeRse DRHotNet dtwSat dynamAedes dynamicSDM
+
+ecospat elevatr EMbC epitweetr 
+
+fasterize FIESTAutils FLightR FRK 
+
+GapAnalysis gDefrag gdistance GeNetIt GeoAdjust GeodesiCL geodiv geofacet 
+geogrid geojsonio geomerge geoviz gfcanalysis ggOceanMaps gmGeostats 
+googletraffic GPSeqClus grainscape graticule gwer gwfa 
+
+hero Hmsc hydroTSM 
+
+iccTraj inlabru INLAspacetime intamap intSDM IsoriX itcSegment 
+
+kehra 
+
+lakemorpho leaflet letsR lgcp loa 
+
+macroBiome mapedit MapGAM mapmisc mapview MEDITS meteo meteoForecast 
+meteoland micromapST MinBAR momentuHMM morphomap move 
+
+nodiv 
+
+oceanic OpenStreetMap OSMscale 
+
+phyloregion places plotKML prevR PWFSLSmoke
+
+QRAGadget quadmesh quickmapr quickPlot 
+
+RAC raster rasterVis rbgm rcanvec rCAT RCGLS RchivalTag rcrimeanalysis 
+ReadDIM red RgoogleMaps riverdist rleafmap rosm rpostgis RSIP rtop RWmisc 
+
+sdm sdStaf SeerMapper seg shadow SimSurvey soilassessment SongEvo spacetime
+SpaDES.tools SpatialEpi spatialfusion SpatialGraph spatsoc spatsurv spbabel 
+spdep sperich spex spgwr stppSim stxplore SUNGEO SurfaceTortoise SWTools 
+
+tiler track2KBA TrajDataMining trajectories trip 
+
+uavRmp 
+
+vec2dtransf 
+
+waver WEGE wildlifeDI wkb wux 
+
+zoon
+```
+
+`sp::is.projected` is used by:
+
+```
+GapAnalysis GeNetIt intkrige ptools riverdist surveillance track2KBA trip
+```
+
+and `sp::spTransform` by:
+
+```
+AGPRIS antaresViz 
+
+biosurvey bivariatemaps 
+
+canadianmaps chronosphere CoordinateCleaner ctmm 
+
+elevatr epitweetr 
+
+fastmaRching FLightR 
+
+GeoAdjust GeodesiCL geoviz ggOceanMaps 
+
+icosa inlabru INLAspacetime 
+
+loa 
+
+macroBiome mapedit mapview micromapST MinBAR momentuHMM mregions 
+
+quickmapr 
+
+raster rcanvec rcrimeanalysis reproducible RgoogleMaps riverdist rosm rpostgis
+
+SeerMapper shadow SUNGEO 
+
+track2KBA 
+
+uavRmp
+```
+Reverse dependency checks of May 4, 2023 showed only 2 packages failing `CMD check` under `_SP_EVOLUTION_STATUS_=2`, and their difficulties are mentioned below (github issues have been raised offering maintainers mitigations). The salient reasons are given below so that others facing similar apparent intractible problems in workflows can perhaps benefit. Since other packages passed `CMD check`, there are no strong reasons not to flip `sp`'s evolution status in June 2023 from `rgdal` to `sf`. 
+
+
+## Possible difficulties
+
+One possible source of difference is that the strings (WKT2_2019, Proj4) returned from `rgdal` came straight from `PROJ`, but `sf` accesses `PROJ` through `GDAL`.
+
+Another source of difference is that `rgdal` used `sp` S4 classes with inheritance, but `sf` uses S3 classes which do not (seem to) treat inheritance in the same way. So workflows using `sp` and classes, so coercion to `sp` classes before `sp::spTransform` is required, and reconstruction of the classes extending `sp` classes after return is probably required.
+
+A further potential cause of confusion is that round-tripping by coercion to `sf` perhaps applying an operation, and returning to `sp` may break rarely used `sp` methods, such as:
+
+```{r}
+library(sp)
+getMethod("$", "SpatialPoints")
+```
+
+which accesses columns by name no longer in the `data.frame` in the data slot through the column names of the matrix of points:
+
+```{r}
+data(meuse)
+names(meuse)
+```
+
+
+```{r}
+coordinates(meuse) <- ~ x + y
+names(meuse)
+```
+```{r}
+colnames(slot(meuse, "coords"))
+```
+
+```{r}
+str(meuse$x)
+```
+So far so good, but round-tripping if `sf` is available changes the column names of the matrix of points:
+
+```{r}
+run <- requireNamespace("sf", quietly = TRUE)
+```
+
+
+```{r, eval=run}
+meuse_rt <- as(sf::st_as_sf(meuse), "Spatial")
+names(meuse_rt)
+```
+```{r, eval=run}
+colnames(slot(meuse_rt, "coords"))
+```
+
+Consequently, code using this legacy short cut may be a source of difficulty. 
+
+## Why not `terra`?
+
+The reason for choosing to replace `rgdal` by `sf` for these three methods has been the absence of an independent object for coordinate reference systems matching `"CRS"` in `sp` and `"crs"` in `sf`. 
+
+It would be possible to create an empty `"SpatVector"` object and assign a coordinate reference system, coerce to `sp`, and extract the `"CRS"` object:
+
+```{r, echo=FALSE}
+run <- requireNamespace("terra", quietly=TRUE)
+run <- run && require("raster", quietly=TRUE)
+```
+
+
+```{r, eval=run}
+v <- terra::vect(matrix(c(0, 0), nrow=1), crs="OGC:CRS84")
+```
+
+```{r, eval=run}
+library(raster)
+slot(as(v, "Spatial"), "proj4string")
+```
+
+but this seems somewhat forced. If there is substantial demand for an alternative mechanism using `terra` and `raster` in place of `sf`, then a well-tested pull request would be considered. It is understandable that Windows or macOS users who otherwise would not need to install `sf`, and who are already using `terra` might prefer to stay with `terra` inside `sp`, but input to the evolution project would be needed to take any action. It may rather be simpler for users with such workflows to migrate to `terra` instead of sustaining a mixed `sp`, `raster` vector combination when `terra` can probably cover all needs.

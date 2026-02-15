@@ -1,0 +1,35 @@
+# Selecting Exporters
+
+otel is responsible for selecting the providers to use for traces,
+logs and metrics. You can use the environment variables below to
+point the otel functions to the desired providers.
+
+If none of these environment variables are set, then otel will not
+emit any telemetry data.
+
+* ``r otel:::default_traces_exporter_envvar``
+
+  The name of the selected tracer provider. See
+  [otel::get_default_tracer_provider()] for the possible values.
+
+* ``r otel:::default_traces_exporter_envvar_r``
+
+  R specific version of ``r otel:::default_traces_exporter_envvar``.
+
+* ``r otel:::default_logs_exporter_envvar``
+
+  The name of the selected logger provider. See
+  [otel::get_default_logger_provider()] for the possible values.
+
+* ``r otel:::default_logs_exporter_envvar_r``
+
+  R specific version of ``r otel:::default_logs_exporter_envvar``.
+
+* ``r otel:::default_metrics_exporter_envvar``
+
+  The name of the selected meter provider. See
+  [otel::get_default_meter_provider()] for the possible values.
+
+* ``r otel:::default_metrics_exporter_envvar_r``
+
+  R specific version of ``r otel:::default_metrics_exporter_envvar``.

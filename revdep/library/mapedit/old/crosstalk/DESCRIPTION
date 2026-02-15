@@ -1,0 +1,66 @@
+Type: Package
+Package: crosstalk
+Title: Inter-Widget Interactivity for HTML Widgets
+Version: 1.2.2
+Authors@R: c(
+    person("Joe", "Cheng", , "joe@posit.co", role = "aut"),
+    person("Carson", "Sievert", , "carson@posit.co", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-4958-2844")),
+    person("Posit Software, PBC", role = c("cph", "fnd")),
+    person(, "jQuery Foundation", role = "cph",
+           comment = "jQuery library and jQuery UI library"),
+    person(, "jQuery contributors", role = c("ctb", "cph"),
+           comment = "jQuery library; authors listed in inst/www/shared/jquery-AUTHORS.txt"),
+    person("Mark", "Otto", role = "ctb",
+           comment = "Bootstrap library"),
+    person("Jacob", "Thornton", role = "ctb",
+           comment = "Bootstrap library"),
+    person(, "Bootstrap contributors", role = "ctb",
+           comment = "Bootstrap library"),
+    person(, "Twitter, Inc", role = "cph",
+           comment = "Bootstrap library"),
+    person("Brian", "Reavis", role = c("ctb", "cph"),
+           comment = "selectize.js library"),
+    person("Kristopher Michael", "Kowal", role = c("ctb", "cph"),
+           comment = "es5-shim library"),
+    person(, "es5-shim contributors", role = c("ctb", "cph"),
+           comment = "es5-shim library"),
+    person("Denis", "Ineshin", role = c("ctb", "cph"),
+           comment = "ion.rangeSlider library"),
+    person("Sami", "Samhuri", role = c("ctb", "cph"),
+           comment = "Javascript strftime library")
+  )
+Description: Provides building blocks for allowing HTML widgets to
+    communicate with each other, with Shiny or without (i.e. static .html
+    files). Currently supports linked brushing and filtering.
+License: MIT + file LICENSE
+URL: https://rstudio.github.io/crosstalk/,
+        https://github.com/rstudio/crosstalk
+BugReports: https://github.com/rstudio/crosstalk/issues
+Imports: htmltools (>= 0.3.6), jsonlite, lazyeval, R6
+Suggests: bslib, ggplot2, sass, shiny, testthat (>= 2.1.0)
+Config/Needs/website: jcheng5/d3scatter, DT, leaflet, rmarkdown
+Encoding: UTF-8
+RoxygenNote: 7.3.2
+NeedsCompilation: no
+Packaged: 2025-08-26 22:06:47 UTC; cpsievert
+Author: Joe Cheng [aut],
+  Carson Sievert [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-4958-2844>),
+  Posit Software, PBC [cph, fnd],
+  jQuery Foundation [cph] (jQuery library and jQuery UI library),
+  jQuery contributors [ctb, cph] (jQuery library; authors listed in
+    inst/www/shared/jquery-AUTHORS.txt),
+  Mark Otto [ctb] (Bootstrap library),
+  Jacob Thornton [ctb] (Bootstrap library),
+  Bootstrap contributors [ctb] (Bootstrap library),
+  Twitter, Inc [cph] (Bootstrap library),
+  Brian Reavis [ctb, cph] (selectize.js library),
+  Kristopher Michael Kowal [ctb, cph] (es5-shim library),
+  es5-shim contributors [ctb, cph] (es5-shim library),
+  Denis Ineshin [ctb, cph] (ion.rangeSlider library),
+  Sami Samhuri [ctb, cph] (Javascript strftime library)
+Maintainer: Carson Sievert <carson@posit.co>
+Repository: RSPM
+Date/Publication: 2025-08-26 23:50:02 UTC
+Built: R 4.5.0; ; 2025-12-02 12:26:13 UTC; unix

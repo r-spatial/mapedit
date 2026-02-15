@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head><title>R: OpenTelemetry R API</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body><div class="container">
+<h1> OpenTelemetry R API
+<img class="toplogo" src="../../../doc/html/Rlogo.svg" alt="[R logo]" />
+</h1>
+<hr/>
+<div style="text-align: center;">
+<a href="../../../doc/html/packages.html"><img class="arrow" src="../../../doc/html/left.jpg" alt="[Up]" /></a>
+<a href="../../../doc/html/index.html"><img class="arrow" src="../../../doc/html/up.jpg" alt="[Top]" /></a>
+</div><h2>Documentation for package &lsquo;otel&rsquo; version 0.2.0</h2>
+
+<ul><li><a href="../DESCRIPTION" type="text/plain; charset=utf-8">DESCRIPTION file</a>.</li>
+<li><a href="../NEWS.md">Package NEWS</a>.</li>
+</ul>
+
+<h2>Help Pages</h2>
+
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="as_attributes.html">as_attributes</a></td>
+<td>R objects as OpenTelemetry attributes</td></tr>
+<tr><td style="width: 25%;"><a href="counter_add.html">counter_add</a></td>
+<td>Increase an OpenTelemetry counter</td></tr>
+<tr><td style="width: 25%;"><a href="default_tracer_name.html">default_tracer_name</a></td>
+<td>Default tracer name (and meter and logger name) for an R package</td></tr>
+<tr><td style="width: 25%;"><a href="end_span.html">end_span</a></td>
+<td>End an OpenTelemetry span</td></tr>
+<tr><td style="width: 25%;"><a href="environmentvariables.html">Environment Variables</a></td>
+<td>Environment variables to configure otel</td></tr>
+<tr><td style="width: 25%;"><a href="extract_http_context.html">extract_http_context</a></td>
+<td>Extract a span context from HTTP headers received from a client</td></tr>
+<tr><td style="width: 25%;"><a href="gauge_record.html">gauge_record</a></td>
+<td>Record a value of an OpenTelemetry gauge</td></tr>
+<tr><td style="width: 25%;"><a href="gettingstarted.html">Getting Started</a></td>
+<td>Getting Started</td></tr>
+<tr><td style="width: 25%;"><a href="gettingstarted.html">gettingstarted</a></td>
+<td>Getting Started</td></tr>
+<tr><td style="width: 25%;"><a href="get_active_span.html">get_active_span</a></td>
+<td>Returns the active span, if any</td></tr>
+<tr><td style="width: 25%;"><a href="get_active_span_context.html">get_active_span_context</a></td>
+<td>Returns the active span context</td></tr>
+<tr><td style="width: 25%;"><a href="get_default_logger_provider.html">get_default_logger_provider</a></td>
+<td>Get the default logger provider</td></tr>
+<tr><td style="width: 25%;"><a href="get_default_meter_provider.html">get_default_meter_provider</a></td>
+<td>Get the default meter provider</td></tr>
+<tr><td style="width: 25%;"><a href="get_default_tracer_provider.html">get_default_tracer_provider</a></td>
+<td>Get the default tracer provider</td></tr>
+<tr><td style="width: 25%;"><a href="get_logger.html">get_logger</a></td>
+<td>Get a logger from the default logger provider</td></tr>
+<tr><td style="width: 25%;"><a href="get_meter.html">get_meter</a></td>
+<td>Get a meter from the default meter provider</td></tr>
+<tr><td style="width: 25%;"><a href="get_tracer.html">get_tracer</a></td>
+<td>Get a tracer from the default tracer provider</td></tr>
+<tr><td style="width: 25%;"><a href="histogram_record.html">histogram_record</a></td>
+<td>Record a value of an OpenTelemetry histogram</td></tr>
+<tr><td style="width: 25%;"><a href="tracing-constants.html">invalid_span_id</a></td>
+<td>OpenTelemetry tracing constants</td></tr>
+<tr><td style="width: 25%;"><a href="tracing-constants.html">invalid_trace_id</a></td>
+<td>OpenTelemetry tracing constants</td></tr>
+<tr><td style="width: 25%;"><a href="is_logging_enabled.html">is_logging_enabled</a></td>
+<td>Check whether OpenTelemetry logging is active</td></tr>
+<tr><td style="width: 25%;"><a href="is_measuring_enabled.html">is_measuring_enabled</a></td>
+<td>Check whether OpenTelemetry metrics collection is active</td></tr>
+<tr><td style="width: 25%;"><a href="is_tracing_enabled.html">is_tracing_enabled</a></td>
+<td>Check if tracing is active</td></tr>
+<tr><td style="width: 25%;"><a href="local_active_span.html">local_active_span</a></td>
+<td>Activate an OpenTelemetry span for an R scope</td></tr>
+<tr><td style="width: 25%;"><a href="log.html">log</a></td>
+<td>Log an OpenTelemetry log message</td></tr>
+<tr><td style="width: 25%;"><a href="log.html">log_debug</a></td>
+<td>Log an OpenTelemetry log message</td></tr>
+<tr><td style="width: 25%;"><a href="log.html">log_error</a></td>
+<td>Log an OpenTelemetry log message</td></tr>
+<tr><td style="width: 25%;"><a href="log.html">log_fatal</a></td>
+<td>Log an OpenTelemetry log message</td></tr>
+<tr><td style="width: 25%;"><a href="log.html">log_info</a></td>
+<td>Log an OpenTelemetry log message</td></tr>
+<tr><td style="width: 25%;"><a href="log_severity_levels.html">log_severity_levels</a></td>
+<td>OpenTelemetry log severity levels</td></tr>
+<tr><td style="width: 25%;"><a href="log.html">log_trace</a></td>
+<td>Log an OpenTelemetry log message</td></tr>
+<tr><td style="width: 25%;"><a href="log.html">log_warn</a></td>
+<td>Log an OpenTelemetry log message</td></tr>
+<tr><td style="width: 25%;"><a href="meter_provider_noop.html">meter_provider_noop</a></td>
+<td>No-op Meter Provider</td></tr>
+<tr><td style="width: 25%;"><a href="as_attributes.html">OTEL_ATTRIBUTE_COUNT_LIMIT</a></td>
+<td>R objects as OpenTelemetry attributes</td></tr>
+<tr><td style="width: 25%;"><a href="as_attributes.html">OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT</a></td>
+<td>R objects as OpenTelemetry attributes</td></tr>
+<tr><td style="width: 25%;"><a href="otel_counter.html">otel_counter</a></td>
+<td>OpenTelemetry Counter Object</td></tr>
+<tr><td style="width: 25%;"><a href="environmentvariables.html">OTEL_ENV</a></td>
+<td>Environment variables to configure otel</td></tr>
+<tr><td style="width: 25%;"><a href="otel_gauge.html">otel_gauge</a></td>
+<td>OpenTelemetry Gauge Object</td></tr>
+<tr><td style="width: 25%;"><a href="otel_histogram.html">otel_histogram</a></td>
+<td>OpenTelemetry Histogram Object</td></tr>
+<tr><td style="width: 25%;"><a href="otel_logger.html">otel_logger</a></td>
+<td>OpenTelemetry Logger Object</td></tr>
+<tr><td style="width: 25%;"><a href="otel_logger_provider.html">otel_logger_provider</a></td>
+<td>OpenTelemetry Logger Provider Object</td></tr>
+<tr><td style="width: 25%;"><a href="environmentvariables.html">OTEL_LOGS_EXPORTER</a></td>
+<td>Environment variables to configure otel</td></tr>
+<tr><td style="width: 25%;"><a href="otel_meter.html">otel_meter</a></td>
+<td>OpenTelemetry Meter Object</td></tr>
+<tr><td style="width: 25%;"><a href="otel_meter_provider.html">otel_meter_provider</a></td>
+<td>OpenTelemetry meter provider objects</td></tr>
+<tr><td style="width: 25%;"><a href="environmentvariables.html">OTEL_METRICS_EXPORTER</a></td>
+<td>Environment variables to configure otel</td></tr>
+<tr><td style="width: 25%;"><a href="environmentvariables.html">OTEL_R_EMIT_SCOPES</a></td>
+<td>Environment variables to configure otel</td></tr>
+<tr><td style="width: 25%;"><a href="zci.html">OTEL_R_INSTRUMENT_PKGS</a></td>
+<td>Zero Code Instrumentation</td></tr>
+<tr><td style="width: 25%;"><a href="environmentvariables.html">OTEL_R_LOGS_EXPORTER</a></td>
+<td>Environment variables to configure otel</td></tr>
+<tr><td style="width: 25%;"><a href="environmentvariables.html">OTEL_R_METRICS_EXPORTER</a></td>
+<td>Environment variables to configure otel</td></tr>
+<tr><td style="width: 25%;"><a href="environmentvariables.html">OTEL_R_SUPPRESS_SCOPES</a></td>
+<td>Environment variables to configure otel</td></tr>
+<tr><td style="width: 25%;"><a href="environmentvariables.html">OTEL_R_TRACES_EXPORTER</a></td>
+<td>Environment variables to configure otel</td></tr>
+<tr><td style="width: 25%;"><a href="otel_span.html">otel_span</a></td>
+<td>OpenTelemetry Span Object</td></tr>
+<tr><td style="width: 25%;"><a href="otel_span_context.html">otel_span_context</a></td>
+<td>An OpenTelemetry Span Context object</td></tr>
+<tr><td style="width: 25%;"><a href="otel_tracer.html">otel_tracer</a></td>
+<td>OpenTelemetry Tracer Object</td></tr>
+<tr><td style="width: 25%;"><a href="default_tracer_name.html">otel_tracer_name</a></td>
+<td>Default tracer name (and meter and logger name) for an R package</td></tr>
+<tr><td style="width: 25%;"><a href="otel_tracer_provider.html">otel_tracer_provider</a></td>
+<td>OpenTelemetry Tracer Provider Object</td></tr>
+<tr><td style="width: 25%;"><a href="environmentvariables.html">OTEL_TRACES_EXPORTER</a></td>
+<td>Environment variables to configure otel</td></tr>
+<tr><td style="width: 25%;"><a href="otel_up_down_counter.html">otel_up_down_counter</a></td>
+<td>OpenTelemetry Up-Down Counter Object</td></tr>
+<tr><td style="width: 25%;"><a href="pack_http_context.html">pack_http_context</a></td>
+<td>Pack the currently active span context into standard HTTP OpenTelemetry headers</td></tr>
+<tr><td style="width: 25%;"><a href="get_default_logger_provider.html">setup_default_logger_provider</a></td>
+<td>Get the default logger provider</td></tr>
+<tr><td style="width: 25%;"><a href="get_default_meter_provider.html">setup_default_meter_provider</a></td>
+<td>Get the default meter provider</td></tr>
+<tr><td style="width: 25%;"><a href="get_default_tracer_provider.html">setup_default_tracer_provider</a></td>
+<td>Get the default tracer provider</td></tr>
+<tr><td style="width: 25%;"><a href="tracing-constants.html">span_kinds</a></td>
+<td>OpenTelemetry tracing constants</td></tr>
+<tr><td style="width: 25%;"><a href="tracing-constants.html">span_status_codes</a></td>
+<td>OpenTelemetry tracing constants</td></tr>
+<tr><td style="width: 25%;"><a href="start_local_active_span.html">start_local_active_span</a></td>
+<td>Start and activate a span</td></tr>
+<tr><td style="width: 25%;"><a href="start_span.html">start_span</a></td>
+<td>Start an OpenTelemetry span.</td></tr>
+<tr><td style="width: 25%;"><a href="tracer_provider_noop.html">tracer_provider_noop</a></td>
+<td>No-op tracer provider</td></tr>
+<tr><td style="width: 25%;"><a href="tracing-constants.html">tracing-constants</a></td>
+<td>OpenTelemetry tracing constants</td></tr>
+<tr><td style="width: 25%;"><a href="up_down_counter_add.html">up_down_counter_add</a></td>
+<td>Increase or decrease an OpenTelemetry up-down counter</td></tr>
+<tr><td style="width: 25%;"><a href="with_active_span.html">with_active_span</a></td>
+<td>Evaluate R code with an active OpenTelemetry span</td></tr>
+<tr><td style="width: 25%;"><a href="zci.html">Zero Code Instrumentation</a></td>
+<td>Zero Code Instrumentation</td></tr>
+</table>
+</div></body></html>

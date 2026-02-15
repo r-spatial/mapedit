@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Thomas Nauss, Florian Detsch" />
+
+<meta name="date" content="2025-08-21" />
+
+<title>satellite - Classes and Methods for Satellite Data</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">satellite - Classes and Methods for
+Satellite Data</h1>
+<h4 class="author">Thomas Nauss, Florian Detsch</h4>
+<h4 class="date">2025-08-21</h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>We are happy to introduce <code>satellite</code>, an R package
+designed to facilitate satellite remote sensing analysis in a structured
+and user-friendly manner.</p>
+<p>The main purpose of <code>satellite</code> is to provide standard
+classes and methods to stream-line remote sensing analysis workflow in
+R. It provides its own <code>satellite-class</code> along with standard
+methods for basic image transformations such as atmospheric and
+topgraphic corrections, among others.</p>
+<p>The package is desinged with both flexibility and user-friendliness
+in mind. Think of it as the <code>sp-package</code> for remote sensing
+analysis. It provides core functionality and can be easily extended via
+packages to suit your own analysis needs. Furthermore, the fact that
+image bands are stored as <code>Raster*</code> objects means, that all
+functionality currently available for these classes will also work
+nicely with <code>satellite</code>.</p>
+<p>In the following, we would like to highlight some of the
+functionality provided by <code>satellite</code>.</p>
+</div>
+<div id="the-satellite-class" class="section level2">
+<h2>The satellite class</h2>
+<p>To start a remote sensing alaysis workflow with
+<code>satellite</code> you simply use its workhorse function
+<code>satellite()</code> and point it to a folder where your satellite
+data is stored.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(satellite)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;satellite&quot;</span>) </span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(path, <span class="at">pattern =</span> <span class="fu">glob2rx</span>(<span class="st">&quot;LC08*.TIF&quot;</span>), <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="co"># Landsat 8 example data files</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>sat <span class="ot">&lt;-</span> <span class="fu">satellite</span>(files)</span></code></pre></div>
+<p>This will create an object of class <code>satellite</code> with three
+slots:</p>
+<ul>
+<li><span class="citation">@layers</span> - a list of
+<code>RasterLayers</code> of all available bands</li>
+<li><span class="citation">@meta</span> - a data frame containing all
+the meta data needed to process the data layers</li>
+<li><span class="citation">@log</span> - a list containing information
+about the processing history of the object</li>
+</ul>
+<p>For supported satellite platforms all of this is done automatically.
+At the moment of this writing, supported platforms are Landsat
+generations 4 to 8. It is, however, very easy to expand this support to
+other platforms by providing suitable look-up-tables (LUT). Even if no
+suitable LUT is available, <code>satellite</code> will still import
+slots <code>@layers</code> and <code>@log</code>.</p>
+<div id="the-layers-slot" class="section level3">
+<h3>The <span class="citation">@layers</span> slot</h3>
+<p>As mentioned above, <code>@layers</code> contains a list of
+<code>RasterLayers</code> of all available bands. The reason for storing
+the individual bands as <code>RasterLayers</code> rather than a
+<code>RasterStack</code> is that most satellite platforms provide at
+least one layer of different spatial resolution that the rest.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">str</span>(sat<span class="sc">@</span>layers, <span class="dv">1</span>)</span></code></pre></div>
+<pre><code>## List of 12
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots
+##  $ :Formal class &#39;RasterLayer&#39; [package &quot;raster&quot;] with 13 slots</code></pre>
+<p>It is, however, easy to create a <code>RasterStack</code> from
+selected layers as <code>stack-method</code> is defined for class
+<code>satellite</code>. By default this will take all layers with the
+same resolution as the first and stack them. A suitable warning is
+provided so that the user is informed which layers were not included in
+the <code>RasterStack</code>. Furthermore, one can simply provide a
+vector of layer IDs (either layer names or numbers) to be stacked.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="do">## default (all that are similar to layer 1; panchromatic 15-m band 8 is skipped here)</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>sat_stack <span class="ot">&lt;-</span> <span class="fu">stack</span>(sat)</span></code></pre></div>
+<pre><code>## Warning in .local(x, ...): 
+## layer B008n has different resolution
+## not stacking this layer</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>sat_stack</span></code></pre></div>
+<pre><code>## class      : RasterStack 
+## dimensions : 41, 41, 1681, 11  (nrow, ncol, ncell, nlayers)
+## resolution : 30, 30  (x, y)
+## extent     : 483285, 484515, 5627295, 5628525  (xmin, xmax, ymin, ymax)
+## crs        : +proj=utm +zone=32 +datum=WGS84 +units=m +no_defs 
+## names      : B001n, B002n, B003n, B004n, B005n, B006n, B007n, B009n, B010n, B011n, B0QAn 
+## min values :  9827,  8709,  7647,  6600,  8337,  6697,  6013,  5033, 27494, 24874,  2720 
+## max values : 15466, 15069, 14143, 15257, 25759, 18589, 14713,  5113, 31926, 27882,  2720</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="do">## or by layer names</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">stack</span>(sat, <span class="at">layer =</span> <span class="fu">c</span>(<span class="st">&quot;B001n&quot;</span>, <span class="st">&quot;B002n&quot;</span>, <span class="st">&quot;B003n&quot;</span>))</span></code></pre></div>
+<pre><code>## class      : RasterStack 
+## dimensions : 41, 41, 1681, 3  (nrow, ncol, ncell, nlayers)
+## resolution : 30, 30  (x, y)
+## extent     : 483285, 484515, 5627295, 5628525  (xmin, xmax, ymin, ymax)
+## crs        : +proj=utm +zone=32 +datum=WGS84 +units=m +no_defs 
+## names      : B001n, B002n, B003n 
+## min values :  9827,  8709,  7647 
+## max values : 15466, 15069, 14143</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="do">## or by layer indices</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">stack</span>(sat, <span class="at">layer =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>)</span></code></pre></div>
+<pre><code>## class      : RasterStack 
+## dimensions : 41, 41, 1681, 5  (nrow, ncol, ncell, nlayers)
+## resolution : 30, 30  (x, y)
+## extent     : 483285, 484515, 5627295, 5628525  (xmin, xmax, ymin, ymax)
+## crs        : +proj=utm +zone=32 +datum=WGS84 +units=m +no_defs 
+## names      : B002n, B003n, B004n, B005n, B006n 
+## min values :  8709,  7647,  6600,  8337,  6697 
+## max values : 15069, 14143, 15257, 25759, 18589</code></pre>
+</div>
+<div id="the-meta-slot" class="section level3">
+<h3>The <span class="citation">@meta</span> slot</h3>
+<p>The <code>@meta</code> slot provides meta information for each of the
+layers of the <code>satellite</code> object. Here’s a non-exhaustive
+list of the most important entries:</p>
+<ul>
+<li>BCDE - the band code (i.e. layer name)</li>
+<li>DATE - the date the image was captured</li>
+<li>SID - a short ID for the sensor (e.g. “LC8”)</li>
+<li>TYPE - type of the solar spectrum the band falls into (e.g. visible,
+near-infrared)</li>
+<li>SPECTRUM - the broad spectrum classification according to shart-wave
+vs. long-wave radiation (i.e. solar vs thermal)</li>
+<li>CALIB - the calibration level of the layer (“SC” means source
+calibration, i.e. as provided by the raw data)</li>
+</ul>
+<p>In addition to these, several calibration coefficients (such as the
+sun zenith and azimuth angles , sun elevation, earth-sun distance etc.),
+information on spatial resolution and projection as well as information
+about file names and paths is also stored.</p>
+<p>For the Landsat 8 example data shipped with the package the meta data
+looks like this:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">str</span>(sat<span class="sc">@</span>meta)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    12 obs. of  42 variables:
+##  $ SCENE   : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ BCDE    : Factor w/ 12 levels &quot;B001n&quot;,&quot;B002n&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
+##  $ DATE    : POSIXct, format: &quot;2013-07-07&quot; &quot;2013-07-07&quot; ...
+##  $ SID     : Factor w/ 1 level &quot;LC8&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ SENSOR  : chr  &quot;Landsat 8&quot; &quot;Landsat 8&quot; &quot;Landsat 8&quot; &quot;Landsat 8&quot; ...
+##  $ SGRP    : Factor w/ 1 level &quot;Landsat&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ BID     : Factor w/ 12 levels &quot;1&quot;,&quot;10&quot;,&quot;11&quot;,..: 1 4 5 6 7 8 9 10 11 2 ...
+##  $ TYPE    : Factor w/ 6 levels &quot;NIR&quot;,&quot;PCM&quot;,&quot;QA&quot;,..: 6 6 6 6 1 4 4 2 4 5 ...
+##  $ SPECTRUM: Factor w/ 2 levels &quot;solar&quot;,&quot;thermal&quot;: 1 1 1 1 1 1 1 1 1 2 ...
+##  $ CALIB   : chr  &quot;SC&quot; &quot;SC&quot; &quot;SC&quot; &quot;SC&quot; ...
+##  $ RID.x   : chr  &quot;R00001&quot; &quot;R00001&quot; &quot;R00001&quot; &quot;R00001&quot; ...
+##  $ RADA    : num  -60.7 -62.2 -57.3 -48.3 -29.6 ...
+##  $ RADM    : num  0.01215 0.01244 0.01146 0.00967 0.00591 ...
+##  $ REFA    : num  -0.1 -0.1 -0.1 -0.1 -0.1 -0.1 -0.1 -0.1 -0.1 NA ...
+##  $ REFM    : num  2e-05 2e-05 2e-05 2e-05 2e-05 2e-05 2e-05 2e-05 2e-05 NA ...
+##  $ BTK1    : num  NA NA NA NA NA ...
+##  $ BTK2    : num  NA NA NA NA NA ...
+##  $ SZEN    : num  31 31 31 31 31 ...
+##  $ SAZM    : num  147 147 147 147 147 ...
+##  $ SELV    : num  59 59 59 59 59 ...
+##  $ ESD     : num  1.02 1.02 1.02 1.02 1.02 ...
+##  $ LMIN    : num  0.43 0.45 0.53 0.64 0.85 1.57 2.11 0.5 1.36 10.6 ...
+##  $ LMAX    : num  0.45 0.51 0.59 0.67 0.88 ...
+##  $ RADMAX  : num  735 753 694 585 358 ...
+##  $ RADMIN  : num  -60.7 -62.2 -57.3 -48.3 -29.6 ...
+##  $ REFMAX  : num  1.21 1.21 1.21 1.21 1.21 ...
+##  $ REFMIN  : num  -0.1 -0.1 -0.1 -0.1 -0.1 ...
+##  $ LNBR    : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ LAYER   : chr  &quot;LC08_L1TP_195025_20130707_20170503_01_T1_B1&quot; &quot;LC08_L1TP_195025_20130707_20170503_01_T1_B2&quot; &quot;LC08_L1TP_195025_20130707_20170503_01_T1_B3&quot; &quot;LC08_L1TP_195025_20130707_20170503_01_T1_B4&quot; ...
+##  $ FILE    : chr  &quot;C:/Users/flowd/AppData/Local/Temp/RtmpInj31S/Rinst3ec42da91034/satellite/extdata/LC08_L1TP_195025_20130707_2017&quot;| __truncated__ &quot;C:/Users/flowd/AppData/Local/Temp/RtmpInj31S/Rinst3ec42da91034/satellite/extdata/LC08_L1TP_195025_20130707_2017&quot;| __truncated__ &quot;C:/Users/flowd/AppData/Local/Temp/RtmpInj31S/Rinst3ec42da91034/satellite/extdata/LC08_L1TP_195025_20130707_2017&quot;| __truncated__ &quot;C:/Users/flowd/AppData/Local/Temp/RtmpInj31S/Rinst3ec42da91034/satellite/extdata/LC08_L1TP_195025_20130707_2017&quot;| __truncated__ ...
+##  $ METAFILE: chr  &quot;C:/Users/flowd/AppData/Local/Temp/RtmpInj31S/Rinst3ec42da91034/satellite/extdata/LC08_L1TP_195025_20130707_2017&quot;| __truncated__ &quot;C:/Users/flowd/AppData/Local/Temp/RtmpInj31S/Rinst3ec42da91034/satellite/extdata/LC08_L1TP_195025_20130707_2017&quot;| __truncated__ &quot;C:/Users/flowd/AppData/Local/Temp/RtmpInj31S/Rinst3ec42da91034/satellite/extdata/LC08_L1TP_195025_20130707_2017&quot;| __truncated__ &quot;C:/Users/flowd/AppData/Local/Temp/RtmpInj31S/Rinst3ec42da91034/satellite/extdata/LC08_L1TP_195025_20130707_2017&quot;| __truncated__ ...
+##  $ RID.y   : chr  &quot;R00001&quot; &quot;R00001&quot; &quot;R00001&quot; &quot;R00001&quot; ...
+##  $ XRES    : num  30 30 30 30 30 30 30 15 30 30 ...
+##  $ YRES    : num  30 30 30 30 30 30 30 15 30 30 ...
+##  $ NROW    : int  41 41 41 41 41 41 41 82 41 41 ...
+##  $ NCOL    : int  41 41 41 41 41 41 41 82 41 41 ...
+##  $ NCELL   : num  1681 1681 1681 1681 1681 ...
+##  $ XMIN    : num  483285 483285 483285 483285 483285 ...
+##  $ XMAX    : num  484515 484515 484515 484515 484515 ...
+##  $ YMIN    : num  5627295 5627295 5627295 5627295 5627295 ...
+##  $ YMAX    : num  5628525 5628525 5628525 5628525 5628525 ...
+##  $ PROJ    : chr  &quot;+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs&quot; &quot;+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs&quot; &quot;+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs&quot; &quot;+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs&quot; ...</code></pre>
+<p>Everytime the user performs some calculation on some or all of the
+layers, this meta information will be updated accordingly. Here’s an
+example:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="do">## add digital elevation model to existing &#39;Satellite&#39; object</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>dem <span class="ot">&lt;-</span> <span class="fu">raster</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/DEM.TIF&quot;</span>, <span class="at">package =</span> <span class="st">&quot;satellite&quot;</span>))</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>sat <span class="ot">&lt;-</span> <span class="fu">addSatDataLayer</span>(sat, <span class="at">data =</span> dem, <span class="at">info =</span> <span class="cn">NULL</span>, <span class="at">bcde =</span> <span class="st">&quot;DEM&quot;</span>, <span class="at">in_bcde =</span> <span class="st">&quot;DEM&quot;</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="do">## perform topographic correction</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>sat_tc <span class="ot">&lt;-</span> <span class="fu">calcTopoCorr</span>(sat)</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="fu">tail</span>(sat_tc<span class="sc">@</span>meta[, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>])</span></code></pre></div>
+<pre><code>##                  BCDE SCENE       DATE SID    SENSOR    SGRP
+## 38 B004n_REF_TopoCorr    NA 2025-08-21 LC8 Landsat 8 Landsat
+## 39 B005n_REF_TopoCorr    NA 2025-08-21 LC8 Landsat 8 Landsat
+## 40 B006n_REF_TopoCorr    NA 2025-08-21 LC8 Landsat 8 Landsat
+## 41 B007n_REF_TopoCorr    NA 2025-08-21 LC8 Landsat 8 Landsat
+## 42 B008n_REF_TopoCorr    NA 2025-08-21 LC8 Landsat 8 Landsat
+## 43 B009n_REF_TopoCorr    NA 2025-08-21 LC8 Landsat 8 Landsat</code></pre>
+<p>As you can see, all bands have been topographically corrected and the
+meta data for the resulting layers is automatically appended to the
+original data frame. Note for example how <code>$DATE</code> is set to
+the date that layers were calculated.</p>
+<p>Note, that in order to avoid too long console output, we only show
+the first and last six columns and rows, respectively, of the meta data
+here.</p>
+</div>
+<div id="the-log-slot" class="section level3">
+<h3>The <span class="citation">@log</span> slot</h3>
+<p>Similar to the meta data, log data is also updated every time an
+analyis is carried out on the object. The default entries (i.e. the ones
+created on intial import) are as follows:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>sat<span class="sc">@</span>log</span></code></pre></div>
+<pre><code>## $ps0001
+## $ps0001$time
+## [1] &quot;2025-08-21 07:21:06 CEST&quot;
+## 
+## $ps0001$info
+## [1] &quot;Initial import&quot;
+## 
+## $ps0001$layers
+## [1] &quot;all&quot;
+## 
+## $ps0001$output
+## [1] &quot;all&quot;
+## 
+## 
+## $ps0002
+## $ps0002$time
+## [1] &quot;2025-08-21 07:21:06 CEST&quot;
+## 
+## $ps0002$info
+## NULL
+## 
+## $ps0002$in_bcde
+## [1] &quot;DEM&quot;
+## 
+## $ps0002$out_bcde
+## [1] &quot;DEM&quot;</code></pre>
+<p>And here’s how this is modified after the topographic correction:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">str</span>(sat_tc<span class="sc">@</span>log[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span></code></pre></div>
+<pre><code>## List of 2
+##  $ ps0001:List of 4
+##   ..$ time  : POSIXct[1:1], format: &quot;2025-08-21 07:21:06&quot;
+##   ..$ info  : chr &quot;Initial import&quot;
+##   ..$ layers: chr &quot;all&quot;
+##   ..$ output: chr &quot;all&quot;
+##  $ ps0002:List of 4
+##   ..$ time    : POSIXct[1:1], format: &quot;2025-08-21 07:21:06&quot;
+##   ..$ info    : NULL
+##   ..$ in_bcde : chr &quot;DEM&quot;
+##   ..$ out_bcde: chr &quot;DEM&quot;</code></pre>
+<p>Note how, in addition to the info about the initial import, we now
+have additional logs entries for each band that was topographically
+corrected clearly showing which call was dispatched, when and on which
+layer. Even though we only show the first additional log entry here,
+entries are created for all processed layers. This ensures that we can
+easily trace what has been done so far and serves as a reference for the
+current state of processing.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

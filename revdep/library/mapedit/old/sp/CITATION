@@ -1,0 +1,23 @@
+citHeader("To cite package sp in publications use:")
+
+bibentry(bibtype="Article",
+  author       = c(person(("Edzer J."), "Pebesma"),
+                   person(c("Roger"), "Bivand")),
+  title        = "Classes and methods for spatial data in {R}",
+  journal      = "R News",
+  year         = 2005,
+  volume       = 5,
+  number       = 2,
+  pages        = "9--13",
+  month        = "November",
+  url          = "https://CRAN.R-project.org/doc/Rnews/"
+)
+
+bibentry(bibtype="book",
+  author       = c(person(c("Roger S."), "Bivand"), person(c("Edzer"), "Pebesma"), person(c("Virgilio"), c("Gomez-Rubio"))),
+  title        = "Applied spatial data analysis with {R}, Second edition",
+  year         = "2013",
+  publisher    = "Springer, NY",
+  url          = "https://asdar-book.org/"
+)
+

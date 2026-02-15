@@ -1,0 +1,27 @@
+# [Zero Code Instrumentation][otel::Zero Code Instrumentation]
+
+otel can instrument R packages for OpenTelemetry data collection
+without changing their source code. This relies on changing the code
+of the R functions manually using `base::trace()` and can be configured
+using environment variables.
+
+* `OTEL_R_INSTRUMENT_PKGS`
+
+  Set `OTEL_R_INSTRUMENT_PKGS` to a comma separated list of packages to
+  instrument. The automatic instrumentation happens when the otel package
+  is loaded, so in general it is best to set this environment variable
+  before loading R.
+
+* `OTEL_R_INSTRUMENT_PKGS_<pkg>_INCLUDE`
+
+  For an automatically instrumented package, set this environment variable
+  to only instrument a subset of its functions. It is parsed as a comma
+  separated string of function names, which may also include `?` and `*`
+  wildcards (globbing).
+
+* `OTEL_R_INSTRUMENT_PKGS_<pkg>_EXCLUDE`
+
+  For an automatically instrumented package, set this environment variable
+  to exclude some functions from instrumentation. It has the same syntax
+  as its `*_INCLUDE` pair. If both are set, then inclusion is applied
+  and the exclusion.

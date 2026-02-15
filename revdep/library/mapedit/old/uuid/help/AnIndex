@@ -1,0 +1,8 @@
+as.UUID	UUID
+is.UUID	UUID
+UUID	UUID
+uuid	UUID
+UUIDfromName	UUIDgenerate
+UUIDgenerate	UUIDgenerate
+UUIDparse	UUIDgenerate
+UUIDvalidate	UUIDgenerate

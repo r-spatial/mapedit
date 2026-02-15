@@ -1,0 +1,52 @@
+Type: Package
+Package: rappdirs
+Title: Application Directories: Determine Where to Save Data, Caches,
+        and Logs
+Version: 0.3.4
+Authors@R: c(
+    person("Hadley", "Wickham", , "hadley@posit.co", role = c("trl", "cre", "cph")),
+    person("Sridhar", "Ratnakumar", role = "aut"),
+    person("Trent", "Mick", role = "aut"),
+    person("ActiveState", role = "cph",
+           comment = "R/appdir.r, R/cache.r, R/data.r, R/log.r translated from appdirs"),
+    person("Eddy", "Petrisor", role = "ctb"),
+    person("Trevor", "Davis", role = c("trl", "aut"),
+           comment = c(ORCID = "0000-0001-6341-4639")),
+    person("Gabor", "Csardi", role = "ctb"),
+    person("Gregory", "Jefferis", role = "ctb"),
+    person("Posit Software, PBC", role = c("cph", "fnd"),
+           comment = c(ROR = "03wc8by49"))
+  )
+Description: An easy way to determine which directories on the users
+    computer you should use to save data, caches and logs. A port of
+    Python's 'Appdirs' (<https://github.com/ActiveState/appdirs>) to R.
+License: MIT + file LICENSE
+URL: https://rappdirs.r-lib.org, https://github.com/r-lib/rappdirs
+BugReports: https://github.com/r-lib/rappdirs/issues
+Depends: R (>= 4.1)
+Suggests: covr, roxygen2, testthat (>= 3.2.0), withr
+Config/Needs/website: tidyverse/tidytemplate
+Config/testthat/edition: 3
+Config/usethis/last-upkeep: 2025-05-05
+Copyright: Original python appdirs module copyright (c) 2010
+        ActiveState Software Inc. R port copyright Hadley Wickham,
+        Posit, PBC.  See file LICENSE for details.
+Encoding: UTF-8
+RoxygenNote: 7.3.3
+NeedsCompilation: yes
+Packaged: 2026-01-16 22:03:30 UTC; hadleywickham
+Author: Hadley Wickham [trl, cre, cph],
+  Sridhar Ratnakumar [aut],
+  Trent Mick [aut],
+  ActiveState [cph] (R/appdir.r, R/cache.r, R/data.r, R/log.r translated
+    from appdirs),
+  Eddy Petrisor [ctb],
+  Trevor Davis [trl, aut] (ORCID:
+    <https://orcid.org/0000-0001-6341-4639>),
+  Gabor Csardi [ctb],
+  Gregory Jefferis [ctb],
+  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)
+Maintainer: Hadley Wickham <hadley@posit.co>
+Repository: RSPM
+Date/Publication: 2026-01-17 08:40:02 UTC
+Built: R 4.5.0; x86_64-pc-linux-gnu; 2026-01-18 04:19:57 UTC; unix

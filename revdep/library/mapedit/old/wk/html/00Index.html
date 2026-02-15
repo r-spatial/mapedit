@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+<head><title>R: Lightweight Well-Known Geometry Parsing</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body><div class="container">
+<h1> Lightweight Well-Known Geometry Parsing
+<img class="toplogo" src="../../../doc/html/Rlogo.svg" alt="[R logo]" />
+</h1>
+<hr/>
+<div style="text-align: center;">
+<a href="../../../doc/html/packages.html"><img class="arrow" src="../../../doc/html/left.jpg" alt="[Up]" /></a>
+<a href="../../../doc/html/index.html"><img class="arrow" src="../../../doc/html/up.jpg" alt="[Top]" /></a>
+</div><h2>Documentation for package &lsquo;wk&rsquo; version 0.9.5</h2>
+
+<ul><li><a href="../DESCRIPTION" type="text/plain; charset=utf-8">DESCRIPTION file</a>.</li>
+<li><a href="../NEWS.md">Package NEWS</a>.</li>
+</ul>
+
+<h2>Help Pages</h2>
+
+
+<p style="text-align: center;">
+<a href="#A">A</a>
+<a href="#C">C</a>
+<a href="#G">G</a>
+<a href="#H">H</a>
+<a href="#I">I</a>
+<a href="#N">N</a>
+<a href="#P">P</a>
+<a href="#R">R</a>
+<a href="#S">S</a>
+<a href="#V">V</a>
+<a href="#W">W</a>
+<a href="#X">X</a>
+</p>
+
+
+<h2><a id="A">-- A --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="crc.html">as_crc</a></td>
+<td>2D Circle Vectors</td></tr>
+<tr><td style="width: 25%;"><a href="crc.html">as_crc.data.frame</a></td>
+<td>2D Circle Vectors</td></tr>
+<tr><td style="width: 25%;"><a href="crc.html">as_crc.matrix</a></td>
+<td>2D Circle Vectors</td></tr>
+<tr><td style="width: 25%;"><a href="crc.html">as_crc.wk_crc</a></td>
+<td>2D Circle Vectors</td></tr>
+<tr><td style="width: 25%;"><a href="grd.html">as_grd_rct</a></td>
+<td>Raster-like objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd.html">as_grd_rct.wk_grd_rct</a></td>
+<td>Raster-like objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd.html">as_grd_rct.wk_grd_xy</a></td>
+<td>Raster-like objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd.html">as_grd_xy</a></td>
+<td>Raster-like objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd.html">as_grd_xy.wk_grd_rct</a></td>
+<td>Raster-like objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd.html">as_grd_xy.wk_grd_xy</a></td>
+<td>Raster-like objects</td></tr>
+<tr><td style="width: 25%;"><a href="rct.html">as_rct</a></td>
+<td>2D rectangle vectors</td></tr>
+<tr><td style="width: 25%;"><a href="rct.html">as_rct.data.frame</a></td>
+<td>2D rectangle vectors</td></tr>
+<tr><td style="width: 25%;"><a href="rct.html">as_rct.matrix</a></td>
+<td>2D rectangle vectors</td></tr>
+<tr><td style="width: 25%;"><a href="rct.html">as_rct.wk_rct</a></td>
+<td>2D rectangle vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wkb.html">as_wkb</a></td>
+<td>Mark lists of raw vectors as well-known binary</td></tr>
+<tr><td style="width: 25%;"><a href="wkb.html">as_wkb.blob</a></td>
+<td>Mark lists of raw vectors as well-known binary</td></tr>
+<tr><td style="width: 25%;"><a href="wkb.html">as_wkb.character</a></td>
+<td>Mark lists of raw vectors as well-known binary</td></tr>
+<tr><td style="width: 25%;"><a href="wkb.html">as_wkb.default</a></td>
+<td>Mark lists of raw vectors as well-known binary</td></tr>
+<tr><td style="width: 25%;"><a href="wkb.html">as_wkb.WKB</a></td>
+<td>Mark lists of raw vectors as well-known binary</td></tr>
+<tr><td style="width: 25%;"><a href="wkb.html">as_wkb.wk_wkb</a></td>
+<td>Mark lists of raw vectors as well-known binary</td></tr>
+<tr><td style="width: 25%;"><a href="wkt.html">as_wkt</a></td>
+<td>Mark character vectors as well-known text</td></tr>
+<tr><td style="width: 25%;"><a href="wkt.html">as_wkt.character</a></td>
+<td>Mark character vectors as well-known text</td></tr>
+<tr><td style="width: 25%;"><a href="wkt.html">as_wkt.default</a></td>
+<td>Mark character vectors as well-known text</td></tr>
+<tr><td style="width: 25%;"><a href="wkt.html">as_wkt.wk_wkt</a></td>
+<td>Mark character vectors as well-known text</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">as_wk_handler</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_inverse.html">as_wk_trans</a></td>
+<td>Generic transform class</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_inverse.html">as_wk_trans.wk_trans</a></td>
+<td>Generic transform class</td></tr>
+<tr><td style="width: 25%;"><a href="xy.html">as_xy</a></td>
+<td>Efficient point vectors</td></tr>
+<tr><td style="width: 25%;"><a href="xy.html">as_xy.data.frame</a></td>
+<td>Efficient point vectors</td></tr>
+<tr><td style="width: 25%;"><a href="xy.html">as_xy.default</a></td>
+<td>Efficient point vectors</td></tr>
+<tr><td style="width: 25%;"><a href="xy.html">as_xy.matrix</a></td>
+<td>Efficient point vectors</td></tr>
+<tr><td style="width: 25%;"><a href="xy.html">as_xy.wk_xy</a></td>
+<td>Efficient point vectors</td></tr>
+</table>
+
+<h2><a id="C">-- C --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="crc.html">crc</a></td>
+<td>2D Circle Vectors</td></tr>
+<tr><td style="width: 25%;"><a href="crc_x.html">crc_center</a></td>
+<td>Circle accessors</td></tr>
+<tr><td style="width: 25%;"><a href="crc_x.html">crc_r</a></td>
+<td>Circle accessors</td></tr>
+<tr><td style="width: 25%;"><a href="crc_x.html">crc_x</a></td>
+<td>Circle accessors</td></tr>
+<tr><td style="width: 25%;"><a href="crc_x.html">crc_y</a></td>
+<td>Circle accessors</td></tr>
+</table>
+
+<h2><a id="G">-- G --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="grd.html">grd</a></td>
+<td>Raster-like objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd_cell.html">grd_cell</a></td>
+<td>Grid cell operators</td></tr>
+<tr><td style="width: 25%;"><a href="grd_cell.html">grd_cell_range</a></td>
+<td>Grid cell operators</td></tr>
+<tr><td style="width: 25%;"><a href="grd_cell.html">grd_cell_rct</a></td>
+<td>Grid cell operators</td></tr>
+<tr><td style="width: 25%;"><a href="grd_cell.html">grd_cell_rct.wk_grd_rct</a></td>
+<td>Grid cell operators</td></tr>
+<tr><td style="width: 25%;"><a href="grd_cell.html">grd_cell_rct.wk_grd_xy</a></td>
+<td>Grid cell operators</td></tr>
+<tr><td style="width: 25%;"><a href="grd_cell.html">grd_cell_xy</a></td>
+<td>Grid cell operators</td></tr>
+<tr><td style="width: 25%;"><a href="grd_cell.html">grd_cell_xy.wk_grd_rct</a></td>
+<td>Grid cell operators</td></tr>
+<tr><td style="width: 25%;"><a href="grd_cell.html">grd_cell_xy.wk_grd_xy</a></td>
+<td>Grid cell operators</td></tr>
+<tr><td style="width: 25%;"><a href="grd_subset.html">grd_crop</a></td>
+<td>Subset grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd_subset.html">grd_crop.wk_grd_rct</a></td>
+<td>Subset grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd_subset.html">grd_crop.wk_grd_xy</a></td>
+<td>Subset grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd_extract.html">grd_data_extract</a></td>
+<td>Extract values from a grid</td></tr>
+<tr><td style="width: 25%;"><a href="grd_subset.html">grd_data_subset</a></td>
+<td>Subset grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd_subset.html">grd_extend</a></td>
+<td>Subset grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd_subset.html">grd_extend.wk_grd_rct</a></td>
+<td>Subset grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd_subset.html">grd_extend.wk_grd_xy</a></td>
+<td>Subset grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd_extract.html">grd_extract</a></td>
+<td>Extract values from a grid</td></tr>
+<tr><td style="width: 25%;"><a href="grd_extract.html">grd_extract_nearest</a></td>
+<td>Extract values from a grid</td></tr>
+<tr><td style="width: 25%;"><a href="grd.html">grd_rct</a></td>
+<td>Raster-like objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd_snap_next.html">grd_snap_next</a></td>
+<td>Index snap functions</td></tr>
+<tr><td style="width: 25%;"><a href="grd_snap_next.html">grd_snap_previous</a></td>
+<td>Index snap functions</td></tr>
+<tr><td style="width: 25%;"><a href="grd_subset.html">grd_subset</a></td>
+<td>Subset grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="grd_summary.html">grd_summary</a></td>
+<td>Grid information</td></tr>
+<tr><td style="width: 25%;"><a href="grd_tile.html">grd_tile</a></td>
+<td>Extract normalized grid tiles</td></tr>
+<tr><td style="width: 25%;"><a href="grd_tile.html">grd_tile.wk_grd_rct</a></td>
+<td>Extract normalized grid tiles</td></tr>
+<tr><td style="width: 25%;"><a href="grd_tile.html">grd_tile.wk_grd_xy</a></td>
+<td>Extract normalized grid tiles</td></tr>
+<tr><td style="width: 25%;"><a href="grd_tile_template.html">grd_tile_summary</a></td>
+<td>Compute overview grid tile</td></tr>
+<tr><td style="width: 25%;"><a href="grd_tile_template.html">grd_tile_template</a></td>
+<td>Compute overview grid tile</td></tr>
+<tr><td style="width: 25%;"><a href="grd.html">grd_xy</a></td>
+<td>Raster-like objects</td></tr>
+</table>
+
+<h2><a id="H">-- H --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="handle_wkt_without_vector_size.html">handle_wkt_without_vector_size</a></td>
+<td>Test handlers for handling of unknown size vectors</td></tr>
+</table>
+
+<h2><a id="I">-- I --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="wk_handle.html">is_handleable</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">is_wk_handler</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_wkb.html">is_wk_wkb</a></td>
+<td>S3 Details for wk_wkb</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_wkt.html">is_wk_wkt</a></td>
+<td>S3 Details for wk_wkt</td></tr>
+</table>
+
+<h2><a id="N">-- N --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="new_wk_crc.html">new_wk_crc</a></td>
+<td>S3 details for crc objects</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_grd.html">new_wk_grd</a></td>
+<td>S3 details for grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">new_wk_handler</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_rct.html">new_wk_rct</a></td>
+<td>S3 details for rct objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_inverse.html">new_wk_trans</a></td>
+<td>Generic transform class</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_wkb.html">new_wk_wkb</a></td>
+<td>S3 Details for wk_wkb</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_wkt.html">new_wk_wkt</a></td>
+<td>S3 Details for wk_wkt</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_xy.html">new_wk_xy</a></td>
+<td>S3 details for xy objects</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_xy.html">new_wk_xym</a></td>
+<td>S3 details for xy objects</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_xy.html">new_wk_xyz</a></td>
+<td>S3 details for xy objects</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_xy.html">new_wk_xyzm</a></td>
+<td>S3 details for xy objects</td></tr>
+</table>
+
+<h2><a id="P">-- P --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="wkb.html">parse_wkb</a></td>
+<td>Mark lists of raw vectors as well-known binary</td></tr>
+<tr><td style="width: 25%;"><a href="wkt.html">parse_wkt</a></td>
+<td>Mark character vectors as well-known text</td></tr>
+<tr><td style="width: 25%;"><a href="wk_plot.html">plot.wk_crc</a></td>
+<td>Plot well-known geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="plot.wk_grd_xy.html">plot.wk_grd_rct</a></td>
+<td>Plot grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="plot.wk_grd_xy.html">plot.wk_grd_xy</a></td>
+<td>Plot grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_plot.html">plot.wk_rct</a></td>
+<td>Plot well-known geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_plot.html">plot.wk_wkb</a></td>
+<td>Plot well-known geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_plot.html">plot.wk_wkt</a></td>
+<td>Plot well-known geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_plot.html">plot.wk_xy</a></td>
+<td>Plot well-known geometry vectors</td></tr>
+</table>
+
+<h2><a id="R">-- R --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="rct.html">rct</a></td>
+<td>2D rectangle vectors</td></tr>
+<tr><td style="width: 25%;"><a href="rct_xmin.html">rct_contains</a></td>
+<td>Rectangle accessors and operators</td></tr>
+<tr><td style="width: 25%;"><a href="rct_xmin.html">rct_height</a></td>
+<td>Rectangle accessors and operators</td></tr>
+<tr><td style="width: 25%;"><a href="rct_xmin.html">rct_intersection</a></td>
+<td>Rectangle accessors and operators</td></tr>
+<tr><td style="width: 25%;"><a href="rct_xmin.html">rct_intersects</a></td>
+<td>Rectangle accessors and operators</td></tr>
+<tr><td style="width: 25%;"><a href="rct_xmin.html">rct_width</a></td>
+<td>Rectangle accessors and operators</td></tr>
+<tr><td style="width: 25%;"><a href="rct_xmin.html">rct_xmax</a></td>
+<td>Rectangle accessors and operators</td></tr>
+<tr><td style="width: 25%;"><a href="rct_xmin.html">rct_xmin</a></td>
+<td>Rectangle accessors and operators</td></tr>
+<tr><td style="width: 25%;"><a href="rct_xmin.html">rct_ymax</a></td>
+<td>Rectangle accessors and operators</td></tr>
+<tr><td style="width: 25%;"><a href="rct_xmin.html">rct_ymin</a></td>
+<td>Rectangle accessors and operators</td></tr>
+</table>
+
+<h2><a id="S">-- S --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="wk_writer.html">sfc_writer</a></td>
+<td>Write geometry vectors</td></tr>
+</table>
+
+<h2><a id="V">-- V --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="new_wk_wkb.html">validate_wk_wkb</a></td>
+<td>S3 Details for wk_wkb</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_wkt.html">validate_wk_wkt</a></td>
+<td>S3 Details for wk_wkt</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_xy.html">validate_wk_xy</a></td>
+<td>S3 details for xy objects</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_xy.html">validate_wk_xym</a></td>
+<td>S3 details for xy objects</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_xy.html">validate_wk_xyz</a></td>
+<td>S3 details for xy objects</td></tr>
+<tr><td style="width: 25%;"><a href="new_wk_xy.html">validate_wk_xyzm</a></td>
+<td>S3 details for xy objects</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vctrs-methods</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_cast.wk_crc</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_cast.wk_rct</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_cast.wk_wkb</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_cast.wk_wkt</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_cast.wk_xy</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_cast.wk_xym</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_cast.wk_xyz</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_cast.wk_xyzm</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_ptype2.wk_crc</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_ptype2.wk_rct</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_ptype2.wk_wkb</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_ptype2.wk_wkt</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_ptype2.wk_xy</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_ptype2.wk_xym</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_ptype2.wk_xyz</a></td>
+<td>Vctrs methods</td></tr>
+<tr><td style="width: 25%;"><a href="vctrs-methods.html">vec_ptype2.wk_xyzm</a></td>
+<td>Vctrs methods</td></tr>
+</table>
+
+<h2><a id="W">-- W --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="wkb.html">wkb</a></td>
+<td>Mark lists of raw vectors as well-known binary</td></tr>
+<tr><td style="width: 25%;"><a href="wkb_to_hex.html">wkb_to_hex</a></td>
+<td>Convert well-known binary to hex</td></tr>
+<tr><td style="width: 25%;"><a href="deprecated.html">wkb_translate_wkb</a></td>
+<td>Deprecated functions</td></tr>
+<tr><td style="width: 25%;"><a href="deprecated.html">wkb_translate_wkt</a></td>
+<td>Deprecated functions</td></tr>
+<tr><td style="width: 25%;"><a href="wk_writer.html">wkb_writer</a></td>
+<td>Write geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wkt.html">wkt</a></td>
+<td>Mark character vectors as well-known text</td></tr>
+<tr><td style="width: 25%;"><a href="wk_format.html">wkt_format_handler</a></td>
+<td>Format well-known geometry for printing</td></tr>
+<tr><td style="width: 25%;"><a href="deprecated.html">wkt_translate_wkb</a></td>
+<td>Deprecated functions</td></tr>
+<tr><td style="width: 25%;"><a href="deprecated.html">wkt_translate_wkt</a></td>
+<td>Deprecated functions</td></tr>
+<tr><td style="width: 25%;"><a href="wk_writer.html">wkt_writer</a></td>
+<td>Write geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_affine.html">wk_affine_compose</a></td>
+<td>Affine transformer</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_affine.html">wk_affine_fit</a></td>
+<td>Affine transformer</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_affine.html">wk_affine_identity</a></td>
+<td>Affine transformer</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_affine.html">wk_affine_invert</a></td>
+<td>Affine transformer</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_affine.html">wk_affine_rescale</a></td>
+<td>Affine transformer</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_affine.html">wk_affine_rotate</a></td>
+<td>Affine transformer</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_affine.html">wk_affine_scale</a></td>
+<td>Affine transformer</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_affine.html">wk_affine_translate</a></td>
+<td>Affine transformer</td></tr>
+<tr><td style="width: 25%;"><a href="wk_bbox.html">wk_bbox</a></td>
+<td>2D bounding rectangles</td></tr>
+<tr><td style="width: 25%;"><a href="wk_bbox.html">wk_bbox.default</a></td>
+<td>2D bounding rectangles</td></tr>
+<tr><td style="width: 25%;"><a href="wk_bbox.html">wk_bbox_handler</a></td>
+<td>2D bounding rectangles</td></tr>
+<tr><td style="width: 25%;"><a href="wk_chunk_strategy_single.html">wk_chunk_strategy_coordinates</a></td>
+<td>Chunking strategies</td></tr>
+<tr><td style="width: 25%;"><a href="wk_chunk_strategy_single.html">wk_chunk_strategy_feature</a></td>
+<td>Chunking strategies</td></tr>
+<tr><td style="width: 25%;"><a href="wk_chunk_strategy_single.html">wk_chunk_strategy_single</a></td>
+<td>Chunking strategies</td></tr>
+<tr><td style="width: 25%;"><a href="wk_orient.html">wk_clockwise</a></td>
+<td>Orient polygon coordinates</td></tr>
+<tr><td style="width: 25%;"><a href="wk_linestring.html">wk_collection</a></td>
+<td>Create lines, polygons, and collections</td></tr>
+<tr><td style="width: 25%;"><a href="wk_linestring.html">wk_collection_filter</a></td>
+<td>Create lines, polygons, and collections</td></tr>
+<tr><td style="width: 25%;"><a href="wk_vertices.html">wk_coords</a></td>
+<td>Extract vertices</td></tr>
+<tr><td style="width: 25%;"><a href="wk_vertices.html">wk_coords&lt;-</a></td>
+<td>Extract vertices</td></tr>
+<tr><td style="width: 25%;"><a href="wk_count.html">wk_count</a></td>
+<td>Count geometry components</td></tr>
+<tr><td style="width: 25%;"><a href="wk_count.html">wk_count.default</a></td>
+<td>Count geometry components</td></tr>
+<tr><td style="width: 25%;"><a href="wk_orient.html">wk_counterclockwise</a></td>
+<td>Orient polygon coordinates</td></tr>
+<tr><td style="width: 25%;"><a href="wk_count.html">wk_count_handler</a></td>
+<td>Count geometry components</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs.html">wk_crs</a></td>
+<td>Set and get vector CRS</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs.html">wk_crs.wk_rcrd</a></td>
+<td>Set and get vector CRS</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs.html">wk_crs.wk_vctr</a></td>
+<td>Set and get vector CRS</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs.html">wk_crs&lt;-</a></td>
+<td>Set and get vector CRS</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_inherit.html">wk_crs_auto</a></td>
+<td>Special CRS values</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_inherit.html">wk_crs_auto_value</a></td>
+<td>Special CRS values</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_equal.html">wk_crs_equal</a></td>
+<td>Compare CRS objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_equal.html">wk_crs_equal_generic</a></td>
+<td>Compare CRS objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_inherit.html">wk_crs_inherit</a></td>
+<td>Special CRS values</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_inherit.html">wk_crs_longlat</a></td>
+<td>Special CRS values</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs.html">wk_crs_output</a></td>
+<td>Set and get vector CRS</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_proj_definition.html">wk_crs_projjson</a></td>
+<td>CRS object generic methods</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_proj_definition.html">wk_crs_proj_definition</a></td>
+<td>CRS object generic methods</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_proj_definition.html">wk_crs_proj_definition.character</a></td>
+<td>CRS object generic methods</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_proj_definition.html">wk_crs_proj_definition.double</a></td>
+<td>CRS object generic methods</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_proj_definition.html">wk_crs_proj_definition.integer</a></td>
+<td>CRS object generic methods</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_proj_definition.html">wk_crs_proj_definition.NULL</a></td>
+<td>CRS object generic methods</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs_proj_definition.html">wk_crs_proj_definition.wk_crs_inherit</a></td>
+<td>CRS object generic methods</td></tr>
+<tr><td style="width: 25%;"><a href="wk_debug.html">wk_debug</a></td>
+<td>Debug filters and handlers</td></tr>
+<tr><td style="width: 25%;"><a href="wk_debug.html">wk_debug_filter</a></td>
+<td>Debug filters and handlers</td></tr>
+<tr><td style="width: 25%;"><a href="wk_set_z.html">wk_drop_m</a></td>
+<td>Set coordinate values</td></tr>
+<tr><td style="width: 25%;"><a href="wk_set_z.html">wk_drop_z</a></td>
+<td>Set coordinate values</td></tr>
+<tr><td style="width: 25%;"><a href="wk_bbox.html">wk_envelope</a></td>
+<td>2D bounding rectangles</td></tr>
+<tr><td style="width: 25%;"><a href="wk_bbox.html">wk_envelope.default</a></td>
+<td>2D bounding rectangles</td></tr>
+<tr><td style="width: 25%;"><a href="wk_bbox.html">wk_envelope.wk_crc</a></td>
+<td>2D bounding rectangles</td></tr>
+<tr><td style="width: 25%;"><a href="wk_bbox.html">wk_envelope.wk_rct</a></td>
+<td>2D bounding rectangles</td></tr>
+<tr><td style="width: 25%;"><a href="wk_bbox.html">wk_envelope.wk_xy</a></td>
+<td>2D bounding rectangles</td></tr>
+<tr><td style="width: 25%;"><a href="wk_bbox.html">wk_envelope_handler</a></td>
+<td>2D bounding rectangles</td></tr>
+<tr><td style="width: 25%;"><a href="wk_example.html">wk_example</a></td>
+<td>Create example geometry objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_example.html">wk_example_wkt</a></td>
+<td>Create example geometry objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_flatten.html">wk_flatten</a></td>
+<td>Extract simple geometries</td></tr>
+<tr><td style="width: 25%;"><a href="wk_flatten.html">wk_flatten_filter</a></td>
+<td>Extract simple geometries</td></tr>
+<tr><td style="width: 25%;"><a href="wk_format.html">wk_format</a></td>
+<td>Format well-known geometry for printing</td></tr>
+<tr><td style="width: 25%;"><a href="wk_is_geodesic.html">wk_geodesic_inherit</a></td>
+<td>Set and get vector geodesic edge interpolation</td></tr>
+<tr><td style="width: 25%;"><a href="wk_meta.html">wk_geometry_type</a></td>
+<td>Extract feature-level meta</td></tr>
+<tr><td style="width: 25%;"><a href="wk_meta.html">wk_geometry_type_label</a></td>
+<td>Extract feature-level meta</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">wk_handle</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">wk_handle.bbox</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.data.frame.html">wk_handle.data.frame</a></td>
+<td>Use data.frame with wk</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">wk_handle.sf</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">wk_handle.sfc</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">wk_handle.sfg</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">wk_handle.wk_crc</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.wk_grd_xy.html">wk_handle.wk_grd_rct</a></td>
+<td>Handler interface for grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.wk_grd_xy.html">wk_handle.wk_grd_xy</a></td>
+<td>Handler interface for grid objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">wk_handle.wk_rct</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">wk_handle.wk_wkb</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">wk_handle.wk_wkt</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.html">wk_handle.wk_xy</a></td>
+<td>Read geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle_slice.html">wk_handle_slice</a></td>
+<td>Handle specific regions of objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle_slice.html">wk_handle_slice.data.frame</a></td>
+<td>Handle specific regions of objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle_slice.html">wk_handle_slice.default</a></td>
+<td>Handle specific regions of objects</td></tr>
+<tr><td style="width: 25%;"><a href="wk_identity.html">wk_identity</a></td>
+<td>Copy a geometry vector</td></tr>
+<tr><td style="width: 25%;"><a href="wk_identity.html">wk_identity_filter</a></td>
+<td>Copy a geometry vector</td></tr>
+<tr><td style="width: 25%;"><a href="wk_is_geodesic.html">wk_is_geodesic</a></td>
+<td>Set and get vector geodesic edge interpolation</td></tr>
+<tr><td style="width: 25%;"><a href="wk_is_geodesic.html">wk_is_geodesic&lt;-</a></td>
+<td>Set and get vector geodesic edge interpolation</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs.html">wk_is_geodesic_output</a></td>
+<td>Set and get vector CRS</td></tr>
+<tr><td style="width: 25%;"><a href="wk_linestring.html">wk_linestring</a></td>
+<td>Create lines, polygons, and collections</td></tr>
+<tr><td style="width: 25%;"><a href="wk_linestring.html">wk_linestring_filter</a></td>
+<td>Create lines, polygons, and collections</td></tr>
+<tr><td style="width: 25%;"><a href="wk_meta.html">wk_meta</a></td>
+<td>Extract feature-level meta</td></tr>
+<tr><td style="width: 25%;"><a href="wk_meta.html">wk_meta.default</a></td>
+<td>Extract feature-level meta</td></tr>
+<tr><td style="width: 25%;"><a href="wk_meta.html">wk_meta_handler</a></td>
+<td>Extract feature-level meta</td></tr>
+<tr><td style="width: 25%;"><a href="wk_orient.html">wk_orient</a></td>
+<td>Orient polygon coordinates</td></tr>
+<tr><td style="width: 25%;"><a href="wk_orient.html">wk_orient_filter</a></td>
+<td>Orient polygon coordinates</td></tr>
+<tr><td style="width: 25%;"><a href="wkb.html">wk_platform_endian</a></td>
+<td>Mark lists of raw vectors as well-known binary</td></tr>
+<tr><td style="width: 25%;"><a href="wk_plot.html">wk_plot</a></td>
+<td>Plot well-known geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_plot.html">wk_plot.default</a></td>
+<td>Plot well-known geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_linestring.html">wk_polygon</a></td>
+<td>Create lines, polygons, and collections</td></tr>
+<tr><td style="width: 25%;"><a href="wk_linestring.html">wk_polygon_filter</a></td>
+<td>Create lines, polygons, and collections</td></tr>
+<tr><td style="width: 25%;"><a href="wk_problems.html">wk_problems</a></td>
+<td>Validate well-known binary and well-known text</td></tr>
+<tr><td style="width: 25%;"><a href="wk_problems.html">wk_problems_handler</a></td>
+<td>Validate well-known binary and well-known text</td></tr>
+<tr><td style="width: 25%;"><a href="wk_proj_crs_view.html">wk_proj_crs_json</a></td>
+<td>Common CRS Representations</td></tr>
+<tr><td style="width: 25%;"><a href="wk_proj_crs_view.html">wk_proj_crs_view</a></td>
+<td>Common CRS Representations</td></tr>
+<tr><td style="width: 25%;"><a href="wk_identity.html">wk_restore</a></td>
+<td>Copy a geometry vector</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.data.frame.html">wk_restore.data.frame</a></td>
+<td>Use data.frame with wk</td></tr>
+<tr><td style="width: 25%;"><a href="wk_identity.html">wk_restore.default</a></td>
+<td>Copy a geometry vector</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.data.frame.html">wk_restore.sf</a></td>
+<td>Use data.frame with wk</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.data.frame.html">wk_restore.tbl_df</a></td>
+<td>Use data.frame with wk</td></tr>
+<tr><td style="width: 25%;"><a href="wk_crs.html">wk_set_crs</a></td>
+<td>Set and get vector CRS</td></tr>
+<tr><td style="width: 25%;"><a href="wk_is_geodesic.html">wk_set_geodesic</a></td>
+<td>Set and get vector geodesic edge interpolation</td></tr>
+<tr><td style="width: 25%;"><a href="wk_set_z.html">wk_set_m</a></td>
+<td>Set coordinate values</td></tr>
+<tr><td style="width: 25%;"><a href="wk_set_z.html">wk_set_z</a></td>
+<td>Set coordinate values</td></tr>
+<tr><td style="width: 25%;"><a href="wk_transform.html">wk_transform</a></td>
+<td>Apply coordinate transformations</td></tr>
+<tr><td style="width: 25%;"><a href="wk_transform.html">wk_transform_filter</a></td>
+<td>Apply coordinate transformations</td></tr>
+<tr><td style="width: 25%;"><a href="wk_translate.html">wk_translate</a></td>
+<td>Translate geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.data.frame.html">wk_translate.data.frame</a></td>
+<td>Use data.frame with wk</td></tr>
+<tr><td style="width: 25%;"><a href="wk_translate.html">wk_translate.default</a></td>
+<td>Translate geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.data.frame.html">wk_translate.sf</a></td>
+<td>Use data.frame with wk</td></tr>
+<tr><td style="width: 25%;"><a href="wk_translate.html">wk_translate.sfc</a></td>
+<td>Translate geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_handle.data.frame.html">wk_translate.tbl_df</a></td>
+<td>Use data.frame with wk</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_affine.html">wk_trans_affine</a></td>
+<td>Affine transformer</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_explicit.html">wk_trans_explicit</a></td>
+<td>Transform using explicit coordinate values</td></tr>
+<tr><td style="width: 25%;"><a href="wk_trans_inverse.html">wk_trans_inverse</a></td>
+<td>Generic transform class</td></tr>
+<tr><td style="width: 25%;"><a href="wk_set_z.html">wk_trans_set</a></td>
+<td>Set coordinate values</td></tr>
+<tr><td style="width: 25%;"><a href="wk_meta.html">wk_vector_meta</a></td>
+<td>Extract feature-level meta</td></tr>
+<tr><td style="width: 25%;"><a href="wk_meta.html">wk_vector_meta.default</a></td>
+<td>Extract feature-level meta</td></tr>
+<tr><td style="width: 25%;"><a href="wk_meta.html">wk_vector_meta_handler</a></td>
+<td>Extract feature-level meta</td></tr>
+<tr><td style="width: 25%;"><a href="wk_vertices.html">wk_vertex_filter</a></td>
+<td>Extract vertices</td></tr>
+<tr><td style="width: 25%;"><a href="wk_vertices.html">wk_vertices</a></td>
+<td>Extract vertices</td></tr>
+<tr><td style="width: 25%;"><a href="wk_void.html">wk_void</a></td>
+<td>Do nothing</td></tr>
+<tr><td style="width: 25%;"><a href="wk_void.html">wk_void_handler</a></td>
+<td>Do nothing</td></tr>
+<tr><td style="width: 25%;"><a href="wk_writer.html">wk_writer</a></td>
+<td>Write geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_writer.html">wk_writer.default</a></td>
+<td>Write geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_writer.html">wk_writer.sf</a></td>
+<td>Write geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_writer.html">wk_writer.sfc</a></td>
+<td>Write geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_writer.html">wk_writer.wk_wkb</a></td>
+<td>Write geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_writer.html">wk_writer.wk_wkt</a></td>
+<td>Write geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_writer.html">wk_writer.wk_xy</a></td>
+<td>Write geometry vectors</td></tr>
+</table>
+
+<h2><a id="X">-- X --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="xy.html">xy</a></td>
+<td>Efficient point vectors</td></tr>
+<tr><td style="width: 25%;"><a href="xy.html">xym</a></td>
+<td>Efficient point vectors</td></tr>
+<tr><td style="width: 25%;"><a href="xy.html">xyz</a></td>
+<td>Efficient point vectors</td></tr>
+<tr><td style="width: 25%;"><a href="xy.html">xyzm</a></td>
+<td>Efficient point vectors</td></tr>
+<tr><td style="width: 25%;"><a href="xy.html">xy_dims</a></td>
+<td>Efficient point vectors</td></tr>
+<tr><td style="width: 25%;"><a href="xy_x.html">xy_m</a></td>
+<td>XY vector extractors</td></tr>
+<tr><td style="width: 25%;"><a href="wk_writer.html">xy_writer</a></td>
+<td>Write geometry vectors</td></tr>
+<tr><td style="width: 25%;"><a href="xy_x.html">xy_x</a></td>
+<td>XY vector extractors</td></tr>
+<tr><td style="width: 25%;"><a href="xy_x.html">xy_y</a></td>
+<td>XY vector extractors</td></tr>
+<tr><td style="width: 25%;"><a href="xy_x.html">xy_z</a></td>
+<td>XY vector extractors</td></tr>
+</table>
+</div></body></html>

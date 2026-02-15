@@ -1,0 +1,305 @@
+$                       Subset a SpatRaster or a SpatVector
+$<-                     Replace with $<-
+Arith-methods           Arithmetic
+Compare-methods         Compare and logical methods
+Math-methods            General mathematical methods
+NAflag                  Set the NA flag
+NIDP                    Number of immediate adjacent cells flowing into
+                        each cell
+RGB                     Layers representing colors
+SpatExtent-class        Class "SpatExtent"
+SpatRaster-class        SpatRaster class
+SpatVector-class        Class "SpatVector"
+Summary-methods         Summarize
+[                       Extract values from a SpatRaster, SpatVector or
+                        SpatExtent
+[<-                     Replace values of a SpatRaster
+[[                      Subset a SpatRaster or a SpatVector
+[[<-                    Replace layers or variables
+activeCat               Active category
+add<-                   Add (in place) a SpatRaster to another
+                        SpatRaster or to a SpatRasterDataset or
+                        SpatRasterCollection
+add_abline              add vertical and/or horizontal lines to a map
+                        made with terra
+add_box                 draw a box
+add_grid                add a grid to a map made with terra
+add_legend              add a custom legend
+add_mtext               draw a box
+adjacent                Adjacent cells or polygons
+aggregate               Aggregate raster or vector data
+align                   Align a SpatExtent
+all.equal               Compare two SpatRaster, SpatVector, or
+                        SpatExtent objects for equality
+animate                 Animate a SpatRaster
+app                     Apply a function to the cells of a SpatRaster
+approximate             Estimate values for cell values that are 'NA'
+                        by interpolating between layers
+ar_info                 ar_info
+as.character,SpatExtent-method
+                        Create a text representation of (the skeleton
+                        of) an object
+as.data.frame           SpatRaster or SpatVector to data.frame
+as.lines                Conversion to a SpatVector of lines
+as.list                 Coerce a Spat* object to a list
+as.points               Conversion to a SpatVector of points
+as.polygons             Conversion to a SpatVector of polygons
+as.raster               Coerce to a "raster" object
+as.vector               Coercion to vector, matrix or array
+atan2                   Two argument arc-tangent
+autocor                 Spatial autocorrelation
+barplot                 Bar plot of a SpatRaster
+bestMatch               bestMatch
+boundaries              Detect boundaries (edges)
+boxplot                 Box plot of SpatRaster data
+buffer                  Create a buffer around vector geometries or
+                        raster patches
+c                       Combine SpatRaster or SpatVector objects
+cartogram               Cartogram
+catalyze                Factors to numeric
+cellSize                Area covered by each raster cell
+cells                   Get cell numbers
+centroids               Centroids
+chunk                   Make a SpatRaster method memory-safe
+clamp                   Clamp values
+clamp_ts                clamp time series data
+classify                Classify (or reclassify) cell values
+click                   Query by clicking on a map
+combineGeoms            Combine geometries
+compareGeom             Compare geometries
+concats                 Concatenate categorical rasters
+contour                 Contour plot
+costDist                Cost-distance
+cover                   Replace values with values from another object
+crds                    Get the coordinates of SpatVector geometries or
+                        SpatRaster cells
+crop                    Cut out a geographic subset
+crosstab                Cross-tabulate
+crs                     Get or set a coordinate reference system
+datatype                Data type of a SpatRaster or SpatVector
+deepcopy                Deep copy
+densify                 Add additional nodes to lines or polygons
+density                 Density plot
+depth                   depth of SpatRaster layers
+describe                describe
+diff                    Lagged differences
+direction               Direction
+disagg                  Disaggregate raster cells or vector geometries
+distance                Geographic distance
+divide                  Subdivide a raster or polygons
+dots                    Make a dot-density map
+draw                    Draw a polygon, line, extent, or points
+droplevels              Categorical rasters
+elongate                elongate lines
+erase                   Erase parts of a SpatVector object
+expanse                 Get the expanse (area) of individual polygons
+                        or for all (summed) raster cells
+ext                     Create, get or set a SpatExtent
+extend                  Extend
+extract                 Extract values from a SpatRaster
+extractAlong            extract values along lines
+extractRange            Extract values for a range of layers from a
+                        SpatRaster
+fillHoles               Remove or extract holes from polygons, or fill
+                        holes in raster data
+fillTime                Fill time gaps in a SpatRaster
+flip                    Flip or reverse a raster
+flowAccumulation        Flow accumulation
+focal                   Focal values
+focal3D                 Three-dimensional focal values
+focalCpp                Compute focal values with an iterating C++
+                        function
+focalMat                Focal weights matrix
+focalPairs              Focal function across two layers
+focalReg                Focal regression
+focalValues             Get focal values
+forceCCW                force counter-clockwise polygons
+freq                    Frequency table
+gaps                    Find gaps between polygons
+gdal                    GDAL version, supported file formats, cache
+                        size, and PROJ coordinate transformation
+                        control
+geom                    Get the geometry (coordinates) of a SpatVector
+geomtype                Geometry type of a SpatVector
+global                  global statistics
+graticule               Create a graticule
+gridDist                Distance on a grid
+gridDistance            deprecated methods
+halo                    Add halo-ed text to a plot
+has.colors              Color table
+head                    head and tail of a SpatRaster or SpatVector
+hist                    Histogram
+hull                    Convex, concave, rectangular and circular hulls
+identical               Compare two SpatRaster, SpatVector or
+                        SpatExtent objects for equality
+ifel                    ifelse for SpatRasters
+image                   SpatRaster image method
+impose                  Impose the geometry of a SpatRaster to those in
+                        a SpatRasterCollection.
+init                    Initialize a SpatRaster with values
+inset                   Make an inset map
+interpIDW               Interpolate points using a moving window
+interpNear              Nearest neighbor interpolation
+interpolate             Spatial interpolation
+intersect               Intersection
+is.bool                 Raster value types
+is.empty                Check if a SpatExtent or SpatVector is empty
+is.flipped              Is a SpatRaster is flipped
+is.lonlat               Check for longitude/latitude crs
+is.rotated              Check for rotation
+is.valid                Check or fix polygon or extent validity
+k_means                 k_means
+lapp                    Apply a function to layers of a SpatRaster, or
+                        sub-datasets of a SpatRasterDataset
+layerCor                Correlation and (weighted) covariance
+linearUnits             Linear units of the coordinate reference system
+lines                   Add points, lines, or polygons to a map
+makeTiles               Make tiles or get their extents
+makeVRT                 Make a VRT header file
+map.pal                 color palettes for mapping
+map_extent              Get the coordinates of the extent of a map
+mask                    Mask values in a SpatRaster or SpatVector
+match                   Value matching for SpatRasters
+mem_info                Memory available and needed
+merge                   Merge SpatRasters, or merge a SpatVector with a
+                        data.frame
+mergeTime               merge SpatRasters by timelines to create a
+                        single timeseries
+meta                    meta
+metags                  Set or get metadata
+minmax                  Get or compute the minimum and maximum cell
+                        values
+modal                   modal value
+mosaic                  mosaic SpatRasters
+na.omit                 Find and remove geometries that are NA
+names                   Names of Spat* objects
+nearest                 nearby geometries
+normalize.longitude     normalize vector data that crosses the dateline
+north                   North arrow
+not.na                  is not NA
+nseg                    Number of segments
+origin                  Origin
+pairs                   Pairs plot (matrix of scatterplots)
+panel                   Map panel
+patches                 Detect patches (clumps) of cells
+perim                   Perimeter or length
+persp                   Perspective plot
+pitfinder               Pit Finder in a Flow Dir SpatRaster for
+                        Watershed Extraction
+plet                    Plot with leaflet
+plot                    Make a map
+plot,SpatExtent,missing-method
+                        Plot a SpatExtent
+plot,SpatGraticule,missing-method
+                        Plot a graticule
+plot,SpatRaster,SpatRaster-method
+                        Scatterplot of two SpatRaster layers
+plotRGB                 Red-Green-Blue plot of a multi-layered
+                        SpatRaster
+prcomp                  SpatRaster PCA with prcomp
+predict                 Spatial model predictions
+princomp                SpatRaster PCA with princomp
+project                 Change the coordinate reference system
+quantile                Quantiles of spatial data
+query                   Query a SpatVectorProxy object
+rangeFill               Fill layers with a range
+rapp                    Range-apply
+rast                    Create a SpatRaster
+rasterize               Rasterize vector data
+rasterizeGeom           Rasterize geometric properties of vector data
+rasterizeWin            Rasterize points with a moving window
+rcl                     Combine row, column, and layer numbers
+readStart               Read from, or write to, file
+rectify                 Rectify a SpatRaster
+regress                 Cell level regression
+relate                  Spatial relationships between geometries
+rep                     Replicate layers
+resample                Transfer values of a SpatRaster to another one
+                        with a different geometry
+rescale                 rescale
+roll                    Rolling (moving) functions
+rotate                  Rotate data along longitude
+rowSums                 row/col sums and means for SpatRaster
+same.crs                Compare coordinate reference systems
+sapp                    Apply a terra function that takes only a single
+                        layer and returns a SpatRaster to all layers of
+                        a SpatRaster
+sbar                    scale bar
+scale                   Scale values
+scale_linear            Scale values linearly
+scoff                   Scale (gain) and offset
+sds                     Create a SpatRasterDataset
+segregate               segregate
+sel                     Spatial selection
+selectHighest           select cells with high or low values
+selectRange             Select the values of a range of layers, as
+                        specified by cell values in another SpatRaster
+serialize               saveRDS and serialize for SpatVector and
+                        SpatRaster*
+set.ext                 Change values in-place
+setValues               Set the values of raster cells or of geometry
+                        attributes
+shade                   Hill shading
+sharedPaths             Shared paths
+shift                   Shift
+sieve                   Sieve filter
+simplifyGeom            simplifyGeom geometries
+size                    Dimensions of a SpatRaster or SpatVector and
+                        related objects
+sort                    Sort a SpatRaster or SpatVector
+sources                 Data sources of a SpatRaster
+spatSample              Take a regular sample
+spin                    spin a SpatVector
+split                   Split a SpatRaster or SpatVector
+sprc                    Create a SpatRasterCollection
+stretch                 Stretch
+subset                  Subset a SpatRaster or a SpatVector
+subst                   replace cell values
+summary                 summary
+surfArea                Compute surface area from elevation data
+svc                     Create a SpatVectorCollection
+symdif                  Symmetrical difference
+t                       Transpose
+tapp                    Apply a function to subsets of layers of a
+                        SpatRaster
+terra-package           Description of the methods in the terra package
+terraOptions            Options
+terrain                 terrain characteristics
+text                    Add labels to a map
+thresh                  Thresholding
+tighten                 tighten SpatRaster or SpatRasterDataset objects
+time                    time of SpatRaster layers
+tmpFiles                Temporary files
+toMemory                Read all cell values into memory
+topology                Vector topology methods
+trim                    Trim a SpatRaster
+union                   Union SpatVector or SpatExtent objects
+unique                  Unique values
+units                   units of SpatRaster or SpatRasterDataSet
+update                  Change values in a file
+values                  Cell values and geometry attributes
+varnames                variable and long variable names
+vect                    Create SpatVector objects
+vector_layers           List or remove layers from a vector file
+viewshed                Compute a viewshed
+voronoi                 Voronoi diagram and Delaunay triangles
+vrt                     Virtual Raster Dataset
+vrt_tiles               filenames of VRT tiles
+watershed               Catchment delineation
+weighted.mean           Weighted mean of layers
+where.min               Where are the cells with the min or max values?
+which.lyr               Which cells are TRUE?
+width                   SpatVector geometric properties
+window                  Set a window
+wrap                    wrap and unwrap
+wrapCache               SpatRaster wrap with caching options
+writeCDF                Write raster data to a NetCDF file
+writeRaster             Write raster data to a file
+writeVector             Write SpatVector data to a file
+xFromCol                Coordinates from a row, column or cell number
+                        and vice versa
+xapp                    Apply a function to the cells of two
+                        SpatRasters
+xmin                    Get or set single values of an extent
+zonal                   Zonal statistics
+zoom                    Zoom in on a map

@@ -1,0 +1,43 @@
+Package: fs
+Title: Cross-Platform File System Operations Based on 'libuv'
+Version: 1.6.6
+Authors@R: c(
+    person("Jim", "Hester", role = "aut"),
+    person("Hadley", "Wickham", , "hadley@posit.co", role = "aut"),
+    person("Gábor", "Csárdi", , "csardi.gabor@gmail.com", role = c("aut", "cre")),
+    person("libuv project contributors", role = "cph",
+           comment = "libuv library"),
+    person("Joyent, Inc. and other Node contributors", role = "cph",
+           comment = "libuv library"),
+    person("Posit Software, PBC", role = c("cph", "fnd"))
+  )
+Description: A cross-platform interface to file system operations, built
+    on top of the 'libuv' C library.
+License: MIT + file LICENSE
+URL: https://fs.r-lib.org, https://github.com/r-lib/fs
+BugReports: https://github.com/r-lib/fs/issues
+Depends: R (>= 3.6)
+Imports: methods
+Suggests: covr, crayon, knitr, pillar (>= 1.0.0), rmarkdown, spelling,
+        testthat (>= 3.0.0), tibble (>= 1.1.0), vctrs (>= 0.3.0), withr
+VignetteBuilder: knitr
+ByteCompile: true
+Config/Needs/website: tidyverse/tidytemplate
+Config/testthat/edition: 3
+Copyright: file COPYRIGHTS
+Encoding: UTF-8
+Language: en-US
+RoxygenNote: 7.2.3
+SystemRequirements: GNU make
+NeedsCompilation: yes
+Packaged: 2025-04-12 09:39:13 UTC; gaborcsardi
+Author: Jim Hester [aut],
+  Hadley Wickham [aut],
+  Gábor Csárdi [aut, cre],
+  libuv project contributors [cph] (libuv library),
+  Joyent, Inc. and other Node contributors [cph] (libuv library),
+  Posit Software, PBC [cph, fnd]
+Maintainer: Gábor Csárdi <csardi.gabor@gmail.com>
+Repository: RSPM
+Date/Publication: 2025-04-12 10:40:02 UTC
+Built: R 4.5.0; x86_64-pc-linux-gnu; 2025-12-02 12:21:34 UTC; unix

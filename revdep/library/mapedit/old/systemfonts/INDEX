@@ -1,0 +1,30 @@
+add_fonts               Add local font files to the search path
+font_fallback           Get the fallback font for a given string
+font_feature            Define OpenType font feature settings
+font_info               Query font-specific information
+font_variation          Define axis coordinates for variable fonts
+fonts_as_import         Create import specifications for web content
+glyph_info              Query glyph-specific information from fonts
+glyph_outline           Get the outline of glyphs
+glyph_raster            Render glyphs to raster image
+glyph_raster_grob       Convert an extracted glyph raster to a grob
+match_fonts             Find a system font by name and style
+plot_glyph_stats        Create a visual representation of what the
+                        various glyph stats mean
+register_font           Register font collections as families
+register_variant        Register a font as a variant as an existing one
+require_font            Ensure font availability in a script
+reset_font_cache        Reset the system font cache
+search_web_fonts        Search font repositories for a font based on
+                        family name
+shape_string            Calculate glyph positions for strings
+str_split_emoji         Split a string into emoji and non-emoji glyph
+                        runs
+string_metrics_dev      Get string metrics as measured by the current
+                        device
+string_width            Calculate the width of a string, ignoring
+                        new-lines
+string_widths_dev       Get string widths as measured by the current
+                        device
+system_fonts            List all fonts installed on your system
+web-fonts               Download and add web font

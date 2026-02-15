@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Launching tasks with mirai</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Launching tasks with mirai</h1>
+
+
+
+<style type="text/css">
+.alert-secondary a, .alert-secondary a:visited {
+color: inherit;
+text-decoration: underline;
+}
+.alert code {
+color: inherit;
+background-color: inherit;
+}
+</style>
+<p>We’ve updated this guide to using the <code>mirai</code> package from
+<code>future</code> as we believe the following benefits are compelling
+in the context of Shiny apps:</p>
+<ol style="list-style-type: decimal">
+<li>Faster startup times and much less per-task overhead, meaning you
+can boost performance by making even shorter tasks async.</li>
+<li>More linear scaling, meaning you get the same relative benefits
+whether running 2 or 200 cores.</li>
+<li>Event-driven promises using <code>mirai</code> vs. promises using
+<code>future</code>, which time-poll every 100 ms. Lower latency and
+response times can help with the user experience.</li>
+</ol>
+<p>The previous guide using <code>future</code> is available <a href="promises_05a_futures.html">here</a>. Using <code>future</code>
+continues to be supported within the Shiny ecosystem, and Henrik
+Bengtsson‘s excellent work on the futureverse deserves credit for
+pushing the boundaries of parallelism in R farther than many thought
+possible.</p>
+<hr>
+<p>The <code>mirai</code> package provides a lightweight way to launch R
+tasks that don’t block the current R session.</p>
+<p>The <code>promises</code> package provides the API for working with
+the results of async tasks, but it totally abdicates responsibility for
+actually launching/creating async tasks. The idea is that any number of
+different packages could be capable of launching async tasks, using
+whatever techniques they want, but all of them would either return
+promise objects or objects that can be converted to promise objects, as
+is the case for <code>mirai</code>.</p>
+<p>This document will give an introduction to the parts of
+<code>mirai</code> that are most relevant to promises. For more
+information, please consult the documentation and vignettes that come
+with <a href="https://mirai.r-lib.org"><code>mirai</code></a>.</p>
+<div id="how-mirai-works" class="section level2">
+<h2>How mirai works</h2>
+<p>The main API that <code>mirai</code> provides couldn’t be simpler.
+You call <code>mirai()</code> and pass it the code that you want
+executed asynchronously:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">mirai</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="co"># expensive operations go here...</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">download_lots_of_data</span>()</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="fu">fit_model</span>(df)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>})</span></code></pre></div>
+<p>The object that’s returned is a mirai, which for all intents and
+purposes is a promise object<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, which will eventually resolve to the
+return value of the code block (i.e. the last expression) or an error if
+the code does not complete executing successfully. The important thing
+is that no matter how long the expensive operation takes, these lines
+will execute almost instantly, while the operation continues in the
+background.</p>
+<p>But we know that R is single-threaded, so how does <code>mirai</code>
+accomplish this? The answer: by utilizing another R process.
+<code>mirai</code> delegates the execution of the expensive operation to
+a totally different R process, so that the original R process can move
+on.</p>
+</div>
+<div id="choosing-a-launch-method" class="section level2">
+<h2>Choosing a launch method</h2>
+<p>In mirai, the <code>daemons()</code> function is used to set and
+launch background R processes (<em>daemons</em>).</p>
+<p>These background processes will be used/recycled for the life of the
+originating R process. If a mirai is launched while all the background R
+processes are busy executing, then the new mirai is queued until one of
+the background processes frees up.</p>
+<p>To launch <code>n</code> processes locally, you just need to call
+<code>daemons(n)</code>, supplying the value of <code>n</code>.</p>
+<p>You need to determine <code>n</code> yourself, and typically this
+should be at most one less than the number of processor cores on your
+machine, to leave one for the main R process. The reason we don’t
+automatically detect this for you is that you may also be running other
+tasks on your machine, and you should take this into account when
+supplying a value for <code>n</code>.</p>
+<p><code>daemons()</code> has further arguments <code>url</code> and
+<code>remote</code> for setting and launching remote daemons over the
+network for distributed computing. To learn more, see the <a href="https://mirai.r-lib.org/reference/daemons.html"><code>mirai::daemons()</code>
+reference docs</a> as well as the daemons sections of the <a href="https://mirai.r-lib.org/articles/mirai.html"><code>mirai</code>
+reference vignette</a>.</p>
+<p>If you don’t set <code>daemons()</code> in a session, then each
+<code>mirai()</code> call will launch a new local R process solely for
+the purpose of performing that evaluation. Whilst this may be desirable
+in certain circumstances, this is rarely going to be the case for Shiny.
+This is as we cannot limit the total number of processes spawned at any
+one time. If a Shiny app has many simultaneous users, then this could
+lead to an excessive number of processes being created, overwhelming the
+system.</p>
+</div>
+<div id="caveats-and-limitations" class="section level2">
+<h2>Caveats and limitations</h2>
+<p>The abstractions that <code>mirai</code> presents are simple and
+consistent, although it may take some time to get used to them. Please
+read this entire section carefully before proceeding.</p>
+<div id="globals-providing-input-to-mirai-code-chunks" class="section level3">
+<h3>Globals: Providing input to mirai code chunks</h3>
+<p>Most mirai code chunks will need to reference data from the original
+process, e.g. data to be fitted, URLs to be requested, file paths to
+read from.</p>
+<p>As evaluation happens in another process, these won’t be available to
+the code chunk by default. These objects will need to be passed to the
+<code>...</code> argument of your <code>mirai()</code> call. These are
+then serialized and sent to the other process along with the code to be
+executed.</p>
+<p>These objects include any functions which are defined in your session
+and not in a package.</p>
+<p>For example:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>download_data <span class="ot">&lt;-</span> \(url) {</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">download.file</span>(url, file, <span class="st">&quot;libcurl&quot;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  file</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>}</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">&quot;http://example.com/data.csv&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">mirai</span>(</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  {</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>    file <span class="ot">&lt;-</span> <span class="fu">download_data</span>(url)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    <span class="fu">read.csv</span>(file)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  },</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="at">download_data =</span> download_data,</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="at">url =</span> url</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>)</span></code></pre></div>
+<p>If there are many variables to pass through, mirai does offer a
+convenience feature to pass an environment instead of individual
+<code>...</code> pairs. The above call would then look like this
+instead:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">mirai</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  {</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    file <span class="ot">&lt;-</span> <span class="fu">download_data</span>(url)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="fu">read.csv</span>(file)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  },</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="fu">environment</span>()</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>)</span></code></pre></div>
+<p>This passes the calling environment, which includes both the
+<code>download_data</code> function as well as <code>url</code>.</p>
+<p>Care should be taken when using this feature as it will also pass
+anything else that happens to be in the same environment. It is safer to
+use when mirai is called inside of another function, then
+<code>environment()</code> will only consist of variables passed as
+arguments to that function, or created locally within it.</p>
+</div>
+<div id="package-loading" class="section level3">
+<h3>Package loading</h3>
+<p>Besides variables, package functions need to be declared with the
+full namespace so that they can be found in the other process. For
+example, using <code>dplyr::mutate()</code> instead of just
+<code>mutate()</code>, even if the <code>dplyr</code> package is loaded
+in your main session, as the other process will not have any packages
+loaded by default.</p>
+<p>Alternatively, make a call to load the package inside your mirai code
+chunk, for example by adding <code>library(dplyr)</code>. Sometimes this
+may be the most convenient option, especially for for infix operators.
+For example the <code>{magrittr}</code> pipe <code>%&gt;%</code>,
+requires a <code>library(magrittr)</code> to load the package
+beforehand.</p>
+</div>
+<div id="custom-data-types" class="section level3">
+<h3>Custom Data Types</h3>
+<p>Certain objects are implemented at a low level, not using one of R’s
+native vector types, and represented in R by an external pointer. An
+example of this is an Arrow table. It is not possible to serialize these
+to and from R’s native rds format. Instead they provide their own
+serialization and deserialization methods.</p>
+<p>mirai offers a seamless solution for working with these data types,
+integrating those custom serialization and deserialization methods with
+R’s native serialization so that you don’t need to manually handle each
+instance of these objects when moving them across processes.</p>
+<p>This does require a one-off configuration step when you set up
+daemons, and you may read more about this in the <a href="https://mirai.r-lib.org/articles/mirai-serialization.html"><code>mirai</code>
+serialization vignette</a>.</p>
+</div>
+<div id="native-resources" class="section level3">
+<h3>Native resources</h3>
+<p>Mirai code blocks cannot use resources such as database connections
+and network sockets that were created in the parent process. Even if it
+seems to work with a simple test, you are asking for crashes or worse by
+sharing these kinds of resources across processes.</p>
+<p>Instead, make sure you create, use, and destroy such resources
+entirely within the scope of the mirai code block.</p>
+</div>
+<div id="mutation" class="section level3">
+<h3>Mutation</h3>
+<p>Reference class objects (including R6 objects, S7 objects, and
+data.table objects) and environments are among the few “native” R object
+types that are mutable, that is, can be modified in-place. Unless they
+contain native resources (see previous section), there’s nothing wrong
+with using mutable objects from within mirai code blocks, even objects
+created in the parent process. However, note that any changes you make
+to these objects will not be visible from the parent process; the mirai
+code is operating on a copy of the object, not the original.</p>
+</div>
+<div id="returning-values" class="section level3">
+<h3>Returning values</h3>
+<p>Mirai code blocks return a value—they’d be a lot less useful if they
+couldn’t! Like everywhere else in R, the return value is determined by
+the last expression in the code block, unless <code>return()</code> is
+explicitly called earlier.</p>
+<p>The return value will always be copied back into the parent process.
+This matters for two reasons.</p>
+<p>First, if the return value is very large, the copying process can
+take some time — and because the data must essentially be serialized to
+and deserialized from rds format, it can take a surprising amount of
+time. In the case of mirai blocks that execute fairly quickly but return
+huge amounts of data, you may be better off not using async techniques
+at all.</p>
+<p>Second, objects that refer to native resources are unlikely to work
+in this direction either; just as you can’t use the parent’s database
+connections in the child process, you also cannot have the child process
+return a database connection for the parent to use.</p>
+<div style="font-size: 20px; margin-top: 40px; text-align: right;">
+<p>Next: <a href="promises_06_shiny.html">Using <code>promises</code>
+with Shiny</a></p>
+</div>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>(The <code>mirai</code> package provides several
+functions for working with mirai objects, but they are not relevant for
+our purposes.)<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

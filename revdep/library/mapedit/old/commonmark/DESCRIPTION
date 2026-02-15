@@ -1,0 +1,30 @@
+Package: commonmark
+Type: Package
+Title: High Performance CommonMark and Github Markdown Rendering in R
+Version: 2.0.0
+Authors@R: c(
+    person("Jeroen", "Ooms", ,"jeroenooms@gmail.com", role = c("aut", "cre"),
+        comment = c(ORCID = "0000-0002-4035-0289")),
+    person("John MacFarlane", role = "cph", comment = "Author of cmark"))
+Description: The CommonMark specification <https://github.github.com/gfm/> defines
+    a rationalized version of markdown syntax. This package uses the 'cmark' 
+    reference implementation for converting markdown text into various formats
+    including html, latex and groff man. In addition it exposes the markdown
+    parse tree in xml format. Also includes opt-in support for GFM extensions
+    including tables, autolinks, and strikethrough text.
+License: BSD_2_clause + file LICENSE
+URL: https://docs.ropensci.org/commonmark/
+        https://ropensci.r-universe.dev/commonmark
+BugReports: https://github.com/r-lib/commonmark/issues
+Suggests: curl, testthat, xml2
+RoxygenNote: 7.3.2
+Language: en-US
+Encoding: UTF-8
+NeedsCompilation: yes
+Packaged: 2025-07-07 13:20:39 UTC; jeroen
+Author: Jeroen Ooms [aut, cre] (ORCID: <https://orcid.org/0000-0002-4035-0289>),
+  John MacFarlane [cph] (Author of cmark)
+Maintainer: Jeroen Ooms <jeroenooms@gmail.com>
+Repository: RSPM
+Date/Publication: 2025-07-07 13:40:02 UTC
+Built: R 4.5.0; x86_64-pc-linux-gnu; 2025-12-02 12:22:33 UTC; unix

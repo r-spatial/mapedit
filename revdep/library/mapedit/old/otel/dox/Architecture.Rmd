@@ -1,0 +1,84 @@
+# Architecture
+
+## Instrumented R package with tracing disabled
+
+All `otel::` calls are no-operations.
+
+```
+              ┌─────────────────┐
+              │    R package    │
+              ├─⇩───────────────┤
+              │   otel package  │
+              └─────────────────┘
+```
+
+## Instrumented R package with tracing enabled
+
+Use environment variables to select the OpenTelemetry exporter to switch
+on. Exporters are in the otelsdk package.
+
+Use environment variables to configure the selected exporter(s). E.g. the
+URL to send the data to.
+
+```
+              ┌─────────────────┐
+              │    R package    │
+╭────────╮    ├─⇩───────────────┤
+│env vars│───→│   otel package  │
+╰────────╯    ├─⇩───────────────┤
+      └──────→│ otelsdk package │
+              ├─⇩───────────────┤
+              │opentelemetry-cpp│
+              └─────────────────┘
+```
+
+#### Exporting OpenTelemetry data via OTLP/HTTP:
+
+The `http` exporter sends OpenTelemetry data using OTLP/HTTP to a collector.
+
+```
+              ┌─────────────────┐
+              │    R package    │                      ┊
+╭────────╮    ├─⇩───────────────┤                      ┊
+│env vars│───→│   otel package  │                      ┊
+╰────────╯    ├─⇩───────────────┤                      ┊
+      └──────→│ otelsdk package │                      ┊     ╔═══════════════╗
+              ├─⇩───────────────┤                      ┊     ║ opentelemetry ║
+              │opentelemetry-cpp├──────── OTLP ─────────────→║   collector   ║
+              └─────────────────┘                      ┊     ╚═══════════════╝
+```
+
+#### Context propagation to subprocess
+
+callr sets the `TRACEPARENT` environment variable, that contains the
+OpenTelemetry (span) context, in the main process. The subprocess creates
+a child span of this:
+
+```
+              ┌─────────────────┐callr┌────────────┐
+              │    R package    │────→│ subprocess │   ┊
+╭────────╮    ├─⇩───────────────┤     └────────────┘   ┊
+│env vars│───→│   otel package  │              │OTLP   ┊
+╰────────╯    ├─⇩───────────────┤              │       ┊
+      └──────→│ otelsdk package │              │       ┊     ╔═══════════════╗
+              ├─⇩───────────────┤              └────────────→║ opentelemetry ║
+              │opentelemetry-cpp├──────── OTLP ─────────────→║   collector   ║
+              └─────────────────┘                      ┊     ╚═══════════════╝
+```
+
+#### Context propagation through HTTP
+
+httr2 sets the `TRACEPARENT` HTTP header, that contains the OpenTelemetry
+(span) context. The web server creates a child span of this.
+
+```
+              ┌─────────────────┐callr┌────────────┐   ┊      ┌────────────┐
+              │    R package    │────→│ subprocess │ ┌───────→│ web server │
+╭────────╮    ├─⇩───────────────┤     └────────────┘ │ ┊      └────────────┘
+│env vars│───→│   otel package  │──────────────┼─────┘ ┊┄┄┄┄┄┄┄┄┄┄┄┄┄│┄┄┄┄┄┄┄┄┄
+╰────────╯    ├─⇩───────────────┤httr2         │       ┊             │
+      └──────→│ otelsdk package │              │       ┊     ╔══════ ↓ ══════╗
+              ├─⇩───────────────┤              └────────────→║ opentelemetry ║
+              │opentelemetry-cpp├──────── OTLP ─────────────→║   collector   ║
+              └─────────────────┘                      ┊     ╚═══════════════╝
+```

@@ -1,0 +1,849 @@
+
+This package is no longer developed and only receives minimal maintenance. 
+Please use the "terra" package instead. 
+
+--- 18-September-2022, version 3.6-3
+
+raster no longer uses rgdal
+
+--- 14-August-2022, version 3.5-29
+
+raster no longer uses rgeos
+
+--- 5-October-2021, version 3.5-1
+
+raster now imports terra (instead of the other way around) such that the two packages can be used together; and to allow replacing rgdal and rgeos functionality with functions from terra.
+
+--- 17-July-2020, version 3.3-13
+
+overhaul of crs to be ready for PROJ6
+several bug fixes (see https://github.com/rspatial/raster/issues?q=is%3Aissue+)
+
+--- 18-April-2020, version 3.1-5
+improvements:
+
+new arguments "smin", "smax" and "samplesize" to "stretch"; and bug fixes. See https://github.com/rspatial/raster/issues/70
+
+layer names in GTiff files are now read from file. Requested by Kyle Taylor
+https://github.com/rspatial/raster/issues/88
+
+bug fixes:
+
+parallel version of extract with polygons and "fun" messed up the order of the values (reported by Jacory). https://github.com/rspatial/raster/issues/79
+
+raster::predict bug when using factors (reported by vvirkki). https://github.com/rspatial/raster/issues/73
+
+distanceFromPoints with large files: https://github.com/rspatial/raster/issues/103
+
+colortable lost when cropping RasterBrick: https://github.com/rspatial/raster/issues/105
+
+Error in stack() when providing both bands and varname: https://github.com/rspatial/raster/issues/97
+
+rasterize and multi-polygon containing hole: https://github.com/rspatial/raster/issues/93
+
+Upside down raster: https://github.com/rspatial/raster/issues/95 (a warning is given, not really fixed yet)
+
+Extract to data.frame bug: https://stackoverflow.com/questions/61174280/r-rasterextract-fails-to-create-data-frame
+
+--- 24-September-2019, version 3.0-7
+Bug fixes: 
+predict with character label factor variables returned NA only https://github.com/rspatial/raster/issues/68
+
+cellFromPolygons now ignores possible incompatible (integer) user-specified default datatype (reported by John Baums, https://github.com/rspatial/raster/issues/69)
+
+
+--- 22-August-2019, version: 3.0-2
+Bug fixes: 
+calc failed when writing to disk if the supplied function returned multiple layers as a vector. Reported by Antoine Stevens
+reclassify bug reported by Jacub Nowasad. https://github.com/rspatial/raster/issues/62
+extract failed for sf objects with a Z dimension. https://github.com/rspatial/raster/issues/64
+
+More generics and namespace exports for compatibility with "terra"
+
+--- 10-July-2019, version: 2.9-22
+New (hidden) function ".ifel", that is, ifelse for Raster objects (this is the R implementation of the arcpy "Con" method)
+Lots of namespace export additions for compatibility with "terra"
+Old .Call code replaced with Rcpp based code
+
+Bug fixes: 
+netcdf writing for multi-layer objects was no working. Reported by Philipp Buehler https://github.com/rspatial/raster/issues/53
+better handling of factor variables in raster::predict
+
+--- 14-May-2019, version: 2.9-5
+new argument "margins" to plotRGB to allow plotting whitespace around images.
+The crs is now written to ncdf files, using proj4=" "
+reclassify now keeps the layer names (suggested by Matthieu Stigler)
+modal of a single layer now returns that layer with a warning instead of throwing an error (suggested by Ben Tupper)
+
+Bug fixes: 
+writing very large Raster objects that were entirely in memory could fail with a "long vectors not supported yet". https://github.com/rspatial/raster/issues/33
+When creating a RasterLayer from an ascii file using the native driver and the file specifies xllcenter. Problem reported by Ram: https://stackoverflow.com/questions/54373701/error-in-if-xn-xx-missing-value-where-true-false-needed
+Error coercing raster with one non-NA value to SpatialPixelsDataFrame (ickf.se)
+https://gis.stackexchange.com/questions/314472/error-coercing-raster-with-one-non-na-value-to-spatialpixelsdataframe/
+mask with sf object ignored other arguments (Jakub Nowasad)
+improved handling of factors in "predict". Fixed a bug with gbm models (dismo) reported by Jane Elith. Also removes factor levels that are not in model for GLM (predictions become NA).
+show(Spatial*) could have the order of the min max values wrong on linux due to prepended spaces by as.matrix in apply(x, 2, range). Reported by Barry Rowlingson. 
+Fixed bug in rasterFromXYZ (if multiple layers and writing to disk) reported by Mike Nosal https://github.com/rspatial/raster/issues/49
+
+
+--- 29-Jan-2019, version: 2.8-19
+
+higher precision extract with weights for small polygons. See https://stackoverflow.com/questions/53854910/issue-with-estimating-weighted-mean-from-raster-for-a-polygon-shape-in-r/
+
+fixed error with rasterize when counting overlapping polygons with holes, reported by Boris Leroy. See:
+https://gis.stackexchange.com/questions/307770/inconsistencies-in-r-rasterize-polygons-packages-raster-and-sf
+
+fixed sf to sp coercion problem for degenerate Spatial*DataFrame with zero variables. Problem reported by Jakub Nowasad https://github.com/rspatial/raster/issues/29
+
+fixed SRTM download in getData (new URL) and uppercase issue reported by tatianic
+https://github.com/rspatial/raster/issues/34
+raster::isLonLat("+init=epsg:4326") now returns TRUE. Suggested by Mike Sumner https://github.com/rspatial/raster/issues/32
+
+faster rasterization of polygons (introduced in previous versions, but, by mistake, was not used in most cases)
+
+faster handling of GMT ncdf files by Mike Sumner
+new argument "na.last" to "unique" suggsted by Marco Sciaini. https://github.com/rspatial/raster/issues/23 
+
+crosstab for small objects returned a data.frame instead of a table with long=FALSE. Reported by Jakub Nowosad
+
+Refined matching CF crs descriptions (in climate ncdf files) with proj, with suggestions from Paul Newell
+
+Improvement to raster::predict suggested by Roeland Kindt
+
+--- 2-Nov-2018, version: 2.8-4
+Improved estimation of available RAM with contributions by Lorenzo Busetto. RAM available is now computed on windows, linux and mac. No more that 60% of available RAM is used (if the estimated RAM needed is not too low). Not more than raster:::.maxmemory() is used; but it should now be safe to set this to Inf. If canProcessInMemory() returns FALSE, chunksize is set 25% of available RAM, or raster:::.chunksize(), whichever is lower. (set options via rasterOptions())
+
+testthat unit tests introduced by Mike Sumner and Jakub Nowosad
+
+as.character() for Raster objects to create the R code to re-create the Raster skeleton in examples.
+
+Reading point values via GDAL has become slower in 2.7-15, reverted to previous function. Thanks to Andrew Brown and Dylan Beaudette for identifying the problem.
+
+Bare negate with a Raster* (e.g. -r) now works. https://github.com/rspatial/raster/issues/21
+
+Bug fixes:
+fixed the link for GADM countries download. Bug reported by Loic Dutrieux
+fixed corner-case bug in alignExtent (for a small extent, touching a grid cell), affecting crop; reported by 
+Judith Mourant and Paul Fenimore
+fixed problem with subs reported by Andy Craig https://github.com/rspatial/raster/issues/17
+Previous version had a maxmemory value that was too high (reported by Lorenzo Busetto)
+
+--- 16-Oct-2018, version: 2.7-15
+faster extraction for points via GDAL (reverted to previous code in version 2.8-4)
+
+Bug fixes:
+buffer did not work with values in memory. Bug reported and solution proposed by Carlos Alberto Arnillas
+extract with point and smaller single cell buffer failed when an aggregation function was provided. Reported by Lucas
+https://stackoverflow.com/questions/52335522/r-why-does-raster-extract-give-dim-error/52338639#52338639
+ 
+
+--- 11-Nov-2017, version: 2.6-6
+New:
+new extent objects created from a vector of coordinates are now checked for being valid. Suggested by Mike Sumner
+buffer for lon/lat points
+erase for SpatialLines with Polygons
+kernelDensity function (hidden)
+output from freq is always ordered (whether computed from disk or from in memory values). Requested by Benjamin Leutner
+
+Bug fixes:
+as.data.frame from file based rasters ingored na.rm=TRUE (unless xy=TRUE). Reported by Jean-Gabriel Elie
+getValuesBlock with lyrs argument. Reported by Antoine Stevens
+In approxNA with large files NAs were ignored and the NArule was ignored. Reported by Pablo Timoner
+isValid(raster()) failed. Reported by dww on http://stackoverflow.com/questions/37869271/how-to-dput-a-raster/37871930
+zapply passes on ... arguments to stackApply
+res() for rotated rasters was wrong https://gis.stackexchange.com/questions/259321/opening-rotated-raster-in-r (fix suggested by Spacedman)
+cover with RasterStackBrick objects could not write to file (reported by L. Wasser https://stackoverflow.com/questions/44295842/r-raster-cover-function-error-with-landsat-stacks 
+Raster Attribute Tables with labels with a colon it could not be written because the colon was used as delimiter in the grd file.
+https://stackoverflow.com/questions/46832976/why-is-crop-sometimes-introducing-nas-on-a-categorical-raster
+An error was thrown if "rasterToPoints" returned no points, and "spatial=TRUE". Instead an empty SpatialPointsDataFrame is now returned (reported and suggested by Arnaud Mosnier)
+Another error when rasterToPoints was used on a single-pixel multi-layer raster object (reported by Daniele Baisero)
+rasterize polygons bugged in some cases if a polygon node was exactly in the center of a cell. Reported by Marco Sciaini  https://gis.stackexchange.com/questions/252210/rasterize-a-spatialpolygonsdataframe-error-in-if-x2a-rxmn
+bug in projectRaster related to dateline: https://stackoverflow.com/questions/47047623/projectraster-raster-projection-of-bathymetry-data-noaa-nc-in-the-pacific
+raster::pring of a SpatialPointsDataFrame showed an error message if the data.frame had zero columns (reported by Bart Branstauber)
+Really bad bug: for Raster 'r', 'r < 50' was not equivalent to '50 > r' (the latter being wrong!). Reported by Jonathan Proctor
+Error in the correction for the standard deviation with asSample=FALSE. Reported and fix provided by Benjamin Leutner
+raster::colSums gave false results when !canProcessInMemory(x). Reported and fix provided by Peter Kullberg
+zonal(  ,stat='sd') did not work. Reported by Matt Biber
+
+--- 31-May-2016, version: 2.5-8
+new functions for Raster objects: as.integer, as.list
+new functions whiches.min and whiches.max (to get all layers that are which.min/max)
+added 'forcefun' argument to overlay
+atan2 now available for all Raster objects
+several minor fixes
+
+--- 19-December-2015, version: 2.5-2
+Bug fixes:
+The order of the layers returned by stackApply was only as expected of the indices were sorted from 1 to n. Reported by Mark Payne
+rasterize(..., getCover=TRUE) again did not work properly. Reported by Pascal Title
+as.vector gave trouble on different version (R-devel vs. R-current). Work around implemented.
+
+--- 10-December-2015, version: 2.4-30
+package ncdf is now obsolete and no longer supported (use ncdf4 instead)
+Major bug fixes:
+Extraction of values with xy or cellnumber from a ncdf file where 'level' is the fourth variable (and time third, in stead of the other way around) did not work correctly. Reported by John Gross
+rasterize(..., getCover=TRUE) did not work properly. Reported by Sam Tomlinso
+Minor bug fixes:
+in rasterFromXYZ (by Gareth Davies)
+in crop (by Florian Detsch)
+in stack (http://stackoverflow.com/questions/32564932/r-import-two-or-more-selected-bands-from-an-image-stack)
+in sampleStratified (by Antoine Stevens)
+
+--- 8-September-2015, version: 2.4-20
+Andrei Mirt send a bug fix for corLocal
+namespace now captures all functions from other packages
+.nchar to replace nchar to avoid R version problem
+Sebastian Bock reported a bug in raster:::.circular.weight
+various minor fixes
+
+--- 2-July-2015, version: 2.4-15
+Improved geodesic algorithm (GeograhicLib by C.F.F. Karney) for pointDistance and other lon/lat distance computations, and to compute the area of an ellipsoidal polygon
+significant speed improvement for bilinear resample / projection (by Joe Cheng) 
+new functions colSums and rowSums
+fixed colnames for  extract(s, points, df = TRUE, cellnumbers = TRUE). Reported by Loic Dutrieux
+fixes to avoid errors thrown by current PROJ.4 (crs must have ellipsoid or datum)
+bug fix: writeRaster did not write names of in memory RasterLayers. Reported by Toph Allen
+temp files were not removed. Fixed by Samuel Bosch
+image failed for a raster with a single row. Patched by Daniel Schlaepfer
+
+--- 11-April-2015, version: 2.3-40
+Category names are now written to file via rgdal or native format
+color tables are now written to file via rgdal or native format
+bug fixes:
+Creating a brick from RasterLayers with a filename argument did not deal with 'overwrite=TRUE'. Reported by Tom Philippi
+boxplot with two raster wasn't going right (reported by Stefan Schlaffer)
+native format can now write/read POSIXct z-values (patch provided by Stefan Schlaffer)
+error in rasterize/mask with SpatialPolygons that go outside the raster
+
+
+--- 12-March-2015, version: 2.3-33
+bug fix in extract(Raster, SpatialPolygons, na.rm=TRUE); na.rm=T was ignored in some cases. (reported by Lewis Hagedorn)
+bug fix in union(SpatialPolygons,missing)
+added extraction of layer names for .img files from gdal metadata
+new unit option ('tangent') to compute slopes (terrain function) 
+transparency (in plot) can now be set using another RasterLayer
+
+--- 25-January-2015, version: 2.3-24
+removed several checks for 'minor' R version that were no longer necessary and wrong since major version 3 (reported by Edzer Pebesma)
+normalizeWeights argument to extract with polygon. Default is TRUE such that weights add up to 1. Setting it to FALSE allows to get the same numbers as in earlier versions (in response to query by Nick Bond)
+bug fixes:
+overlay did not check if rasters have the same structure if only two objects were used. Reported by Loïc Dutrieux
+'freq' on large files with NA values produced  an error (reported by Nick Bond)
+
+--- 10-October-2014, version: 2.3-10
+new function: localFun
+bug fixes:
+- in 'freq', useNA='always' did not return counts for NA values for large raster files.
+- rasterize with polygons did not accept a non-character function anymore. Reported by Sarah Lehnen.
+- invalid polygons errors are now handled by union/erase/intersect.
+- fixed plotting bug due to a change in sampleRegular.
+- sampleRegular ignored xy=TRUE when size >= ncell(x). Reported by Oscar Perpiñan Lamigueiro.
+- in 'freq', useNA='always' did not return counts for NA values for large raster files.
+- extend failed in some cases (when only extending rows). Reported by Anja Klisch
+- plotRGB failed in some cases. Reported by Mike Sumner
+
+--- 5-September-2014, version: 2.3-0
+Improvement of ENVI hdr file (WKT projection) suggested by Loïc Dutrieux	
+expanded corLocal to RasterStackBrick	
+union function for single SpatialPolygons* object
+removeTmpFiles now also removes sub-folders. Code modified by Matteo Mattiuzzi	
+expanded functionality: aggregate can now aggregate in space and 'time' (layers).  	
+specifying an invalid band number when creating a RasterLayer now leads to an error instead of a warning. In the case of ncdf files there was no warning (reported by Sahar Mokhtari) 
+removed obsolete function edges (use boundaries instead). obsolete function edge still available this version. 
+
+bug fixes: 
+- in plotRGB with stretching (in some cases the image became black). (Reported by Agus Lobo)
+- as.data.frame(xy=TRUE, na.rm=TRUE) now works. Reported by Helen Sofaer
+- RasterLayer with single column RAT tables gave an error on show(). Reported by Nevil Amos 
+- aspect computation for plotting lon/lat rasters failed in some cases (Reported by Francisco Quevedo)
+- datum/ellipsoid and true scale latitude was incorrect for South NSIDC (Reported by Neal Young)
+- extracting values failed for very large rasters (cell numbers > 2*10^9 because as.integer() returns NA). Problem reported by Samantha Franks and by Alexander Herr
+- subset failed for bricks derived from 4D NetCDF files. Reported by Mark Payne
+	
+--- 6-March-2014, version: 2.2-31
+new functions 'meta<-' and 'meta' to set and get metadata to a Raster object. Metadata is saved to file for native format files only.
+new argument updatevalue to mask
+new function animate
+new function corLocal
+new convenience function origin<-
+new function RGB to create Red-Green-Blue(-alpha) files.
+new intersect method for SpatialPoints with ANY(-thing from which an Extent can be extracted)
+newly exported function compareCRS
+bug fix in boundaries function with large files reported by Adrien Bayeux
+bug fix in writing multiple layers to a ncdf file if the z-value cannot be converted to numeric. Reported by Aseem Sharma
+bug fix in extract with lines and along=TRUE (reported by Robin Edwards)
+bug fix in extract with polygons, in some combinations the column names setting was incorrect and led to an error. (Reported by David Walter)
+bug fix in rasterize/polygons (and affected extract with polygons). It did not consider nested polygons with holes. (Reported by Bart Kranstauber)
+bug fix in disaggregate chunk size computation (reported by Benjamin Leutner)
+bug fixes in writing IDRISI files (reported by Paulo Cardoso)
+bug fix: factors were not set correctly for a Raster* derived from a Spatial* object leading to an error when sampleRegular(asRaster=T) was used (reported by Tomislav Hengl)
+
+--- 20-January-2014, version: 2.2-12
+bug fix in rasterize with small polygons (reverted to previous version) (reported by Roger Bivand)
+bug fix in extract/points/RasterBrick when all points are outside the raster (reported by Jonathan Greenberg)
+bug fix in linking to SAGA files (reported by Chuck Bulmer)
+bug fix in scale with large files (and underlying problem in cellStats) (reported by Oscar Perpiñan Lamigueiro).
+improved chunk size computation in disaggregate as suggested by Benjamin Leutner
+improved writing of min and max value stats when these are truncated because of the data type (suggested by Philip Heilman)
+resample now first aggregates input data if it is being resampled to much larger grid cells
+projectRaster now allows re-projecting to the same CRS as the input data (an alternative to resample)
+
+--- 1-January-2014, version: 2.2-5
+bug fix that prevented using certain file formats that do not provide a proj4 string
+bug fix in trim. It failed when only the last row had values. Reported by Daniel Schlaepfer
+bug fix in sampleRandom. 'ext' argument was ignored for large Raster objects. Reported by Ned Horning
+added 'export' argument to cluserR
+added 'NArule' argument to approxNA and fixed bug when there was only one layer without an NA value (reported by Josh Perlman)
+improved rasterTmpFile to avoid creating duplicate names in case of parallel processes that call set.seed (suggested by Daniel Schlaepfer)
+added several functions to manipulate Spatial* objects (aggregate, bind, intersect, erase, union, symdif) that were previously in sptools (on R-Forge)
+'edges' renamed to 'boundaries' to avoid name overlap with igraph::edges. edges (and edge! see previous change below) is still available for now (with a warning) for backwards compatibility
+
+--- 16-November-2013, version: 2.1-65
+added support to read NSIDC sea ice concentration binary files (southern and northern hemisphere)
+	http://nsidc.org/data/polar_stereo/ps_grids.html and
+	http://nsidc.org/data/nsidc-0051.html
+	https://stat.ethz.ch/pipermail/r-sig-geo/2011-October/013067.html
+bug fix in stack with with input file name vector and quick=TRUE 
+bug fix: mask with maskvalue that is not NA ignored "inverse=TRUE"
+new function "validNames" (to avoid the need for using raster:::.goodNames by another package)
+new function "flowPath"
+fixed wrong axes labels with plot( ,gridded=TRUE). Reported by Agustin Lobo
+'edge' renamed to 'edges' to avoid name overlap with igraph::edge. edge is still available for now (with a warning) for backwards compatibility
+	
+--- 8-July-2013, version: 2.1-45
+bug fix in focal with pad=TRUE (introduced in previous version)
+bug fix in terrain/roughness (problem reported by Michael Sumner)
+rotate failed with a single-layer RasterBrick (reported by Michael Sumner)
+
+--- 2-July-2013, version: 2.1-41
+changes in namespace (disaggregate) to keep compatibility with 'sp'
+bug fix in aggregate with expand=FALSE, reported by Koen Hufkens
+focal sometimes returns NaN where a NA would be easier to interpret (and use in subsequent calls to focal( , NAonly=T). Trying to return NA now in such cases (reported by Marcia Macedo).
+
+--- 14-June-2013, version: 2.1-37
+new argument 'values' to 'trim' to allow trimming for other values that NA
+new functions (for Raster objects) which.min and which.max
+layers can now be referred to with a $ (as in lists and data.frames)
+coercion methods to Extent and RasterLayer from GridTopology contributed by Michael Sumner
+bug fixes in crosstab and in zonal, reported by Josh Perlman
+bug fix in terrain. flowdir was not computed when used together with other options (bug and fix reported by Etienne Racine)
+changed default datatype to FLT8S (from FLT4S) to avoid generalization of large integers
+NA value in native arc ascii files now only the flag value (it was any value <= the flag value)
+bug fix in assigning colnames when extracting values from RasterBrick
+
+--- 11-April-2013, version: 2.1-25
+removed bugs from 'f8' in the writing functions vignette (reported by J. R. Matchett)
+fixed bug that occured when creating stack from ascii files if rgdal was not installed
+fixed support for big.matrix to store raster data (because currently the bigmemory package is not available on windows) 
+aggregate now allows aggregation to be 1 in one dimension 
+fixed bug in density and hist with RasterStack objects (reported by Carsten Neumann)
+added option 'along' to extract with lines
+added option 'factors' to predict function to be able to specify factor levels.
+added option 'sp' to extract to return an Spatial object
+
+--- 10-March-2013, version: 2.1-10
+replacement with multi-layer object now works as expected (problem reported by Julian Zeidler)
+replacing a logical value in a RasterLayer previously changed the data type to numeric
+improved setExtent (bug report by Kathi Borgmann)
+adjacency is now obsolete (use adjacent instead)
+rasterOptions now (optionally) saved in a file in the start-up working directory
+fixed colnames in extract/polygons (cellnumbers=TRUE & df=TRUE). Reported by Florian de Boissieu
+bug with Math methods that occured when using mapply fixed thanks to Martin Morgan
+Then results of terrain(flowdir) were the mirror image of what the help says. The code has been fixed to match the help file. Reported by Daniel Schlaepfer.
+Bug fixes in dealing with RATs (reported by Dylan Beaudette) and rasterize/points (reported by Steven Mosher)
+Support for "GMT" netcdf files (suggested by Michael Sumner)
+Option 'ncdf=TRUE' in raster function for files with non-standard (or no) ncdf file extension (suggested by Tom Roche).
+
+--- 21-December-2012, version: 2.0-41
+fixed bugs in extend: added rows did in some cases get values from row above, and using a 'datatype' arugment led to an error. Both reported by Oliver Soong
+fixed bug, introduced in previous version, in aggregate with expand=FALSE (reported by Mark Payne)
+fixed bug in summary that occurred when some layers had NA values and others not (reported by Agustin Lobo)
+getValuesBlock now has a row=1 default value. docs suggested that the default was all rows (but there was no default). Inconsistency reported by Oliver Soong
+blockSize made safer for resample with cluster (thanks to Stefan Schlaffer)
+'timer' (in progressbar) works again (thanks to Stefan Schlaffer)
+subsetting a brick to a single layer now returns a RasterLayer (unless drop=FALSE), which is consistent with the behavior or a RasterStack (suggested by Jon Olav Skoien)
+Fixed error occurring when creating a RasterStack from several ncdf files using a 'varname' argument (Problem reported by Greg).
+
+--- 7-November-2012, version 2.0-31
+new function 'select' for selecting spatial subsets by drawing on plot (map)
+new function 'barplot' for RasterLayer objects
+new function 'scale' for Raster* objects (suggested by Agustin Lobo)
+new functions to coerce to and from big.matrix objects: as(x, 'big.matrix') and raster(x) or brick(x)
+new implementation of aggregate that is _much_ faster with fun= min, max, mean or sum
+raster now uses 'igraph' instead of 'igraph0' (functions gridDistance and clump)
+renamed function 'compare' to 'compareRaster' (to avoid name hiding by the igraph package)
+renamed function 'expand' to 'extend' (to avoid name hiding by the Matrix package)
+functions setOptions, showOptions, saveOptions, and clearOptions have been replaced by new function "rasterOptions"
+incorporated function 'count' into 'freq' (via the 'value' argument) and 'count' now gives a warning and will be removed in the future (to avoid name hiding of count by the plyr package which is used by rgeos)
+new argument 'alignOnly' to projectRaster
+new option 'setStatistics=FALSE' for writing to some GDAL files (geoTiff in particular) to suppress writing band statistics (min, max, mean, sd). This is currently not documented. When TRUE, all statistics are written when all the values are in memory, but only min and max are written in other cases, leading to problems in QGIS (reported by Agustin Lobo)
+Added argument "gridded=TRUE" for plot(RasterLayer, RasterLayer), to show counts for intervals (suggested by Agustin Lobo)
+Added stat='sd' option to zonal (suggested by Christian Levers)
+improvement to rasterize with polygons. Polygons that cross a cell vertically and through the center are now inside (they were at the right side of a polygon, but not at the left side of a polygon). Reported by Jon Olav Skoien
+Fixed bug when cropping brick from ncdf file to a single cell (reported by Kapo Coulibaly)
+Fixed bug in sampleRandom with "rowcol=TRUE" (reported by Agustin Lobo)
+Fixed bug with RAT tables in native format (reported by Joseph Steward)
+Fixed corner case bug with extract/polygons df=TRUE (reported by Jon Olav Skoien)
+Added big.matrix as a "driver" (file format). This is experimental (and not documented).
+raster now attempts to interpret the CRS from netcdf files
+added support for the 360 day calendar in netcdf files
+
+
+--- 1-September-2012, version 2.0-12
+fixed bug in summary reported by Agustin Lobo
+fixed bug in terrain/flowdir reported by Marie Morfin
+zlim (argument to plot) did not function properly when used to extend the values range (reported by Bart)
+writeRaster now honours the value of the NAvalue argument when writing a ncdf file (requested by Thiago Veloso)
+added support for the ncdf4 library
+fixed many spelling mistakes in the documentation reported by Phil Heilman
+function fourCellsFromXY is now visible.
+method 'freq' implemented for 'RasterStackBrick'
+new function 'layerize'
+function 'reclassify' replaces identical 'reclass' (still available but with deprecation warning) to avoid hiding by  xts::reclass
+added arguments to writeRaster to allow for writing layers to individual files
+
+--- 27-June-2012, version 2.0-08
+bug fixes (both introduced in version 2.0-04):
+multilayer files of the 'raster' format have a corrupt header file (reported by Jonathan Greenberg)
+subset with a RasterBrick fails because of an error when accessing the z slot (reported by Matt Fischer)
+crop with a RasterStack failed
+new option 'tmptime' to set after how many hours temp files may be deleted. Suggested by Shannon Albeke
+
+--- 17-June-2012, version 2.0-04
+More support for factors and (related) Raster Attribute Tables (functions ratify, deratify)
+z-values are saved to file (native format only)
+Old slot @zvalue removed (in favor of slot @z)
+New function 'names' to (eventually) replace 'layerNames', for compatibility with sp.
+New function 'proj4string' (equivalent to 'projection') for compatibility with sp.
+New function 'sampleStratified'
+Improved speed for creating a RasterStack from a list of RasterLayer objects (thanks to report by Jonathan Kennel), and for rasterToPoints
+setValues(brick, values) now also works if the existing values (on disk) cannot be all loaded into memory (suggested by Jonathan Greenberg).
+bug fixes: 
+rasterize with polygons ignores the 'field' argument (bug introduced in previous version)
+log failed when writing to disk (reported by Jochen Albrecht)
+sampleRegular failed in some cases for a RasterStack (affecting spplot). Reported by Matthew Landis)
+
+
+--- 1-May-2012, version 1.9-82
+New features, improvements:
+New function weighted.mean 
+New function layerStats to compute the correlation, covariance and weighted covariance matrix across layers (by Jonathan Greenberg)
+crosstab can now also process multi-layer objects, suggested by Neil Best
+Improved speed of getValuesBlock for RasterBrick using suggestion by Stefan Schlaffer
+print method for Spatial* objects similar to that for Raster* objects
+
+bug fixes:
+'overlay' ignored the writeRaster arguments. Reported by Oliver Soong
+The 'buffer' argument in extract (with points) was lost in the previous version. It has been restored. 
+In extract with polygons failed with "getCover=TRUE". Reported by Ariel Ortiz-Bobea
+'predict' now also works when using a single predictor raster layer. Reported by Ben Weinstein
+'crop' now accepts a 'datatype' argument. Reported by Jonathan Greenberg
+
+--- 5-April-2012, version 1.9-82
+New function 'getValuesFocal' to get focal values (a cell and its neighborhood)
+Added .tmpdir function, provided by Shaun Walbridge, to make the name of the folder used to store temporary files user-specific to avoid collisions on multi-user platforms such as cluster computers. 
+Improved support for accessing subdatasets (in gdal provided raster data). Non-standard names like "subdatset:filename" should now work (previously some were normalized to (invalid) path names). There is also an argument "sub" in raster().
+Bug fixes: 
+disaggregate sometimes failed for large files, patched by Jim Regetz. 
+It was not possible to make a RasterStack from a single-layer RasterBrick (reported by Julian Zeidler).
+The 'slope' returned by 'terrain' was not correct when used together with 'tri', 'tpi', or 'roughness', and when you use unit = 'degrees' (reported by Forrest Stevens)
+predict / randomForest failed with more than one factor variable, reported by Xiong Xiong
+Fixed bug when writing to EHdr files, reported by Elena
+It is now assured that the filename returned by rasterTmpFile() does not exist (avoiding "overwrite" problems, reported by Diann Prosser).
+
+--- 27-February-2012, version 1.9-70
+Removed function 'polygonFromExtent' (in favor of as(x, 'SpatialPolygons') )
+In 'compare', the name of argument 'prj' was changed to 'crs'
+Fixed bug in srtm download limits. Reported by Stefan Schlaffer
+Fixed bug that made init fail for large rasters. Reported by Oscar Perpiñan Lamigueiro.
+removed bug in calc (some functions produced an error) reported by Alfredo Alessandrini
+sampleRandom did not always return the randomly selected numbers in random order. Reported by Etienne Racine.
+cover did not check if input rasters were overlapping. This could lead to wrong results. Reported by Thiago Veloso
+
+--- 6-February-2012, version 1.9-67
+Bug fix in terrain('slope') for lon/lat rasters that were processed on disk. Latitude of the first chunk of rows was used for all rows. Reported by Bart Kranstauber
+Bug fixed that occured when using getData and a root working like "c:\". Reported by Uwe Ligges. 
+A few changes to scalebar()
+
+--- 17-January-2012, version 1.9-64
+Bug fix in projectRaster for small rasters (< 50 rows or columns). Rported by Klaus Jacobi
+Bug fix in plot with breaks argument (legend did not always match). Reported by Jane Elith
+Setting layer names to a RasterStack now also changes the layer names of the component RasterLayer objects
+
+--- 15-January-2012, version 1.9-63
+All the recent new functions that operate on vectors (polygons mostly) have been removed and placed in the new 'geovec' package (on R-Forge).
+Fixed problem with .commonDataType, that affeced the datatype selection for crop (and some other functions). Problem report by Jon Olav Skoien.
+Fixed problem with focal() that, with a large filter, crashed R because of out of bound array indices in C. Problem reported by Jérôme Guélat
+expand method implemented for Extent objects. Code provided by Etienne B. Racine
+Also implemented generic functions 'intersect' and 'union' for Extent objects (to replace intersectExtent and unionExtent)
+Legend sometimes was not entirely right when using a few breaks only (reported by Barry Rowlingson)
+mask now keeps layer names (suggested by Jane Elith)
+
+--- 21-December-2011, version 1.9-58
+approxNA failed for large objects, reported and fixes suggested by Stefan Schlaffer
+Bug fixes in extract with RasterBrick (thanks to reports by Colin Rundel and Laurent Fernandez Soldevila)
+
+--- 13-December-2011, version 1.9-56
+functions min, max, mean (with a RasterStackBrick object) ignored the na.rm argument. Bug reported by Maximilian Reinwand
+bug occurred when creating a RasterStack from a named list of Raster objects. Reported by Laurent Fernandez  
+Fixed problem in getData: file.rename failed on some systems if the temp folder is on a different device. Reported by Edzer Pebesma
+ 
+--- 12-December-2011, version 1.9-55
+bug fix aggregate with multi-layer objects, reported by Colin Rundel.
+improvements to merge (Raster,Raster) function and merge docs.
+bug with progressbar fixed in terrain (reported by Pascal Fust)
+
+--- 2-December-2011, version 1.9-52
+writeValues methods now only available with a vector (RasterLayer) or matrix (RasterStack) argument. To avoid perhaps unexpected coercion (column-wise coercion to vector); problem pointed out by Kristina Helle.
+new argument 'snap' in alignExtent and crop (suggested by Matteo Mattiuzzi)
+approxNA can now interpolated over non-equal distance (suggested by Tobias Schmidt)
+bug fix for 'edge', reported by Steve Mosher.
+bug fix for 'expand' with mutlti-layer objects and block-wise processing, reported by Jonathan Greenberg
+bug fix in 'interpolate' reported by David Stephens
+
+--- 25-November-2011, version 1.9-47
+Improvements to new polygon manipulation functions. 
+Bug fixes with reclass(include.lowest=TRUE) if the reclass value was a Real (like NA) it was coerced to an integer, reported by Steve Mosher.
+
+--- 17-November-2011, version 1.9-44
+fixed bug with cell values reading with BIL driver (reported by sonal singhal)
+fixed serious bug with a stack from different bands from the same file. .cellValues returned values for the first band only (introduced in 1.9-41?). Reported by Matteo Mattiuzzi & Benjamin Mack
+addition: crop method for Spatial* objects
+addition: aggregate (dissolve) method for SpatialPolygons*
+addition: merge (join) method for Spatial*DataFrame & data.frame; and for SpatialPolygons & SpatialPolygons
+addition: raster algebra for SpatialPolygons: + (same as function merge), - (difference), * (= function crop)
+
+--- 9-November-2011, version 1.9-41
+beginCluster now has 'exclude' option (suggested by Julian Zeidler)
+Bug fix, as(x, 'SpatialPixels') returned SpatialPoints. reported by Clément Calange.
+redesigned function edge for better speed. Arguments have changed. and to deal with a bug reported by Paul Galpern
+improved speed of disaggregate and expand for large files (processing by block of rows rather than by row)
+simplified pbCreate
+new function for using clusters with raster functions: clusterR
+new .detectCores function (taken from the new (R 2.14-0) parallel package)
+new function approxNA to approximate NA values by cell, across layers (emerged from discussions with Jan Verbesselt). 
+added generic functions %in% and match for Raster objects (suggested by Paul Galpern)
+re-implemented merge and mosaic for higher speed (by block rather than by row).
+re-implemented mean, min and max for higher speed
+blockSize now tries to respect the gdal reported block size for (hopefully) faster reading (re-implemented rasterFromGDAL to accomodate this) 
+fixed bug with reclass right=TRUE and include.lowest=TRUE (latter argument was sometimes ignored)
+rasterToPolygons now has a 'dissolve' argument (requiring rgeos)
+
+--- 26-October-2011, version 1.9-33
+Bug fix. When indexing with a single cell and a multi-layer object, only the value for the first layer was returned. Reported by Jan Verbesselt
+Fixed bug with reading multi-level (4 dimensions) ncdf files, reported by John Gross
+
+--- 24-October-2011, version 1.9-32
+Expanded function KML to create time-series from multi-layer objects (suggested by Tony Fischbach)
+Bug fixed in sampleRegular for files with gain/offset (that were applied twice). Reported by Ned Hornig.
+'offset' argument for raster(x, offset=6) when 'x' is an ascii file that has more header lines than the standard 6 lines.
+
+--- 19-October-2011, version 1.9-29
+Bug fix in projectRaster with circumpolar datasets. Reported by Anthony Fischbach
+sampleRegular has new argument, useGDAL=FALSE. If FALSE, GDAL is not used to assure that the cells extracted are always the same, irrespective of the data source (gdal driver or not). Problem reported by Ned Hornig
+reclass now has option 'right=NA' (apart from right=TRUE or right=FALSE) to allow intervals to be closed at the left and right side. It is now also possible to provide a two column relassification matrix ("is-becomes") (suggestions by Agustin Lobo). 
+
+--- 12-October-2011, version 1.9-27
+Functions re-implemented using C routines for better speed: focal (a combination of old functions focal, focalNA and focalFilter), distance, direction, reclass and slopeAspect.
+reclass has changed a bit. Intervals are more rigorously defined (see arguments 'right' and 'include.lowest'), as in 'cut'
+slopeAspect is replaced by 'terrain' to do slope, aspect and other elevation derived terrain characteristics.
+Fixed subset bug reported by Julian Zeidler. https://r-forge.r-project.org/tracker/?func=detail&atid=1189&aid=1610&group_id=294
+New function "log" defined seperately from the Math generics to allow for additional argument "base=x". Suggested by Oscar Perpiñan Lamigueiro.
+mask now works for the a RasterStack/Brick and Spatial* objects. Bug reported by Robert Buitenwerf
+
+--- 23-September-2011, version 1.9-19
+option "useRaster" to plot. To use 'image' rather than 'rasterImage', because rasterImage not working on some platforms (windows server); in R versions above 2.13.0. The default is FALSE because 'image' is not working well in R 2.13.1 (it draws white lines over the image); but this was fixed in 2.13.1-patched and above.
+Bug fix: new plot argument 'addfun' interfered with old argument 'add' such that 'add=T' did not work (reported by Achilleas Psomas)
+Big speed gain (~50 times) for 'calc' with a RasterLayer. calc used apply(x, 1, fun) (which is more natural for RasterStackBrick objects), where it simply could use fun(x). This can now be tested using (currently undocumented) arguments forcefun=TRUE or forceapply=TRUE
+
+--- 15-September-2011, version 1.9-13
+Removed backwards compatibility issue (x <- normalizePath(x)  instead of x <- normalizePath(x, winslash = "/", FALSE), when creating raster from file). Reported by Julian Zeidler.
+
+--- 14-September-2011, version 1.9-12
+removed backwards compatability issue (for Linux) from vignette (\SweaveOpts{resolution=100}). Reported by Mathieu Basille 
+bug fix in sub (such that it can use field name in stead of colnumber). Reported by Alfredo Alessandrini
+
+--- 11-September-2011, version 1.9-11
+new arguments to plot: fun (to transform values, e.g. log) and addfun to add e.g. points or polygons to each map in a RasterStack
+new argument to mask: inverse=FALSE to do mask areas that _are_ NA (rather than are _not_ NA) in the mask
+layerNames are now preserved when writing to (.grd) files. Bug reported by Steven Mosher.
+Bug fix: pairs did not show the correlation coefficient where there were NA values (reported by Jane Elith)
+Improved handling of multifile ncdf files & varname argument, suggested by Matt Fischer. 
+cluster support for raster::predict function (run beginCluster() before using predict); but so far this seems to slow things down! 
+Much improved speed of the extract function for Raster objects with many layers. Low speed was a problem reported by Jan Verbesselt 
+http://r-sig-geo.2731867.n2.nabble.com/extracting-time-series-data-from-a-raster-brick-of-AVHRR-satellite-data-td6622055.html#a6629299
+and by Nathan Amboy.
+Bug fix with subset of a RasterBrick from disk. Reported by Stefan Schlaffer. 
+https://r-forge.r-project.org/tracker/?func=detail&atid=1189&aid=1520&group_id=294
+Some improvements to setValues with a RasterBrick based on suggestions by Julian Zeidler
+https://r-forge.r-project.org/tracker/?func=detail&atid=1189&aid=1504&group_id=294
+Fixed some problems (reported by Carsten Neumann) with plot that were introduced when replacing 'image' with 'rasterImage' 
+
+--- 30-July-2011, version 1.9-5
+Patches by Pierre Roudier to improve coercion from Raster* to Spatial* objects.
+new function as.data.frame for Raster* objects
+Removed generic function 'Median'
+Added generic index/replace function for Raster* and matrix.
+
+--- 19-July-2011, version 1.9-1
+MAJOR bug fix in arith.  If x is a Raster* object, a-x returned x-a, and a/x returned x/a. Reported by Steven Mosher. 
+plot now uses rasterImage instead of image
+Replacement functions implemented for RasterStack/Brick objects (e.g., x[x<1] <- NA )
+removed '$size' from list returned by 'blockSize' function (because size can be different for last block). Use $nrows[i] instead.
+bug fix in flip(x, 'y') for x is RasterStackBrick when writing to disk
+removed gplot and plot3D functions. These are now in the rasterVis package
+added linear and histogram stretch options to plotRGB; based on Josh Gray's code in http://spatiallyexplicit.wordpress.com/2011/06/07/crop-circles/
+added a scalebar function, partly based on a function by Josh Gray
+
+--- 3-July-2011, version 1.8-39
+Bug fix, cover failed with RasterBricks (reported by Steven Mosher)
+Quicker subset with RasterBricks (suggested by Christian Kamenik)
+
+--- 18-June-2011, version 1.8-38
+Bug fix in gridDistance. Function crashed with large files and many rows with NA (reported by Corné Vreugdenhil)
+Bug fix in ascii file writing. In some cases NA was written as -Inf, which was not understood by gdal. gdal returned both -Inf and 0 values as NA. reprted by Enric Batllori Presas (problem probably introduced in version 1.8-16).
+
+--- 15-June-2011, version 1.8-35
+new helper functions spplot for plotting Raster* objects with spplot (sp package) 
+new helper functions gplot for plotting Raster* objects with ggplot (ggplot2 package), based on an example by Paul Hiemstra (later moved to RasterVis)
+new slot 'z' in Raster* objects to (somewhat) formalize management of time series. Is to replace the 'zvalue' slot
+new function zApply (by Oscar Perpiñan Lamigueiro); a stackApply for time series using the z slot. 
+implemented generic function 'coordinates' for Raster* objects
+
+--- 3-June-2011, version 1.8-31
+Added functions to coerce to RasterLayer/Brick from gre objects (geoR package), as suggested by Agustin Lobo; using generic functions as(), raster(), brick()
+Plot and other related functions now use the argument "ext" in stead of "extent" to avoid confusion with extent()
+renamed the 'ext' function to 'extension'
+sampleRegular of gdal files now uses rgdal for quicker sub-sampling (leading to faster plotting)
+Further improvements to predict.
+
+--- 25-May-2011, version 1.8-27
+Arith functions now work with logical arguments (including NA). Problem reported by Agustin Lobo 
+restored "..." argument in predict (got lost while improving it in version 1.8-22)
+
+--- 24-May-2011, version 1.8-25
+(More) safer handling of the new 'rotated' slot in BasicRaster such that older raster objects do not fail. 
+extract with polygons now can also return a value for very small polygons ("small=TRUE"). Requested by  
+Somewhat faster rasterToPolygons
+multi-core (cluster) versions of extract with polygons and extract with lines
+
+--- 12-May-2011, version 1.8-22
+Minor bug fix for predict when using a mgcv gam model & filename & na.rm=FALSE, file writing failed (reported by Tim Häring)
+Safer handling of the new 'rotated' slot in BasicRaster such that older raster objects do not fail. 
+
+--- 9-May-2011, version 1.8-20
+A warning is given when a rotated image is used (suggested by Agustin Lobo)
+New function 'rectify' to unrotate rasters
+Very limited initial support for rotated rasters (typically sat images). Many of the existing functions will work with these images, but results can be wrong. Should work OK for simple raster algebra etc. but probably not when joining data spatially.  Although basic extract with coordinates should work OK now. 
+Changes to calc and overlay to allow for more complex functions
+Changes to stackSelect to allow (optionally recycled) layer selection with a multi-layer object 
+Faster setvalues with an array and 'brick' and 'setValues' (code changes provided by Justin McGrath)
+Fixed a problem with a few functions set warnings to -1 and did not reset it (reported by Justin McGrath)
+New option in 'hdr' to write ESRI .prj files. 
+New global option "tolerance" that is used to assess whether Raster* objects have the same origin/resolution
+Improvements to hillShade thanks to Oscar Perpiñán Lamigueiro
+default NA value for reading files via gdal is now -Inf such that values are not inadvertedly classified as NA (thanks to bug report by Agustin Lobo) when using e.g. INT2U datatype.
+further adjustments needed for writing.
+focal now correct for global lon/lat data (first & last columns touch)
+focalFilter now using the correct "padding" for global lon/lat data (first & last columns touch)
+Added new functions Geary, Moran (global) and MoranLocal
+New option to focalFilter: "pad" to better deal with edge effects
+
+--- 11-Apr-2011, version 1.8-12
+Major bug fix in focalFilter. In previous versoins results were wrong for filters larger than 3x3 !
+Thanks to Nick Hamm & Andy Wilson for reporting
+Bug fix in cellStats with 'sd' and large files (reported by John Donoghue)
+
+--- 26-Mar-2011, version 1.8-9
+Major bug fix in gridDistance with some large rasters that cannot be processed in memory (reported by Kevin Ummel)
+Bug fix in crop with RasterStack introduced in version 1.7-48 to keep the colortable when doing crop (reported by Kevin Ummel)
+Fixed error in asFactor
+added "alpha" (transparancy) argument to plot
+new function 'hillshade'
+new cellvalues argument to extract with lines
+
+--- 14-Mar-2011, version 1.8-3
+new function 'slopeAspect' that computes slope and/or aspect
+non-exported classes prefixed with a '.' (to pass check in R 2.13.0)
+Fixed error that occured in extract (.polygonValues) when a polygon smaller than the cell size and weights=T (reported by Xin Lin)
+new function 'stackSelect' to select cell values from a single layer of a stack, using a RasterLayer to provide the indices.
+bug fix in cross-tab for large files
+colortable no longer lost after using 'crop' (reported by Don MacQueen)
+
+--- 26-Feb-2011,  version 1.7-46
+Improvments to projectRaster based on comments by George Riner
+resample no longer looses layer names (reported by Brian Anacker)
+A number of buglets fixed. Thanks to Jon Olav Skoien, Kevin Ummel & Matteo Mattiuzzi
+Changes to reclass such that a function like sum returns an object with the (highest) number of layers of the input objects (suggested by Neil Best)
+Bug fix in zonal; it did not ignore NA values. (reported by Kevin Ummel)
+Changes to reclass and calc (suggested by Neil Best)
+Fixed bug in projectRaster (reported by Bart Kranstauber) that was created with bug fix on 7-Jan-2011 
+ncdf write now honours the datatype argument. Code changes as suggested by Stefan Schlaffer
+new functions cellFromLines, cellFromPolygons (suggested by Brian Oney)
+
+--- 17-Jan-2011,  version 1.7-29
+bug fix in update (reported by Matteo Mattiuzzi) 
+calc can now return multiple layers when the input is a RasterLayer (Neil Best)
+bug fix in extract with buffer for non-long/lat rasters (reported by Richard Plant)
+Fixed projectRaster for multi-layer objects (bug reported by Alison Mynsberge)
+bug fix in sampleInt with very large numbers (as.integer set them to NA)
+
+--- 5-Jan-2011,  version 1.7-23
+Bug fix in reading values from Bricks from ncdf files (reported by Martin Brandt)
+added "cellnumbers" argument for extract with points and buffer
+set factor levels in predict (bug fix suggested by Isabelle Boulangeat)
+refinements to overlay allowing for different number of output layers than input layers
+attempt to speed up stack()
+
+--- 21-Dec-2010,  version 1.7-18
+brick method can now take an array as argument (suggested by Agustin Lobo)
+fixed as.array (values were not in right order, and added argument 'transpose'
+'update' now also works for a RasterBrick 
+implemented the transpose ('t') method for Raster* objects
+sampleRandom has two new arguments: rowcol to return row and column number, and sp to return a SpatialPointsDataFrame (suggested by Agustin Lobo)
+When creating a stack from a list, the names of the list elements are used as layernames (suggested by Bart Kranstauber)
+update can now update netcdf files
+Native file format can now write in any (row) order.
+Small bug fix in .polygonValues (thanks to Aman Verma)
+new function 'update' to change values of a file linked to a RasterLayer object
+bug fixes in read/write SAGA format (and uses rgdal now for reading, when possible, but not yet for writing).
+improvements in writing RasterBrick objects to native format files.
+bug fixes in 'predict' with models that have factor variables.
+bug fixes in 'predict' for (some) model objects that are not standard (S3) models (suggested by Isabelle Boulangeat).
+
+--- 2-Dec-2010,  version 1.7-8
+bug fix in extract by focal area (thanks to Matteo Mattiuzzi)
+predict automatic removal (to NA) of factor levels not used to build the model
+
+--- 29-Nov-2010,  version 1.7-6
+New function as.array
+improved sampleRegular for multi-layer objects
+Code simplifications for 'raster', 'stack', and 'brick' functions
+raster no longer has the "values" argument (use setValues)
+When adding layers to a RasterBrick, a RasterStack will be returned.
+Fixed calc for regression functions
+Fixed data handling error causing full memory in extract(points, buffer) (reported by Steve Mosher)
+Fixed bug in projectRaster when projecting a raster from a regional crs to a global crs that caused the values to duplicate (reported by Bart Kranstauber)
+crosstab can now return results in 'long' format
+more complete and flexible recycling in overlay and Arith
+Added boxplot function for Raster* objects
+New version of alignExtent (bug reported by Keven Ummel)
+overlay now allows for RasterStackBrick / RasterLayer combination (bug reported by Keven Ummel)
+cluster object stored as 'option'
+
+--- 17-Nov-2010,  version 1.6-22
+NAflag honored when writing ascii file. 
+multicore support for resample
+Bug fix in pairs (David Ramsey)
+Bug fix in rasterize with lines (Julian Burgos)
+
+--- 14-Nov-2010,  version 1.6-19
+Fixed bug in .stopGDALwrting (reported by Kevin Ummel and Lyndon Estes)
+Experimental support for multicore in functions projectRaster and distance
+Started support for multi-core/cluster processing (together with Matteo Mattiuzzi)
+Fixed bug in aggregate with unequal x and y fact (thanks to Kevin Ummel for reporting)
+Added drop=FALSE to "[" methods, to return a Raster*. 
+[[ method to extract layers from multi-layer Raster objects
+Writing cdf files now uses the CF standard 'degrees_east' and 'degrees_north' as variable names in lon/lat data (suggested by Kevin Ummel)
+fixed bug when using se.fit=TRUE in predict (it did not respond to it). Reported by Eliane Meier. 
+Also changed the above that when se.fit=T, both the prediction AND the s.e. are returned (as a RasterBrick)
+changed NAvalue argument in writeRaster to NAflag to avoid confusion with NAvalue function
+fixed backwards compatability by replacing packageVersion('rgdal') to packageDescription('rgdal')$Version
+
+--- 5-Nov-2010,  version 1.6-15
+'unique' now also works for multi-layer objects
+Using new features in GDAL 0.6-29: set statistics and capture raster attributes 
+Replacing pointsToRater, linesToRaster and polygonsToRaster with single generic function 'rasterize'
+Introduces support for netcdf files with 4 dimensions (lon, lat, level, time), because of a problem reported by Kevin Ummel
+
+--- 30-Oct-2010,  version 1.6-10
+Improved [ and [<- methods. Removed [[ methods
+Introduced sub-setting of Raster* objects with Spatial* objects
+Additional options to linesToRaster (to match polygonsToRaster)
+as.matrix implemented for Raster* objects (suggested by Michael Sumner)
+writeRaster now takes optional arguments varname, varunit, longname, xname, yname, zname, zunit, for writing netcdf files (requested by Mario Frasca). 
+Merged 'focalValues' into 'extract' 
+Removed 'getValuesExtent', it was a synonym to 'extract(x=Raster, y=extent)' 
+Temporary files are now only deleted (at startup of raster) if they are at least 24 hrs old
+Generic function 'cut' implemented for Raster objects (suggested by Steven Mosher)
+Bug fix in addLayer with RasterBrick (reported by Steven Mosher)
+Fixed bug in reading values from a 2-dimensional netcdf file (no 'time') (reported by Steven Mosher)
+Fixed bug in reading cell values from netcdf file that can not be read into memory (reported by Steven Mosher)
+New generic function 'extract', to replace xyValues, cellValues, lineValues, polygonValues
+Improvements to rasterFromXYZ (thanks to Thiago Veloso).
+writeHdr can now write VRT (GDAL virtual raster) header files to accompany .gri files such that these can be viewed in e.g. ArcGIS and QGIS.
+Adjustments to calc to allow it to return any number of layers from a computation on a multiple layer object
+
+--- 11-Oct-2010,  version 1.5-16
+netcdf files writing in chunks. 
+netcdf create a RasterLayer from a RasterBrick no longer goes to disk (copy parameters in memory)
+raster() now also takes an "image" (a list with x, y and z) argument and coerces it to a RasterLayer
+bug fixes in .readRowsAscii (reported by Manuel Spínola), setMinMax
+filenames in Raster objects from working directory now get the full path appended (no errors when the workdir changes)
+new functions (under development): morph, morphMerge
+New function lineValues (extract values from Raster* by lines, like polygonValues)
+bug fixes: 
+projectRaster now works for RasterStack objects
+focalFilter now works with a 'filename' argument (bug reported by Bill McCoy)
+Added argument NAvalue to writeRaster to allow to manually set the NA value (flag) when writing to file.
+Added a RasterStackBrick version of 'count'
+Added a RasterStackBrick version of 'flip'
+
+--- 20-Sep-2010,  version 1.5-8
+added functions gain, gain<-, offs, and offs<- to get or set the gain (scale) and offset parameters of a Raster object
+fixed bug when creating a RasterLayer from a BIL file that has the coordinates in a world file rather than in the hdr file (reported by Steven Mosher)
+fixed bug when creating a RasterLayer from a SAGA grid file with non-integer resolution (reported by Matthew Landis)
+reclass can now also process a multi-layer Raster object
+cover and overlay can now also process mulitple multi-layer Raster objects to return another multi-layer object
+improved speed of gridDistance (JvE)
+rasterToPoints can now take a matrix of values and return a brick with layer for each column (suggested by Steven Mosher)
+writeRaser (internal saveAs function) takes more care as not to overwrite its own source file, even if overwrite=TRUE
+calc now uses rowSums and rowMeans where appropriate, and automatically detects whether these functions are appropriate (suggested by Matteo Mattiuzzi). This is also implemented in stackApply, and improved (automatic detection) in aggregate.
+removed functions: 'filename<-', values, copryRasterFile, renameRasterFile, removeRasterFile.
+bug fix: RasterBricks sometimes had a link to the filename of the object it was created from in a computation. 
+
+--- 29-Aug-2010, version 1.4-10
+Minor bug fixes in ncdf/brick handling
+Bug fixes in dropLayer for a RasterBrick (reported by Steven Mosher)
+Added option 'setfileext' (default TRUE) to turn off the automatic setting of the file extension when writing raster files (based on the format). (requested by Jonathan Greenberg)
+ext(filename) <- 'x'  now only removes the old extension if it has less than 5 characters (including the dot).
+Added arguments to all xyValues methods such that both of the below functions work (before only test1 would work; bug reported by Roman Lustrik)
+test1 = function(r, xy, ...) {  return( xyValues(r, xy, ...) ) }
+test2 = function(r, xy, buffer, fun) { return( xyValues(r, xy, buffer=buffer, fun=fun) )}
+bug fixes: 
+writing via gdal did not respond to the 'options' argument (reported by Tom Kurkowski and  Jorrel Aunario)
+cellValues (and getValues) bug in ncdf brick fixed. (reported by Steven Mosher)
+new function:
+stackApply applies a function over sets of layers of a RasterStack/Brick
+'hasValues' while 'dataContent' has now been removed. 
+improvements:
+area now takes na.rm=TRUE and weights=TRUE arguments, and returns a Brick if input is Stack/Brick and na.rm=T (suggested by Steven Mosher). 
+as.logical now works for a multi-layer object (suggested by Steven Mosher)
+Setting the nodata value with NAvalues now also affects reading of values from netcdf files (suggested by Steven Mosher)
+cellStats now returns values per layer (rather than all combined) (suggested by Steven Mosher)
+Minor bug fix in rasterToPoints with multi-layer objects (reported by Jon Olav Skoien).
+Minor bug fixes in crop (reported by Jon Olav Skoien) and in focalNA (reported by Matteo Mattiuzzi)
+Changes in gridDistance to avoid it (igraph) from crashing when using very complex grids.
+Added @data@gain and @data@offset slots to Raster* objects and use these when reading values from file
+v = v * gain + offset  (suggestion by Jonathan Greenberg)
+It is now possible to do Arith (e.g. addition, multiplication) with a RasterStack or Brick using a vector argument of lenght that equals nlayers(object).
+E.g. you can mutliply a RasterStack with 5 layers with vector c(1,3,5,3,1), where indices are matched to layers.
+It is also possible to do Arith & Math with mutliple RasterStackBrick objects (as long as nlayers is the same) and with a RasterStack/Brick and a RasterLayer objects.
+
+--- 12-Aug-2010, version 1.3-11
+Expanded sampleRandom by adding a 'cells' and 'extent' argument; 
+Switched from RNetCDF to ncdf package for netcdf file support
+Added three slots to class BasicRaster
+unit='vector' ; to store the unit of the layer(s), e.g. "kg m-2 s-1"
+zname='character' ; to store the name of the z (layers) variable, e.g. "time"
+zvalue='vector' ; to store the values of the z variable, e.g. the dates corresponding to each later
+These slots are now filled for values from netcdf files with "CF" type convention (e.g. cmip), with an attempt to covert "days since" to a Date (coverted to string).
+Not yet used in writing, or with other formats
+New clump function, now always using igraph (also for large rasters) & minor bug fix
+Fixes to subs function (needs more checking)
+To allow for better behaviour when using objects derived from Raster* objects (perhaps in other packages), replaced code like
+"if (class(x) == 'RasterLayer')" with "if (inherits(x, 'RasterLayer'))"
+Bug fix: error when indexing a RasterStack as in s[1]  (as reported by Kevin Ummel)
+
+--- 27-July-2010, version 1.3-4
+Starting this log

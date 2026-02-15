@@ -1,0 +1,38 @@
+Package: e1071
+Version: 1.7-17
+Title: Misc Functions of the Department of Statistics, Probability
+        Theory Group (Formerly: E1071), TU Wien
+Imports: graphics, grDevices, class, stats, methods, utils, proxy
+Suggests: cluster, mlbench, nnet, randomForest, rpart, SparseM, xtable,
+        Matrix, MASS, slam
+Authors@R: c(person(given = "David", family = "Meyer", role = c("aut", "cre"),
+                    email = "David.Meyer@R-project.org",
+		    comment = c(ORCID = "0000-0002-5196-3048")),    
+             person(given = "Evgenia", family = "Dimitriadou", role = c("aut","cph")),
+             person(given = "Kurt", family = "Hornik", role = "aut",
+	            email = "Kurt.Hornik@R-project.org",
+                    comment = c(ORCID = "0000-0003-4198-9911")),
+             person(given = "Andreas", family = "Weingessel", role = "aut"),
+             person(given = "Friedrich", family = "Leisch", role = "aut"),
+             person(given = "Chih-Chung", family = "Chang", role = c("ctb","cph"), comment = "libsvm C++-code"),
+             person(given = "Chih-Chen", family = "Lin", role = c("ctb","cph"), comment = "libsvm C++-code"))
+Description: Functions for latent class analysis, short time Fourier
+	     transform, fuzzy clustering, support vector machines,
+	     shortest path computation, bagged clustering, naive Bayes
+	     classifier, generalized k-nearest neighbour ...
+License: GPL-2 | GPL-3
+LazyLoad: yes
+NeedsCompilation: yes
+Packaged: 2025-12-17 20:18:24 UTC; meyer
+Author: David Meyer [aut, cre] (ORCID: <https://orcid.org/0000-0002-5196-3048>),
+  Evgenia Dimitriadou [aut, cph],
+  Kurt Hornik [aut] (ORCID: <https://orcid.org/0000-0003-4198-9911>),
+  Andreas Weingessel [aut],
+  Friedrich Leisch [aut],
+  Chih-Chung Chang [ctb, cph] (libsvm C++-code),
+  Chih-Chen Lin [ctb, cph] (libsvm C++-code)
+Maintainer: David Meyer <David.Meyer@R-project.org>
+Repository: RSPM
+Date/Publication: 2025-12-18 13:06:03 UTC
+Encoding: UTF-8
+Built: R 4.5.0; x86_64-pc-linux-gnu; 2025-12-19 04:16:55 UTC; unix

@@ -1,0 +1,17 @@
+auth_basic	auth_basic
+browse_last	browse_last
+create_server	create_server
+daemon_list	daemon_stop
+daemon_stop	daemon_stop
+httd	httd
+httr	httd
+httw	httd
+jekyll	dynamic_site
+make	make
+random_port	random_port
+redirect	redirect
+rmdv1	dynamic_site
+rmdv2	dynamic_site
+server_config	server_config
+serve_example	serve_example
+vign	vign

@@ -1,0 +1,39 @@
+Type: Package
+Package: farver
+Title: High Performance Colour Space Manipulation
+Version: 2.1.2
+Authors@R: c(
+    person("Thomas Lin", "Pedersen", , "thomas.pedersen@posit.co", role = c("cre", "aut"),
+           comment = c(ORCID = "0000-0002-5147-4711")),
+    person("Berendea", "Nicolae", role = "aut",
+           comment = "Author of the ColorSpace C++ library"),
+    person("Romain", "François", , "romain@purrple.cat", role = "aut",
+           comment = c(ORCID = "0000-0002-2444-4226")),
+    person("Posit, PBC", role = c("cph", "fnd"))
+  )
+Description: The encoding of colour can be handled in many different ways,
+    using different colour spaces. As different colour spaces have
+    different uses, efficient conversion between these representations are
+    important. The 'farver' package provides a set of functions that gives
+    access to very fast colour space conversion and comparisons
+    implemented in C++, and offers speed improvements over the
+    'convertColor' function in the 'grDevices' package.
+License: MIT + file LICENSE
+URL: https://farver.data-imaginist.com,
+        https://github.com/thomasp85/farver
+BugReports: https://github.com/thomasp85/farver/issues
+Suggests: covr, testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Encoding: UTF-8
+RoxygenNote: 7.3.1
+NeedsCompilation: yes
+Packaged: 2024-05-13 08:31:27 UTC; thomas
+Author: Thomas Lin Pedersen [cre, aut]
+    (<https://orcid.org/0000-0002-5147-4711>),
+  Berendea Nicolae [aut] (Author of the ColorSpace C++ library),
+  Romain François [aut] (<https://orcid.org/0000-0002-2444-4226>),
+  Posit, PBC [cph, fnd]
+Maintainer: Thomas Lin Pedersen <thomas.pedersen@posit.co>
+Repository: RSPM
+Date/Publication: 2024-05-13 09:33:09 UTC
+Built: R 4.5.0; x86_64-pc-linux-gnu; 2025-12-02 12:22:10 UTC; unix

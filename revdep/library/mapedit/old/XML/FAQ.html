@@ -1,0 +1,359 @@
+<html>
+<head>
+<title>FAQ for the XML package in R/S-Plus</title>
+</head>
+
+<body>
+<h1>FAQ for the XML package in R/S-Plus</h1>
+
+<dl>
+
+    <dt>
+    <li>  I have compiled the package from source and everything goes
+    fine, but when I try to load it, I get an error about an
+    "undefined symbol xmlOutputBufferCreateBuffer". What's the problem?
+    <dd>
+	The most obvious explanation is that you are <i>compiling</i> against
+    one version of libxml2 but <i>loading</i> another.
+	Here is the explanation I gave to several people.
+<div style="border: solid 1px; background-color: lightgrey; padding: 2pt">
+That particular routine is either "borrowed"
+from libxml2.so or if not available from that, a compiled
+copy I added to the XML source is used.
+So it looks like the configuration is smart enough not
+to compile the one we provide because xmlOutputBufferCreateBuffer()
+is available  in libxml2-2.6.32, but then it fails to find it
+at load time.
+<p/>
+So the first thing that comes to mind is that there is some inconsistency
+between your compile/link configuration and your run-time load configuration.
+Is it possible that you have an older version of libxml2...so somewhere
+on your system that is being loaded at run time
+Try the shell command
+<pre>
+R CMD ldd <wherever XML is installed>/libs/XML.so
+</pre>
+and see where it thinks libxml2 is. Hopefully it will
+list it and we might see that it is /usr/lib/libxml2.so
+and that you are compiling against a version in
+/usr/local/lib/.
+If that is the case, you would need to change your personal setting for
+<b>LD_LIBRARY_PATH</b>
+or add /usr/local/lib to  /etc/ld.so.conf file at a system level.
+</div>
+
+  <dt>
+  <li> How do I create my own XML content from within R
+      and not just parse other people's XML documents?
+  <dd>
+      There are several facilities for doing this in the XML package.
+      Basically you will be creating a tree, a hierarchical collection
+      of XML nodes.
+      So you need to be able to create the nodes and then arrange them
+      into this hierarachical structure.
+      You can create all the nodes and then do the tree construction
+      but it is typically easier to create the nodes and specify
+      its parent during the creation.
+      The XML package provides low-level functions
+      for creating the nodes and
+      several functions which provide a higher level interface
+      that try to facilitate adding nodes to a 'current' point
+      in the tree. These manage the notion of 'current' for you.
+      These functions share a very similar interface and so
+      it is easy to switch from one to the other. They differ
+      in how they represent the tree which can be complicated
+      in R since there are no references/pointers.
+      <p/>
+      The approach I prefer is the <code>xmlTree()</code>
+      function.
+      This uses the low-level node creation functions
+      (e.g. newXMLNode, newXMLComment, newXMLPINode, etc.)
+      but also allows us to manage a stack of "open" nodes
+      and a default namespace prefix.
+      New nodes are by default added to the most recent
+      "open" node, i.e. that node acts as the parent for new nodes.
+      <p/>
+
+<dt>
+<li> Doesn't the use  of internal nodes such as with <code
+    class="rfunc">xmlTree()</code> mean that we cannot store the
+    tree across R sessions since they are external pointers to C data
+    structures in memory.
+    
+<dd>  Well, yes and no. We cannot use R's regular serialization
+    to RDA files of the variables holding the tree or the individual
+    nodes.  But we can easily create a text representation from the
+    internal nodes by dumping the tree, either to a file or a
+    character vector of length 1, and then we can restore
+    that XML tree by parsing it again:
+<pre>
+   tt = xmlTree("top")
+   tt$addTag("b", "Some text")
+   save(saveXML(tt), file = "tt.rda")
+   load("tt.rda")
+   tt = xmlTreeParse(tt, asText = TRUE, useInternal = TRUE)
+</pre>    
+    We don't get back the XMLInternalDOM with information about open
+    nodes, etc. from which we could continue to add nodes.
+    But we do get back the exact tree.
+
+    <p/>
+     We can also convert the nodes from internal nodes to
+    regular R base nodes.
+    And from that 
+      
+
+
+  
+  <dt>
+  <li> My XML document has attributes that have a namespace
+      prefix (e.g.
+<code>
+<b>&lt;node mine:foo="abc" /&gt;</b>
+</code>
+      )
+      When I parse this document into S, the namespace prefix
+      on the attribute is dropped. Why and how can I fix it?
+      
+  <dd>
+     The first thing to do is
+     use a value of <code>TRUE</code> for the <code>addAttributeNamespaces</code>
+     argument in the call to <code>xmlTreeParse</code>.
+     <br>
+     The next thing is to ensure that the namespace
+      (<code>mine</code>, in our example)
+     is defined in the document.
+      In other words, there must be be an
+       <code>xmlns:mine="<i>some url</i>"</code>
+      attribute in some node before or in the node
+      that is being processed.
+      If no definition for the namespace is in the document,
+      the libxml parser drops the prefix on the attribute.
+      <br>
+     The same applies to namespaces for node names, and not just
+      attributes.
+  
+  
+  <dt>
+  <li> <font class="question">I define a method in the closure, but it
+      never gets called.</font>
+  <dd> The most likely cause is that you omitted to add it to the list
+      of functions returned by the closure. Another possibility is
+      that you have mis-spelled the name of the method. The matching
+      is case-sensitive and exact.
+      If the function corresponds to a particular XML element name,
+      check whether the value of the argument <code>useTagName</code> is T,
+      and also that there really is a  tag with this name in the
+      document.
+       Again, the case is important.
+
+  <dt>
+  <li><font class="question">When I compile the source code, I get
+      lots of warning messages such as 
+<pre>
+"RSDTD.c", line 110: warning: argument #2 is incompatible with prototype:
+        prototype: pointer to const uchar : "unknown", line 0
+        argument : pointer to const char   
+      </pre>
+      </font>
+  <dd> This is because the XML libraries work on unsigned characters
+      for UniCode. The R and S facilities do not.
+      I am not yet certain which direction to adapt things for this
+      package. The warnings are typically harmless.
+
+  <dt>
+  <li> <font class="question">When I compile the chapter for
+      Splus5/S4, I get warning messages about SET_CLASS being redefined.</font>
+  <dd> This is ok, in this situation. The warning is left there to
+      remind people that there are some games being played and that
+      if there are problems, to consider these warnings.
+       The SET_CLASS macro being redefined is a local version for S3/R
+      style classes. The one in the Splus5/S4 header files is for the
+      S4 style classes.
+
+  <dt>
+  <li> <font class="question">On which platfforms does it compile?</font>
+  <dd> I have used gcc on both Linux (RedHat 6.1) (egcs-2.91.66)
+       and Solaris (gcc-2.7.2.3), and the Sun compilers, cc 4.2 on
+       Solaris 2.6/SunOS 5.6 and cc 5.0 on Solaris 2.7/SunOS 5.7.
+</dl>
+
+
+<dl>
+
+
+  <dt>
+  <li><font class="question">I can't seem to use conditional DTD
+      segments via the IGNORE/INCLUDE mechanism.</font>
+  <dd> Libxml doesn't support this. Perhaps we will add code for this.
+<p>
+  Daneil Veillard might add this.      
+
+
+  <dt>
+  <li> <font class="question">When I read a relatively simple tree in
+      Splus5 and print it to the terminal/console, I get an error
+      about nested expressions exceeding the limit of 256.
+      </font>
+  <dd> The simple fix is to set the value of the
+      <code>expressions</code>
+      option to a value larger than 256.
+<pre>
+ options(expressions=1000)
+</pre>
+      
+     The main cause of this is that 
+      S and R are programming languages not specialized for handling
+      trees.
+       (They are functional languages and have no facilities for
+      pointers or references as in C or Java.)
+
+
+
+  <dt>
+  <li> <font class="question">I get errors when using parameter
+      entities in DTDs?</font>
+  <dd>
+This was true in version 1.7.3 and 1.8.2 of
+libxml. Thanks to Daneil Veillard for fixing
+      this quickly when I pointed it out.
+
+<p>
+
+      Parameters are allowed, but the libxml parsing library is fussy
+      about white-space, etc.
+      The following is is ok
+<pre>
+&lt;!ELEMENT legend  (%PlotPrimitives;)* &gt;
+</pre>
+      but 
+<pre>
+&lt;!ELEMENT legend  (%PlotPrimitives; )* &gt;
+</pre>
+      is not. The extra space preceeding the <code>)</code>
+causes an error in the parser something like
+<pre>
+1: XML Parsing Error: ../Histogram.dtd:80: xmlParseElementChildrenContentDecl : ',' '|' or ')' expected 
+2: XML Parsing Error: ../Histogram.dtd:80: xmlParseElementChildrenContentDecl : ',' expected 
+3: XML Parsing Error: ../Histogram.dtd:80: xmlParseElementDecl: expected '>' at the end 
+4: XML Parsing Error: ../Histogram.dtd:80: Extra content at the end of the document 
+</pre>
+
+       This can be fixed by adding a call to SKIP_BLANKS at the end of
+      the loop <code>while(CUR!= ')' { ... } </code> in  the routine
+      <code>xmlParseElementChildrenContentDecl()</code> in parser.c
+      The problem lies in the transition between the different input
+      buffers introduced by the entity expansion.      
+
+
+  <dt>
+  <li> I am trying to use XPath and getNodeSet(). But I am not
+      matching any nodes.
+      
+  <dd>
+    If you are certain that the XPath  expression should match what you
+    want, then it is probably a matter of namespaces.
+    If the document in which you are trying to find the nodes has a
+    default   namespace  (at the top-level node or a sub-node
+    involved in your match), then you have to explicitly identify
+    the namespace. Unfortunately, XPath doesn't use the default
+    namespace of the target document, but requires the namespace
+    to be explicitly mentioned in the XPath expression.
+      <p/>
+    For example, suppose we have a document that looks like
+<pre>
+<![CDATA[
+ <doc xmlns="http://www.omegahat.net">
+     <topic><title>My Title</title></topic>
+ </doc>      
+]]>
+</pre>      
+ and we want to use an XPath expression to find the title node.
+ We might think that   <code>"/doc/topic/title"</code>
+      would do the trick. But in fact, we need
+<pre>
+  /ns:doc/ns:topci/ns:title    
+</pre>
+  And then we need to map ns to the URI "http://www.omegahat.net".
+  We do this in a call to getNodeSet() as
+<pre>
+  getNodeSet(doc, "/ns:doc/ns:topci/ns:title", c(ns = "http://www.omegahat.net"))
+</pre>
+
+<p/>
+      As a simplification, getNodeSet() will create the map between
+      the prefix and the URI of the default namespace of the XML
+      document if you specify a single string with no name as the
+      value
+      of the <code>namespaces</code> argument, e.g.
+<pre>
+  getNodeSet(doc, "/ns:doc/ns:topci/ns:title", "ns")
+</pre>
+      
+      <p/>
+      
+    There are some additional comments <a
+      href="http://plasmasturm.org/log/259/">here</a>.
+
+  <dt>
+  <li> There is an table of data in HTML  that I want to read into R
+      as a data frame. How can I do it?
+  <dd>
+      Well, it is relatively easy, although the technology underlying
+      it is quite powerful and somewhat complex in the general case.
+      There is a <a href="htmlTables.xml">document describing the approach(es)</a>
+
+
+   <dt>
+   <li> I have a "large" XML file. Can I use DOM parsing or do I have
+   to use SAX style parsing via the more complex xmlEventParse().
+   <dd>  Well, I was given a 70 Mb XML file (which when compressed is
+   6MB)   and after uncompressing the file, I can read it into R
+      via <code class="r">xmlTreeParse(, useInternalTrue =
+   TRUE)</code>
+       This file contained 2,895,409 nodes
+       (<code class="r">length(getNodeSet(z, "//*"))</code>)
+      This took 9.4 seconds on Intel MacBook Pro with a 2.33Ghz Dual
+   processor and 3G of RAM, and on a machine with dual core 64bit AMD,
+       it took 20 seconds.
+       To find the nodes of interest took 8.9 seconds on the Mac, and
+        (apparently) 1.1 seconds on the AMD.
+
+
+   <dt>
+   <li> I want to include one document inside another. How can I do this?
+       
+   <dd> Firstly, you want to look into XInclude.
+       When processing the document in R, use <code>xinclude = TRUE</code>,  which
+       is the default, in calls to xmlTreeParse().
+
+   <dt>
+   <li>  I want to use XInclude to include part of the same
+       document. I can't figure out how to do it. Any ideas?
+
+   <dd>
+       Yes. Use
+<pre>
+ &lt;xi:include xpointer="xpointer(//mynode)"/&gt;
+</pre>
+ adapting that to what you want.
+       Note that the attribute is named xpointer.
+       There is no href so the XInclude  defaults to this document
+       and the expression for the xpointer attribute
+       uses the function xpointer. This is not element.
+
+
+
+   <dt>
+   <li>  When I parse HTML content, what does the &amp;nbsp; entity turn into?
+   <dd>
+       This turns into the Unicode character U+00A0, or in R "\u00A0".
+ </dl>
+
+<hr>
+<address><a href="http://www.stat.ucdavis.edu/~duncan">Duncan Temple Lang</a>
+<a href=mailto:duncan@wald.ucdavis.edu>&lt;duncan@wald.ucdavis.edu&gt;</a></address>
+<!-- hhmts start -->
+Last modified: Fri Dec 14 04:29:02 PST 2012
+<!-- hhmts end -->
+</body> </html>

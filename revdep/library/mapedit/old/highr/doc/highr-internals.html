@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Internals of the <code>highr</code> package</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils/css/docco-classic.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rstudio/markdown/inst/resources/prism-xcode.css">
+</head>
+<body>
+<div class="frontmatter">
+<div class="title"><h1>Internals of the <code>highr</code> package</h1></div>
+<div class="author"><h2></h2></div>
+<div class="date"><h3></h3></div>
+</div>
+<div class="body">
+<!--
+%\VignetteEngine{knitr::docco_classic}
+%\VignetteIndexEntry{Internals of the highr package}
+-->
+<h1 id="internals-of-the-highr-package">Internals of the <code>highr</code> package</h1>
+<p>The <strong>highr</strong> package is based on the function <code>getParseData()</code>, which was
+introduced in R 3.0.0. This function gives detailed information of the
+symbols in a code fragment. A simple example:</p>
+<pre><code class="language-r">p = parse(text = &quot;   xx = 1 + 1  # a comment&quot;, keep.source = TRUE)
+(d = getParseData(p))
+</code></pre>
+<pre><code>##    line1 col1 line2 col2 id parent                  token terminal        text
+## 14     1    4     1   13 14      0 expr_or_assign_or_help    FALSE            
+## 1      1    4     1    5  1      3                 SYMBOL     TRUE          xx
+## 3      1    4     1    5  3     14                   expr    FALSE            
+## 2      1    7     1    7  2     14              EQ_ASSIGN     TRUE           =
+## 12     1    9     1   13 12     14                   expr    FALSE            
+## 5      1    9     1    9  5      6              NUM_CONST     TRUE           1
+## 6      1    9     1    9  6     12                   expr    FALSE            
+## 7      1   11     1   11  7     12                    '+'     TRUE           +
+## 8      1   13     1   13  8      9              NUM_CONST     TRUE           1
+## 9      1   13     1   13  9     12                   expr    FALSE            
+## 10     1   16     1   26 10    -14                COMMENT     TRUE # a comment
+</code></pre>
+<p>The first step is to filter out the rows that we do not need:</p>
+<pre><code class="language-r">(d = d[d$terminal, ])
+</code></pre>
+<pre><code>##    line1 col1 line2 col2 id parent     token terminal        text
+## 1      1    4     1    5  1      3    SYMBOL     TRUE          xx
+## 2      1    7     1    7  2     14 EQ_ASSIGN     TRUE           =
+## 5      1    9     1    9  5      6 NUM_CONST     TRUE           1
+## 7      1   11     1   11  7     12       '+'     TRUE           +
+## 8      1   13     1   13  8      9 NUM_CONST     TRUE           1
+## 10     1   16     1   26 10    -14   COMMENT     TRUE # a comment
+</code></pre>
+<p>There is a column <code>token</code> in the data frame, and we will wrap this column
+with markup commands, e.g. <code>\hlnum{1}</code> for the numeric constant <code>1</code>. We
+defined the markup commands in <code>cmd_latex</code> and <code>cmd_html</code>:</p>
+<pre><code class="language-r">head(highr:::cmd_latex)
+</code></pre>
+<pre><code>##              cmd1 cmd2
+## COMMENT  \\hlcom{    }
+## DEFAULT  \\hldef{    }
+## FUNCTION \\hlkwa{    }
+## IF       \\hlkwa{    }
+## ELSE     \\hlkwa{    }
+## WHILE    \\hlkwa{    }
+</code></pre>
+<pre><code class="language-r">tail(highr:::cmd_html)
+</code></pre>
+<pre><code>##                             cmd1    cmd2
+## AND2       &lt;span class=&quot;hl opt&quot;&gt; &lt;/span&gt;
+## OR         &lt;span class=&quot;hl opt&quot;&gt; &lt;/span&gt;
+## OR2        &lt;span class=&quot;hl opt&quot;&gt; &lt;/span&gt;
+## NS_GET     &lt;span class=&quot;hl opt&quot;&gt; &lt;/span&gt;
+## NS_GET_INT &lt;span class=&quot;hl opt&quot;&gt; &lt;/span&gt;
+## STR_CONST  &lt;span class=&quot;hl sng&quot;&gt; &lt;/span&gt;
+</code></pre>
+<p>These command data frames are connected to the tokens in the R code via
+their row names:</p>
+<pre><code class="language-r">d$token
+</code></pre>
+<pre><code>## [1] &quot;SYMBOL&quot;    &quot;EQ_ASSIGN&quot; &quot;NUM_CONST&quot; &quot;'+'&quot;       &quot;NUM_CONST&quot; &quot;COMMENT&quot;
+</code></pre>
+<pre><code class="language-r">rownames(highr:::cmd_latex)
+</code></pre>
+<pre><code>##  [1] &quot;COMMENT&quot;              &quot;DEFAULT&quot;              &quot;FUNCTION&quot;            
+##  [4] &quot;IF&quot;                   &quot;ELSE&quot;                 &quot;WHILE&quot;               
+##  [7] &quot;FOR&quot;                  &quot;IN&quot;                   &quot;BREAK&quot;               
+## [10] &quot;REPEAT&quot;               &quot;NEXT&quot;                 &quot;NULL_CONST&quot;          
+## [13] &quot;LEFT_ASSIGN&quot;          &quot;EQ_ASSIGN&quot;            &quot;RIGHT_ASSIGN&quot;        
+## [16] &quot;SYMBOL_FORMALS&quot;       &quot;SYMBOL_SUB&quot;           &quot;SLOT&quot;                
+## [19] &quot;SYMBOL_FUNCTION_CALL&quot; &quot;NUM_CONST&quot;            &quot;'+'&quot;                 
+## [22] &quot;'-'&quot;                  &quot;'*'&quot;                  &quot;'/'&quot;                 
+## [25] &quot;'^'&quot;                  &quot;'$'&quot;                  &quot;'@'&quot;                 
+## [28] &quot;':'&quot;                  &quot;'?'&quot;                  &quot;'~'&quot;                 
+## [31] &quot;'!'&quot;                  &quot;SPECIAL&quot;              &quot;GT&quot;                  
+## [34] &quot;GE&quot;                   &quot;LT&quot;                   &quot;LE&quot;                  
+## [37] &quot;EQ&quot;                   &quot;NE&quot;                   &quot;AND&quot;                 
+## [40] &quot;AND2&quot;                 &quot;OR&quot;                   &quot;OR2&quot;                 
+## [43] &quot;NS_GET&quot;               &quot;NS_GET_INT&quot;           &quot;STR_CONST&quot;
+</code></pre>
+<p>Now we know how to wrap up the R tokens. The next big question is how to
+restore the white spaces in the source code, since they were not directly
+available in the parsed data, but the parsed data contains column numbers,
+and we can derive the positions of white spaces from them. For example,
+<code>col2 = 5</code> for the first row, and <code>col1 = 7</code> for the next row, and that
+indicates there must be one space after the token in the first row, otherwise
+the next row will start at the position <code>6</code> instead of <code>7</code>.</p>
+<p>A small trick is used to fill in the gaps of white spaces:</p>
+<pre><code class="language-r">(z = d[, c('col1', 'col2')])  # take out the column positions
+</code></pre>
+<pre><code>##    col1 col2
+## 1     4    5
+## 2     7    7
+## 5     9    9
+## 7    11   11
+## 8    13   13
+## 10   16   26
+</code></pre>
+<pre><code class="language-r">(z = t(z)) # transpose the matrix
+</code></pre>
+<pre><code>##      1 2 5  7  8 10
+## col1 4 7 9 11 13 16
+## col2 5 7 9 11 13 26
+</code></pre>
+<pre><code class="language-r">(z = c(z)) # turn it into a vector
+</code></pre>
+<pre><code>##  [1]  4  5  7  7  9  9 11 11 13 13 16 26
+</code></pre>
+<pre><code class="language-r">(z = c(0, head(z, -1))) # append 0 in the beginning, and remove the last element
+</code></pre>
+<pre><code>##  [1]  0  4  5  7  7  9  9 11 11 13 13 16
+</code></pre>
+<pre><code class="language-r">(z = matrix(z, ncol = 2, byrow = TRUE))
+</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]    0    4
+## [2,]    5    7
+## [3,]    7    9
+## [4,]    9   11
+## [5,]   11   13
+## [6,]   13   16
+</code></pre>
+<p>Now the two columns indicate the starting and ending positions of spaces,
+and we can easily figure out how many white spaces are needed for each row:</p>
+<pre><code class="language-r">(s = z[, 2] - z[, 1] - 1)
+</code></pre>
+<pre><code>## [1] 3 1 1 1 1 2
+</code></pre>
+<pre><code class="language-r">(s = strrep(' ', s))
+</code></pre>
+<pre><code>## [1] &quot;   &quot; &quot; &quot;   &quot; &quot;   &quot; &quot;   &quot; &quot;   &quot;  &quot;
+</code></pre>
+<pre><code class="language-r">paste(s, d$text, sep = '')
+</code></pre>
+<pre><code>## [1] &quot;   xx&quot;         &quot; =&quot;            &quot; 1&quot;            &quot; +&quot;           
+## [5] &quot; 1&quot;            &quot;  # a comment&quot;
+</code></pre>
+<p>So we have successfully restored the white spaces in the source code. Let’s
+paste all pieces together (suppose we highlight for LaTeX):</p>
+<pre><code class="language-r">m = highr:::cmd_latex[d$token, ]
+cbind(d, m)
+</code></pre>
+<pre><code>##    line1 col1 line2 col2 id parent     token terminal        text     cmd1 cmd2
+## 1      1    4     1    5  1      3    SYMBOL     TRUE          xx     &lt;NA&gt; &lt;NA&gt;
+## 2      1    7     1    7  2     14 EQ_ASSIGN     TRUE           = \\hlkwb{    }
+## 5      1    9     1    9  5      6 NUM_CONST     TRUE           1 \\hlnum{    }
+## 7      1   11     1   11  7     12       '+'     TRUE           + \\hlopt{    }
+## 8      1   13     1   13  8      9 NUM_CONST     TRUE           1 \\hlnum{    }
+## 10     1   16     1   26 10    -14   COMMENT     TRUE # a comment \\hlcom{    }
+</code></pre>
+<pre><code class="language-r"># use standard markup if tokens do not exist in the table
+m[is.na(m[, 1]), ] = highr:::cmd_latex['DEFAULT', ]
+paste(s, m[, 1], d$text, m[, 2], sep = '', collapse = '')
+</code></pre>
+<pre><code>## [1] &quot;   \\hldef{xx} \\hlkwb{=} \\hlnum{1} \\hlopt{+} \\hlnum{1}  \\hlcom{# a comment}&quot;
+</code></pre>
+<p>So far so simple. That is one line of code, after all. A next challenge
+comes when there are multiple lines, and a token spans across multiple lines:</p>
+<pre><code class="language-r">d = getParseData(parse(text = &quot;x = \&quot;a character\nstring\&quot; #hi&quot;, keep.source = TRUE))
+(d = d[d$terminal, ])
+</code></pre>
+<pre><code>##   line1 col1 line2 col2 id parent     token terminal                  text
+## 1     1    1     1    1  1      3    SYMBOL     TRUE                     x
+## 2     1    3     1    3  2     10 EQ_ASSIGN     TRUE                     =
+## 5     1    5     2    7  5      8 STR_CONST     TRUE &quot;a character\nstring&quot;
+## 6     2    9     2   11  6    -10   COMMENT     TRUE                   #hi
+</code></pre>
+<p>Take a look at the third row. It says that the character string starts from
+line 1, and ends on line 2. In this case, we just pretend as if everything
+on line 1 were on line 2. Then for each line, we append the missing spaces
+and apply markup commands to text symbols.</p>
+<pre><code class="language-r">d$line1[d$line1 == 1] = 2
+d
+</code></pre>
+<pre><code>##   line1 col1 line2 col2 id parent     token terminal                  text
+## 1     2    1     1    1  1      3    SYMBOL     TRUE                     x
+## 2     2    3     1    3  2     10 EQ_ASSIGN     TRUE                     =
+## 5     2    5     2    7  5      8 STR_CONST     TRUE &quot;a character\nstring&quot;
+## 6     2    9     2   11  6    -10   COMMENT     TRUE                   #hi
+</code></pre>
+<p>Do not worry about the column <code>line2</code>. It does not matter. Only <code>line1</code> is
+needed to indicate the line number here.</p>
+<p>Why do we need to highlight line by line instead of applying highlighting
+commands to all text symbols (a.k.a vectorization)? Well, the margin of this
+paper is too small to write down the answer.</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/combine/npm/@xiee/utils/js/docco-classic.min.js,npm/@xiee/utils/js/docco-resize.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils/js/center-img.min.js" defer></script>
+</body>
+</html>

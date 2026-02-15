@@ -1,0 +1,10 @@
+## Version support
+
+```{r}
+#| include: FALSE
+dps <- desc::desc(package = "otel")$get_deps()
+rdp <- trimws(sub(">=", "", dps$version[dps$package == "R"]))
+```
+
+otel and otelsdk support R `r rdp` and higher on Unix and R 4.3.0 or higher
+on Windows.

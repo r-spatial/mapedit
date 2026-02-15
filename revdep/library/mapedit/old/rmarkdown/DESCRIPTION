@@ -1,0 +1,125 @@
+Type: Package
+Package: rmarkdown
+Title: Dynamic Documents for R
+Version: 2.30
+Authors@R: c(
+    person("JJ", "Allaire", , "jj@posit.co", role = "aut"),
+    person("Yihui", "Xie", , "xie@yihui.name", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-0645-5666")),
+    person("Christophe", "Dervieux", , "cderv@posit.co", role = "aut", comment = c(ORCID = "0000-0003-4474-2498")),
+    person("Jonathan", "McPherson", , "jonathan@posit.co", role = "aut"),
+    person("Javier", "Luraschi", role = "aut"),
+    person("Kevin", "Ushey", , "kevin@posit.co", role = "aut"),
+    person("Aron", "Atkins", , "aron@posit.co", role = "aut"),
+    person("Hadley", "Wickham", , "hadley@posit.co", role = "aut"),
+    person("Joe", "Cheng", , "joe@posit.co", role = "aut"),
+    person("Winston", "Chang", , "winston@posit.co", role = "aut"),
+    person("Richard", "Iannone", , "rich@posit.co", role = "aut", comment = c(ORCID = "0000-0003-3925-190X")),
+    person("Andrew", "Dunning", role = "ctb", comment = c(ORCID = "0000-0003-0464-5036")),
+    person("Atsushi", "Yasumoto", role = c("ctb", "cph"), comment = c(ORCID = "0000-0002-8335-495X", cph = "Number sections Lua filter")),
+    person("Barret", "Schloerke", role = "ctb"),
+    person("Carson", "Sievert", role = "ctb", comment = c(ORCID = "0000-0002-4958-2844")), 
+    person("Devon", "Ryan", , "dpryan79@gmail.com", role = "ctb", comment = c(ORCID = "0000-0002-8549-0971")),
+    person("Frederik", "Aust", , "frederik.aust@uni-koeln.de", role = "ctb", comment = c(ORCID = "0000-0003-4900-788X")),
+    person("Jeff", "Allen", , "jeff@posit.co", role = "ctb"), 
+    person("JooYoung", "Seo", role = "ctb", comment = c(ORCID = "0000-0002-4064-6012")),
+    person("Malcolm", "Barrett", role = "ctb"),
+    person("Rob", "Hyndman", , "Rob.Hyndman@monash.edu", role = "ctb"),
+    person("Romain", "Lesur", role = "ctb"),
+    person("Roy", "Storey", role = "ctb"),
+    person("Ruben", "Arslan", , "ruben.arslan@uni-goettingen.de", role = "ctb"),
+    person("Sergio", "Oller", role = "ctb"),
+    person(given = "Posit Software, PBC", role = c("cph", "fnd")),
+    person(, "jQuery UI contributors", role = c("ctb", "cph"), comment = "jQuery UI library; authors listed in inst/rmd/h/jqueryui/AUTHORS.txt"),
+    person("Mark", "Otto", role = "ctb", comment = "Bootstrap library"),
+    person("Jacob", "Thornton", role = "ctb", comment = "Bootstrap library"),
+    person(, "Bootstrap contributors", role = "ctb", comment = "Bootstrap library"),
+    person(, "Twitter, Inc", role = "cph", comment = "Bootstrap library"),
+    person("Alexander", "Farkas", role = c("ctb", "cph"), comment = "html5shiv library"),
+    person("Scott", "Jehl", role = c("ctb", "cph"), comment = "Respond.js library"),
+    person("Ivan", "Sagalaev", role = c("ctb", "cph"), comment = "highlight.js library"),
+    person("Greg", "Franko", role = c("ctb", "cph"), comment = "tocify library"),
+    person("John", "MacFarlane", role = c("ctb", "cph"), comment = "Pandoc templates"),
+    person(, "Google, Inc.", role = c("ctb", "cph"), comment = "ioslides library"),
+    person("Dave", "Raggett", role = "ctb", comment = "slidy library"),
+    person(, "W3C", role = "cph", comment = "slidy library"),
+    person("Dave", "Gandy", role = c("ctb", "cph"), comment = "Font-Awesome"),
+    person("Ben", "Sperry", role = "ctb", comment = "Ionicons"),
+    person(, "Drifty", role = "cph", comment = "Ionicons"),
+    person("Aidan", "Lister", role = c("ctb", "cph"), comment = "jQuery StickyTabs"),
+    person("Benct Philip", "Jonsson", role = c("ctb", "cph"), comment = "pagebreak Lua filter"),
+    person("Albert", "Krewinkel", role = c("ctb", "cph"), comment = "pagebreak Lua filter")
+  )
+Description: Convert R Markdown documents into a variety of formats.
+License: GPL-3
+URL: https://github.com/rstudio/rmarkdown,
+        https://pkgs.rstudio.com/rmarkdown/
+BugReports: https://github.com/rstudio/rmarkdown/issues
+Depends: R (>= 3.0)
+Imports: bslib (>= 0.2.5.1), evaluate (>= 0.13), fontawesome (>=
+        0.5.0), htmltools (>= 0.5.1), jquerylib, jsonlite, knitr (>=
+        1.43), methods, tinytex (>= 0.31), tools, utils, xfun (>=
+        0.36), yaml (>= 2.1.19)
+Suggests: digest, dygraphs, fs, rsconnect, downlit (>= 0.4.0), katex
+        (>= 1.4.0), sass (>= 0.4.0), shiny (>= 1.6.0), testthat (>=
+        3.0.3), tibble, vctrs, cleanrmd, withr (>= 2.4.2), xml2
+VignetteBuilder: knitr
+Config/Needs/website: rstudio/quillt, pkgdown
+Config/testthat/edition: 3
+Encoding: UTF-8
+RoxygenNote: 7.3.2
+SystemRequirements: pandoc (>= 1.14) - http://pandoc.org
+NeedsCompilation: no
+Packaged: 2025-09-25 03:25:30 UTC; yihui
+Author: JJ Allaire [aut],
+  Yihui Xie [aut, cre] (ORCID: <https://orcid.org/0000-0003-0645-5666>),
+  Christophe Dervieux [aut] (ORCID:
+    <https://orcid.org/0000-0003-4474-2498>),
+  Jonathan McPherson [aut],
+  Javier Luraschi [aut],
+  Kevin Ushey [aut],
+  Aron Atkins [aut],
+  Hadley Wickham [aut],
+  Joe Cheng [aut],
+  Winston Chang [aut],
+  Richard Iannone [aut] (ORCID: <https://orcid.org/0000-0003-3925-190X>),
+  Andrew Dunning [ctb] (ORCID: <https://orcid.org/0000-0003-0464-5036>),
+  Atsushi Yasumoto [ctb, cph] (ORCID:
+    <https://orcid.org/0000-0002-8335-495X>, cph: Number sections Lua
+    filter),
+  Barret Schloerke [ctb],
+  Carson Sievert [ctb] (ORCID: <https://orcid.org/0000-0002-4958-2844>),
+  Devon Ryan [ctb] (ORCID: <https://orcid.org/0000-0002-8549-0971>),
+  Frederik Aust [ctb] (ORCID: <https://orcid.org/0000-0003-4900-788X>),
+  Jeff Allen [ctb],
+  JooYoung Seo [ctb] (ORCID: <https://orcid.org/0000-0002-4064-6012>),
+  Malcolm Barrett [ctb],
+  Rob Hyndman [ctb],
+  Romain Lesur [ctb],
+  Roy Storey [ctb],
+  Ruben Arslan [ctb],
+  Sergio Oller [ctb],
+  Posit Software, PBC [cph, fnd],
+  jQuery UI contributors [ctb, cph] (jQuery UI library; authors listed in
+    inst/rmd/h/jqueryui/AUTHORS.txt),
+  Mark Otto [ctb] (Bootstrap library),
+  Jacob Thornton [ctb] (Bootstrap library),
+  Bootstrap contributors [ctb] (Bootstrap library),
+  Twitter, Inc [cph] (Bootstrap library),
+  Alexander Farkas [ctb, cph] (html5shiv library),
+  Scott Jehl [ctb, cph] (Respond.js library),
+  Ivan Sagalaev [ctb, cph] (highlight.js library),
+  Greg Franko [ctb, cph] (tocify library),
+  John MacFarlane [ctb, cph] (Pandoc templates),
+  Google, Inc. [ctb, cph] (ioslides library),
+  Dave Raggett [ctb] (slidy library),
+  W3C [cph] (slidy library),
+  Dave Gandy [ctb, cph] (Font-Awesome),
+  Ben Sperry [ctb] (Ionicons),
+  Drifty [cph] (Ionicons),
+  Aidan Lister [ctb, cph] (jQuery StickyTabs),
+  Benct Philip Jonsson [ctb, cph] (pagebreak Lua filter),
+  Albert Krewinkel [ctb, cph] (pagebreak Lua filter)
+Maintainer: Yihui Xie <xie@yihui.name>
+Repository: RSPM
+Date/Publication: 2025-09-28 11:30:02 UTC
+Built: R 4.5.0; ; 2025-12-02 12:29:05 UTC; unix

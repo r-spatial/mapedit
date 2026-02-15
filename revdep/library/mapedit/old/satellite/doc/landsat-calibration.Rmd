@@ -1,0 +1,44 @@
+---
+title: "Landsat-8 Calibration"
+author: "Thomas Nauss"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Landsat-8 Calibration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+
+---
+
+The following example shows how to read a Landsat-8 data set downloaded from the
+[USGS Earth Explorer](https://earthexplorer.usgs.gov/) and how to convert the 
+bands' scaled counts to radiance, reflectance and/or brightness temperature.
+
+
+## Reading Landsat-8 data
+
+We will use the test data set supplied with this package. In order to read the
+data set, just supply the filename (or list of filenames) to the `satellite()`
+function.
+
+```{r}
+library(satellite)
+path <- system.file("extdata", package = "satellite")
+files <- list.files(path, pattern = glob2rx("LC08*.TIF"), full.names = TRUE)
+sat <- satellite(files)
+```
+The meta data will automatically be loaded since (i) Landsat-8 is a known 
+platform to the `satellite` package and (ii) the name of the meta data file
+is in accordance with the USGS conventions.
+
+
+## Converting Landsat-8 scaled counts to physical units
+
+In order to convert scaled counts of a Satellite object to radiance, reflectance
+and/or temperature, just supply it to the `convSC2Rad`, `convSC2Ref` or
+`convRad2BT` function.
+```{r}
+sat <- convSC2Rad(sat)
+sat <- convSC2Ref(sat)
+sat <- convRad2BT(sat)
+```

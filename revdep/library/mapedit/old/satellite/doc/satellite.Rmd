@@ -1,0 +1,113 @@
+---
+title: "satellite - Classes and Methods for Satellite Data"
+author: "Thomas Nauss, Florian Detsch"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{satellite - Classes and Methods for Satellite Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+We are happy to introduce `satellite`, an R package designed to facilitate satellite remote sensing analysis in a structured and user-friendly manner.
+
+The main purpose of `satellite` is to provide standard classes and methods to stream-line remote sensing analysis workflow in R. It provides its own `satellite-class` along with standard methods for basic image transformations such as atmospheric and topgraphic corrections, among others.
+
+The package is desinged with both flexibility and user-friendliness in mind. Think of it as the `sp-package` for remote sensing analysis. It provides core functionality and can be easily extended via packages to suit your own analysis needs. Furthermore, the fact that image bands are stored as `Raster*` objects means, that all functionality currently available for these classes will also work nicely with `satellite`.
+
+In the following, we would like to highlight some of the functionality provided by `satellite`.
+
+## The satellite class
+
+To start a remote sensing alaysis workflow with `satellite` you simply use its workhorse function `satellite()` and point it to a folder where your satellite data is stored.
+
+```{r}
+library(satellite)
+path <- system.file("extdata", package = "satellite") 
+files <- list.files(path, pattern = glob2rx("LC08*.TIF"), full.names = TRUE) # Landsat 8 example data files
+
+sat <- satellite(files)
+```
+
+This will create an object of class `satellite` with three slots:
+
+* @layers - a list of `RasterLayers` of all available bands
+* @meta - a data frame containing all the meta data needed to process the data layers
+* @log - a list containing information about the processing history of the object
+
+For supported satellite platforms all of this is done automatically. At the moment of this writing, supported platforms are Landsat generations 4 to 8. It is, however, very easy to expand this support to other platforms by providing suitable look-up-tables (LUT). Even if no suitable LUT is available, `satellite` will still import slots `@layers` and `@log`.
+
+### The @layers slot
+
+As mentioned above, `@layers` contains a list of `RasterLayers` of all available bands. The reason for storing the individual bands as `RasterLayers` rather than a `RasterStack` is that most satellite platforms provide at least one layer of different spatial resolution that the rest. 
+
+```{r}
+str(sat@layers, 1)
+```
+
+It is, however, easy to create a `RasterStack` from selected layers as `stack-method` is defined for class `satellite`. By default this will take all layers with the same resolution as the first and stack them. A suitable warning is provided so that the user is informed which layers were not included in the `RasterStack`. Furthermore, one can simply provide a vector of layer IDs (either layer names or numbers) to be stacked.
+
+```{r}
+## default (all that are similar to layer 1; panchromatic 15-m band 8 is skipped here)
+sat_stack <- stack(sat)
+sat_stack
+
+## or by layer names
+stack(sat, layer = c("B001n", "B002n", "B003n"))
+
+## or by layer indices
+stack(sat, layer = 2:6)
+```
+
+### The @meta slot
+
+The `@meta` slot provides meta information for each of the layers of the `satellite` object. Here's a non-exhaustive list of the most important entries:
+
+* BCDE       - the band code (i.e. layer name)
+* DATE       - the date the image was captured
+* SID        - a short ID for the sensor (e.g. "LC8")
+* TYPE       - type of the solar spectrum the band falls into (e.g. visible, near-infrared)
+* SPECTRUM   - the broad spectrum classification according to shart-wave vs. long-wave radiation (i.e. solar vs thermal)
+* CALIB      - the calibration level of the layer ("SC" means source calibration, i.e. as provided by the raw data)
+
+In addition to these, several calibration coefficients (such as the sun zenith and azimuth angles , sun elevation, earth-sun distance etc.), information on spatial resolution and projection as well as information about file names and paths is also stored.
+
+For the Landsat 8 example data shipped with the package the meta data looks like this:
+
+```{r}
+str(sat@meta)
+```
+
+Everytime the user performs some calculation on some or all of the layers, this meta information will be updated accordingly. Here's an example:
+
+```{r}
+## add digital elevation model to existing 'Satellite' object
+dem <- raster(system.file("extdata/DEM.TIF", package = "satellite"))
+sat <- addSatDataLayer(sat, data = dem, info = NULL, bcde = "DEM", in_bcde = "DEM")
+
+## perform topographic correction
+sat_tc <- calcTopoCorr(sat)
+tail(sat_tc@meta[, 1:6])
+```
+
+As you can see, all bands have been topographically corrected and the meta data for the resulting layers is automatically appended to the original data frame. Note for example how `$DATE` is set to the date that layers were calculated. 
+
+Note, that in order to avoid too long console output, we only show the first and last six columns and rows, respectively, of the meta data here.
+
+### The @log slot
+
+Similar to the meta data, log data is also updated every time an analyis is carried out on the object. The default entries (i.e. the ones created on intial import) are as follows:
+
+```{r}
+sat@log
+```
+
+And here's how this is modified after the topographic correction:
+
+```{r}
+str(sat_tc@log[1:2])
+```
+
+Note how, in addition to the info about the initial import, we now have additional logs entries for each band that was topographically corrected clearly showing which call was dispatched, when and on which layer. Even though we only show the first additional log entry here, entries are created for all processed layers. This ensures that we can easily trace what has been done so far and serves as a reference for the current state of processing.

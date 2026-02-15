@@ -1,0 +1,7 @@
+export(setBufLen)
+export(brewCache)
+export(brewCacheOn)
+export(brewCacheOff)
+export(brew)
+importFrom("utils", "head")
+importFrom("utils", "tail")

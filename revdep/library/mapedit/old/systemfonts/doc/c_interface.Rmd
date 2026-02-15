@@ -1,0 +1,193 @@
+---
+title: "systemfonts C interface"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{systemfonts C interface}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+#| include: false
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+#| label: setup
+library(systemfonts)
+```
+
+Most of the functionality in systemfonts is intended to be used from compiled
+code to help e.g. graphic devices to resolve font specifications to a font file
+prior to rendering. systemfonts provide key functionality to get called at the
+C level by putting systemfonts in the `LinkingTo` field in the description and
+adding `#include <systemfonts.h>` to your C code. Make sure systemfonts is
+loaded before using it, e.g. by having `match_fonts()` imported into your package
+namespace. All functions are provided in the `systemfonts::ver2` namespace.
+Legacy API is not namespaced. The different functionality will be discussed
+below:
+
+## Font matching
+The C equivalent of the `match_fonts()` R function is `locate_font()` with the
+following signature:
+
+```C
+FontSettings2 locate_font(
+  const char *family,
+  double italic,
+  double weight,
+  double width,
+  const int* axes,
+  const int* coords,
+  int n_axes
+)
+```
+
+It takes a UTF-8 encoded string with the font family name, a double giving
+italic (usually 0.0 == "upright" and 1.0 == "italic"), a double giving weight
+(usually ranging between 100.0 and 1000.0 — 0.0 means "undefined") and a double
+giving "width" (usually ranging from 1.0 to 10.0 — 0.0 means undefined). Lastly
+you can provide variable axis coords with the `axes` and `coords` array pointers
+with `n_axes` giving the number in the arrays (which are assumed to be of the
+same length). The values of each array are not immediately understandable to the
+human eye and will usually come from a user through a call to
+`font_variation()`. If the axes array contain "ital", "wght", and/or "wdth"
+*and* the font has these variable axes then the values for these axes will
+overwrite the values provide in `italic`, `weight`, and `width`.
+
+The returned `FontSettings2` struct will contain both the font location and
+index along with any OpenType feature settings and the axes settings in the case
+of a variable font. The struct (along with its `FontFeature` struct dependency)
+is shown below and is pretty self-documenting.
+
+Do not cache the `FontSettings2` struct as the `features`, `axes`, and `coords`
+arrays  may be cleared at any time after the call has ended. systemfonts itself
+takes care of caching so this is not something you should be concerned with in
+your code.
+
+```C
+struct FontFeature {
+  char feature[4];
+  int setting;
+};
+struct FontSettings {
+  char file[PATH_MAX + 1];
+  unsigned int index;
+  const FontFeature* features;
+  int n_features;
+  const int* axes;
+  const int* coords;
+  int n_axes;
+};
+```
+
+## Glyph metrics
+The C equivalent of `glyph_info()` is `glyph_metrics()` with the following
+signature:
+
+```C
+int glyph_metrics(
+  uint32_t code,
+  const FontSettings2& font,
+  double size,
+  double res,
+  double* ascent,
+  double* descent,
+  double* width
+)
+```
+
+It takes the glyph to measure as an int giving the UTF code of the glyph, with a
+`FontSettings2` object describing the font. Further it takes a size in pt and a
+resolution in ppi. It will write the ascent, descent, and width in pts to the
+pointers passed in, and return `0` if the operation was successful.
+
+## Retrieving cached freetype face
+A heavy part of text layouting is reading and parsing font files. systemfonts
+contains its own cache to make sure that parsing is kept at a minimum. If you
+want to use this cache to load and cache freetype face object (FT_Face) you can
+use `get_cached_face()`. This resides in a separate header (`systemfonts-ft.h`)
+because it requires FreeType to be linked in your package, which the rest of the
+C api does not. It will look in the cache for a face and size that
+matches your request and return that if found. If not, it will load it for you
+and add it to the cache, before returning it to you. `get_cached_face()` sets
+the passed int error pointer to 0 if successful.
+
+```C
+get_cached_face(
+  const FontSettings2& font,
+  double size,
+  double res,
+  int * error
+)
+```
+
+Freetype uses reference counting to keep track of objects and the count is
+increased by a call to `get_cached_face()`. It is the responsibility of the
+caller to decrease it once the face is no longer needed using `FT_Done_Face()`.
+
+## Check for Freetype compatibility
+If you are using a cached face from systemfonts you should ensure that your code
+has been compiled with the same version of Freetype as systemfonts has. You can
+do this with the `check_ft_version()` from the `systemfonts-ft.h` header. It takes no arguments and return `true` if the Freetype version from systemfonts 
+corresponds with the one your library is compiled with.
+
+## Font fallback
+When rendering text it is not given that all the requested characters have a
+glyph in the given font. While one can elect to render a "missing glyph" glyph
+(often either an empty square or a questionmark in a tilted square) a better
+approach is often to find a font substitute that does contain the character and
+use that for rendering it. This function allows you to find a fallback font for
+a given string and font. The string should be stripped of characters that you
+already know how to render. The fallback font is returned as a `FontSettings2`
+object, though features are always empty.
+
+```C
+FontSettings2 get_fallback(
+  const char* string,
+  const FontSettings2& font
+)
+```
+
+## Font Weight
+When encoding text with CSS it may be necessary to know the exact weight of the
+font given by a file so that it may be reflected in the style sheet. This
+function takes a `FontSettings2` object and returns the weight (100-900 or 0 if
+it is undefined by the font) respecting the variable axes settings if given.
+
+```C
+int get_font_weight(
+  const FontSettings2& font
+)
+```
+
+## Family name
+It may be beneficial to know the family name from a given font. This can be
+obtained with `get_font_family()` which will write the name to the provided
+`char*` argument. It will return 0 if it was somehow unsuccessful.
+
+```C
+int get_font_family(
+  const FontSettings2& font,
+  char* family,
+  int max_length
+)
+```
+
+## Emoji location
+Figuring out which character in a string should be treated as an emoji is
+non-trivial due to the existence of emojis with text representation default etc.
+systemfonts allow you to get the embedding of emojis in a string based on the
+correct rules.
+
+```C
+void detect_emoji_embedding(
+  const uint32_t* string,
+  int n,
+  int* embedding,
+  const FontSettings2& font
+)
+```

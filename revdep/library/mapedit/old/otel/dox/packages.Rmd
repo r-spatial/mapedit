@@ -1,0 +1,8 @@
+## The otel and otelsdk R packages
+
+Use the [otel](https://github.com/r-lib/otel) package as a dependency if
+you want to instrument your R package or project for OpenTelemetry.
+
+Use the [otelsdk](https://github.com/r-lib/otelsdk) package to produce
+OpenTelemetry output from an R package or project that was instrumented
+with the otel package.

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="D Cooley" />
+
+<meta name="date" content="2025-11-26" />
+
+<title>Converting between GeoJSON and sf</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Converting between GeoJSON and sf</h1>
+<h4 class="author">D Cooley</h4>
+<h4 class="date">2025-11-26</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#what-it-does" id="toc-what-it-does">What it does</a></li>
+<li><a href="#what-it-doesnt-do" id="toc-what-it-doesnt-do">What it
+doesn’t do</a></li>
+<li><a href="#geojson" id="toc-geojson">GeoJSON</a>
+<ul>
+<li><a href="#geometry" id="toc-geometry">Geometry</a></li>
+<li><a href="#geometry-collection" id="toc-geometry-collection">Geometry
+Collection</a></li>
+<li><a href="#feature" id="toc-feature">Feature</a></li>
+<li><a href="#feature-collection" id="toc-feature-collection">Feature
+Collection</a></li>
+</ul></li>
+<li><a href="#vectors-of-geojson" id="toc-vectors-of-geojson">Vectors of
+GeoJSON</a></li>
+<li><a href="#json-arrays-of-geojson" id="toc-json-arrays-of-geojson">JSON Arrays of GeoJSON</a></li>
+<li><a href="#reading-from-url" id="toc-reading-from-url">Reading from
+URL</a></li>
+<li><a href="#reading-from-file" id="toc-reading-from-file">Reading from
+file</a></li>
+<li><a href="#sf-to-geojson" id="toc-sf-to-geojson">sf to GeoJSON</a>
+<ul>
+<li><a href="#atomising" id="toc-atomising">Atomising</a></li>
+</ul></li>
+<li><a href="#well-known-text" id="toc-well-known-text">Well-known
+Text</a></li>
+</ul>
+</div>
+
+<div id="what-it-does" class="section level2">
+<h2>What it does</h2>
+<p>Quickly converts between GeoJSON and <code>sf</code> objects</p>
+</div>
+<div id="what-it-doesnt-do" class="section level2">
+<h2>What it doesn’t do</h2>
+<p>As per GeoJSON (<a href="https://datatracker.ietf.org/doc/html/rfc7946#page-11">RFC 7946
+specification)</a>, foreign members are ignored, and nested objects and
+arrays inside the <code>properties</code> object are converted to
+string/characters.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(geojsonsf)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># library(sf)</span></span></code></pre></div>
+<p>You would also typically load <code>library(sf)</code> to take
+advantange of its <code>plot</code> methods.</p>
+</div>
+<div id="geojson" class="section level2">
+<h2>GeoJSON</h2>
+<div id="geometry" class="section level3">
+<h3>Geometry</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="st">&#39;{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[0,0]}&#39;</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>sf <span class="ot">&lt;-</span> <span class="fu">geojson_sf</span>(p)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">head</span>(sf)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt;   geometry</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; 1     0, 0</span></span></code></pre></div>
+</div>
+<div id="geometry-collection" class="section level3">
+<h3>Geometry Collection</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>gc <span class="ot">&lt;-</span> <span class="st">&#39;{</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="st">  &quot;type&quot;: &quot;GeometryCollection&quot;,</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="st">  &quot;geometries&quot;: [</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="st">    {&quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [100.0, 0.0]},</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="st">    {&quot;type&quot;: &quot;LineString&quot;, &quot;coordinates&quot;: [[101.0, 0.0], [102.0, 1.0]]},</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="st">    {&quot;type&quot; : &quot;MultiPoint&quot;, &quot;coordinates&quot; : [[0,0], [1,1], [2,2]]}</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="st">  ]</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="st">}&#39;</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>sf <span class="ot">&lt;-</span> <span class="fu">geojson_sf</span>(gc)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="fu">head</span>(sf)</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt;                                   geometry</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; 1 100, 0, 101, 102, 0, 1, 0, 1, 2, 0, 1, 2</span></span></code></pre></div>
+<p>Some web-plotting libraries (such as <code>googleway</code>) can’t
+plot GeometryCollections directly. Therefore, you can set
+<code>expand_geometries</code> to <code>TRUE</code> and it will extract
+each geometry from a GeometryCollection and create a row for each
+one</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>gc <span class="ot">&lt;-</span> <span class="st">&#39;{</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="st">  &quot;type&quot;: &quot;GeometryCollection&quot;,</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="st">  &quot;geometries&quot;: [</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="st">    {&quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [100.0, 0.0]},</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="st">    {&quot;type&quot;: &quot;LineString&quot;, &quot;coordinates&quot;: [[101.0, 0.0], [102.0, 1.0]]},</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="st">    {&quot;type&quot; : &quot;MultiPoint&quot;, &quot;coordinates&quot; : [[0,0], [1,1], [2,2]]}</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="st">  ]</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="st">}&#39;</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>sf <span class="ot">&lt;-</span> <span class="fu">geojson_sf</span>(gc, <span class="at">expand_geometries =</span> T)</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="fu">head</span>(sf)</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt;           geometry</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; 1           100, 0</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 2   101, 102, 0, 1</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 3 0, 1, 2, 0, 1, 2</span></span></code></pre></div>
+</div>
+<div id="feature" class="section level3">
+<h3>Feature</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="st">&#39;{</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="st">    &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="st">    &quot;properties&quot;: {&quot;id&quot;:1,&quot;value&quot;:100,&quot;text&quot;:&quot;the quick brown fox&quot;},</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="st">    &quot;geometry&quot;: {</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="st">      &quot;type&quot;: &quot;LineString&quot;, </span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="st">      &quot;coordinates&quot;: [[101.0, 0.0], [102.0, 1.0]]</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="st">      }</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="st">    }&#39;</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>sf <span class="ot">&lt;-</span> <span class="fu">geojson_sf</span>(f)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="fu">head</span>(sf)</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt;   id value                text       geometry</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; 1  1   100 the quick brown fox 101, 102, 0, 1</span></span></code></pre></div>
+</div>
+<div id="feature-collection" class="section level3">
+<h3>Feature Collection</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>fc <span class="ot">&lt;-</span> <span class="st">&#39;{</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="st">  &quot;type&quot;: &quot;FeatureCollection&quot;,</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="st">  &quot;features&quot;: [</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="st">  {</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="st">    &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="st">    &quot;properties&quot;: {&quot;foo&quot; : &quot;feature 1.1&quot;, &quot;bar&quot; : &quot;feature 1.2&quot;},</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="st">    &quot;geometry&quot;: {&quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [100.0, 0.0]}</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="st">  },</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="st">  {</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="st">    &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="st">    &quot;properties&quot;: null,</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="st">    &quot;geometry&quot;: {&quot;type&quot;: &quot;LineString&quot;, &quot;coordinates&quot;: [[101.0, 0.0], [102.0, 1.0]]}</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="st">  },</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="st">  {</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="st">    &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="st">        &quot;properties&quot;: {&quot;foo&quot; : &quot;feature 3.1&quot;, &quot;bar&quot; : &quot;feature 3.2&quot;},</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="st">        &quot;geometry&quot;: {&quot;type&quot;: &quot;LineString&quot;, &quot;coordinates&quot;: [[101.0, 0.0], [102.0, 1.0]]}</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="st"> ]</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="st">}&#39;</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>sf <span class="ot">&lt;-</span> <span class="fu">geojson_sf</span>(fc)</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="fu">head</span>(sf)</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt;           foo         bar       geometry</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt; 1 feature 1.1 feature 1.2         100, 0</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt; 2        &lt;NA&gt;        &lt;NA&gt; 101, 102, 0, 1</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt; 3 feature 3.1 feature 3.2 101, 102, 0, 1</span></span></code></pre></div>
+</div>
+</div>
+<div id="vectors-of-geojson" class="section level2">
+<h2>Vectors of GeoJSON</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>geo <span class="ot">&lt;-</span> <span class="fu">c</span>(p, gc, f, fc)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>sf <span class="ot">&lt;-</span> <span class="fu">geojson_sf</span>(geo)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">head</span>(sf)</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt;   id value                text                                 geometry</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; 1 NA    NA                &lt;NA&gt;                                     0, 0</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; 2 NA    NA                &lt;NA&gt; 100, 0, 101, 102, 0, 1, 0, 1, 2, 0, 1, 2</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; 3  1   100 the quick brown fox                           101, 102, 0, 1</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; 4 NA    NA                &lt;NA&gt;                                   100, 0</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; 5 NA    NA                &lt;NA&gt;                           101, 102, 0, 1</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; 6 NA    NA                &lt;NA&gt;                           101, 102, 0, 1</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt;           foo         bar</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; 1        &lt;NA&gt;        &lt;NA&gt;</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; 2        &lt;NA&gt;        &lt;NA&gt;</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; 3        &lt;NA&gt;        &lt;NA&gt;</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; 4 feature 1.1 feature 1.2</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; 5        &lt;NA&gt;        &lt;NA&gt;</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; 6 feature 3.1 feature 3.2</span></span></code></pre></div>
+</div>
+<div id="json-arrays-of-geojson" class="section level2">
+<h2>JSON Arrays of GeoJSON</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>js <span class="ot">&lt;-</span> <span class="st">&#39;[</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="st">{</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="st">  &quot;type&quot;: &quot;FeatureCollection&quot;,</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="st">  &quot;features&quot;: [</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="st">  {</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="st">    &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="st">    &quot;properties&quot;: null,</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="st">    &quot;geometry&quot;: {&quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [100.0, 0.0]}</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="st">  },</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="st">  {</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="st">    &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="st">    &quot;properties&quot;: null,</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="st">    &quot;geometry&quot;: {&quot;type&quot;: &quot;LineString&quot;, &quot;coordinates&quot;: [[201.0, 0.0], [102.0, 1.0]]}</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="st">  },</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="st">  {</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="st">    &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="st">        &quot;properties&quot;: null,</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="st">        &quot;geometry&quot;: {&quot;type&quot;: &quot;LineString&quot;, &quot;coordinates&quot;: [[301.0, 0.0], [102.0, 1.0]]}</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="st"> ]</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="st">},</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="st">{</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="st">  &quot;type&quot;: &quot;FeatureCollection&quot;,</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="st">    &quot;features&quot;: [</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="st">    {</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="st">      &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="st">      &quot;properties&quot;: null,</span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="st">      &quot;geometry&quot;: {&quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [100.0, 0.0]}</span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="st">    },</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="st">    {</span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="st">      &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="st">      &quot;properties&quot;: null,</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="st">      &quot;geometry&quot;: {&quot;type&quot;: &quot;LineString&quot;, &quot;coordinates&quot;: [[501.0, 0.0], [102.0, 1.0]]}</span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="st">    },</span></span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="st">    {</span></span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="st">      &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="st">      &quot;properties&quot;: null,</span></span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a><span class="st">      &quot;geometry&quot;: {&quot;type&quot;: &quot;LineString&quot;, &quot;coordinates&quot;: [[601.0, 0.0], [102.0, 1.0]]}</span></span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a><span class="st">  ]</span></span>
+<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a><span class="st">]&#39;</span></span>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a></span>
+<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a>sf <span class="ot">&lt;-</span> <span class="fu">geojson_sf</span>(js)</span>
+<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a><span class="fu">head</span>(sf)</span>
+<span id="cb8-47"><a href="#cb8-47" tabindex="-1"></a><span class="co">#&gt;         geometry</span></span>
+<span id="cb8-48"><a href="#cb8-48" tabindex="-1"></a><span class="co">#&gt; 1         100, 0</span></span>
+<span id="cb8-49"><a href="#cb8-49" tabindex="-1"></a><span class="co">#&gt; 2 201, 102, 0, 1</span></span>
+<span id="cb8-50"><a href="#cb8-50" tabindex="-1"></a><span class="co">#&gt; 3 301, 102, 0, 1</span></span>
+<span id="cb8-51"><a href="#cb8-51" tabindex="-1"></a><span class="co">#&gt; 4         100, 0</span></span>
+<span id="cb8-52"><a href="#cb8-52" tabindex="-1"></a><span class="co">#&gt; 5 501, 102, 0, 1</span></span>
+<span id="cb8-53"><a href="#cb8-53" tabindex="-1"></a><span class="co">#&gt; 6 601, 102, 0, 1</span></span></code></pre></div>
+</div>
+<div id="reading-from-url" class="section level2">
+<h2>Reading from URL</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">&quot;http://eric.clst.org/assets/wiki/uploads/Stuff/gz_2010_us_050_00_500k.json&quot;</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>sf <span class="ot">&lt;-</span> <span class="fu">geojson_sf</span>(url)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#head(sf)</span></span></code></pre></div>
+</div>
+<div id="reading-from-file" class="section level2">
+<h2>Reading from file</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>sf <span class="ot">&lt;-</span> <span class="fu">geojson_sf</span>(<span class="fu">system.file</span>(<span class="st">&quot;examples&quot;</span>, <span class="st">&quot;geo_melbourne.geojson&quot;</span>, <span class="at">package =</span> <span class="st">&quot;geojsonsf&quot;</span>))</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">head</span>(sf)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt;                 SA2_NAME polygonId strokeColor           SA3_NAME AREASQKM</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; 1             Abbotsford        70     #440154              Yarra   1.7405</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; 2            Albert Park        59     #450457       Port Phillip   4.6747</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; 3 Alphington - Fairfield        41     #46075A    Darebin - South   2.8853</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; 4               Armadale        66     #460A5D Stonnington - West   2.1835</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; 5             Ascot Vale        44     #460C5F           Essendon   3.8361</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt; 6              Brunswick        36     #472D7B Brunswick - Coburg   5.1425</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt;   fillColor strokeWeight</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt; 1   #440154            1</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt; 2   #450457            1</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt; 3   #46075A            1</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt; 4   #460A5D            1</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co">#&gt; 5   #460C5F            1</span></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt; 6   #472D7B            1</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="co">#&gt;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   geometry</span></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="co">#&gt; 1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 144.99252, 144.99265, 144.99268, 144.99269, 144.99275, 144.99283, 144.99286, 144.99294, 144.99298, 144.99309, 144.99319, 144.99324, 144.99330, 144.99342, 144.99359, 144.99388, 144.99406, 144.99434, 144.99446, 144.99483, 144.99492, 144.99500, 144.99507, 144.99536, 144.99548, 144.99548, 144.99762, 144.99767, 144.99800, 144.99919, 145.00009, 145.00060, 145.00076, 145.00093, 145.00101, 145.00107, 145.00105, 145.00128, 145.00128, 145.00128, 145.00128, 145.00128, 145.00128, 145.00128, 145.00128, 145.00128, 145.00128, 145.00128, 145.00130, 145.00130, 145.00131, 145.00131, 145.00134, 145.00134, 145.00136, 145.00137, 145.00139, 145.00142, 145.00143, 145.00148, 145.00150, 145.00150, 145.00150, 145.00154, 145.00154, 145.00154, 145.00154, 145.00154, 145.00154, 145.00154, 145.00156, 145.00156, 145.00156, 145.00156, 145.00157, 145.00157, 145.00157, 145.00157, 145.00194, 145.00189, 145.00180, 145.00172, 145.00163, 145.00151, 145.00140, 145.00124, 145.00105, 145.00087, 145.00067, 145.00037, 145.00015, 144.99991, 144.99971, 144.99950, 144.99937, 144.99931, 144.99927, 144.99925, 144.99930, 144.99937, 144.99954, 144.99968, 144.99982, 145.00000, 145.00032, 145.00064, 145.00090, 145.00116, 145.00142, 145.00204, 145.00246, 145.00270, 145.00288, 145.00319, 145.00346, 145.00371, 145.00398, 145.00409, 145.00420, 145.00450, 145.00488, 145.00531, 145.00607, 145.00647, 145.00682, 145.00726, 145.00749, 145.00763, 145.00769, 145.00769, 145.00766, 145.00758, 145.00742, 145.00717, 145.00694, 145.00671, 145.00645, 145.00620, 145.00589, 145.00560, 145.00536, 145.00514, 145.00494, 145.00473, 145.00458, 145.00441, 145.00424, 145.00404, 145.00389, 145.00375, 145.00348, 145.00325, 145.00302, 145.00279, 145.00244, 145.00218, 145.00189, 145.00160, 145.00151, 145.00128, 145.00102, 145.00084, 145.00067, 145.00058, 145.00031, 145.00014, 144.99994, 144.99980, 144.99963, 144.99948, 144.99934, 144.99928, 144.99927, 144.99936, 144.99936, 144.99950, 144.99960, 144.99971, 144.99982, 144.99995, 145.00003, 145.00012, 145.00021, 145.00032, 145.00044, 145.00053, 145.00079, 145.00105, 145.00119, 145.00133, 145.00186, 145.00223, 145.00282, 145.00336, 145.00383, 145.00421, 145.00441, 145.00473, 145.00569, 145.00644, 145.00693, 145.00729, 145.00754, 145.00778, 145.00806, 145.00836, 145.00853, 145.00871, 145.00885, 145.00896, 145.00897, 145.00897, 145.00897, 145.00897, 145.00900, 145.00903, 145.00906, 145.00911, 145.00914, 145.00920, 145.00929, 145.00937, 145.00952, 145.00974, 145.00989, 145.01004, 145.01051, 145.01094, 145.01131, 145.01172, 145.01207, 145.01268, 145.01347, 145.01363, 145.01398, 145.01413, 145.01466, 145.01497, 145.01529, 145.01550, 145.01564, 145.01573, 145.01579, 145.01579, 145.01576, 145.01569, 145.01559, 145.01550, 145.01540, 145.01538, 145.01508, 145.01414, 145.01331, 145.01300, 145.01221, 145.01010, 145.00977, 145.00964, 145.00848, 145.00735, 145.00708, 145.00641, 145.00627, 145.00546, 145.00511, 145.00468, 145.00412, 145.00294, 145.00232, 145.00064, 144.99954, 144.99907, 144.99835, 144.99776, 144.99716, 144.99657, 144.99603, 144.99525, 144.99454, 144.99385, 144.99377, 144.99284, 144.99260, 144.99237, 144.99197, 144.99135, 144.99141, 144.99152, 144.99159, 144.99170, 144.99176, 144.99213, 144.99237, 144.99249, 144.99252, -37.80249, -37.80184, -37.80161, -37.80152, -37.80119, -37.80072, -37.80054, -37.80007, -37.79984, -37.79914, -37.79845, -37.79811, -37.79776, -37.79706, -37.79605, -37.79602, -37.79602, -37.79604, -37.79605, -37.79601, -37.79601, -37.79602, -37.79603, -37.79611, -37.79612, -37.79621, -37.79642, -37.79610, -37.79611, -37.79607, -37.79604, -37.79601, -37.79599, -37.79591, -37.79585, -37.79575, -37.79564, -37.79559, -37.79562, -37.79565, -37.79566, -37.79567, -37.79568, -37.79571, -37.79572, -37.79575, -37.79577, -37.79579, -37.79580, -37.79581, -37.79582, -37.79583, -37.79584, -37.79584, -37.79585, -37.79585, -37.79585, -37.79587, -37.79587, -37.79590, -37.79594, -37.79595, -37.79600, -37.79600, -37.79601, -37.79602, -37.79604, -37.79605, -37.79607, -37.79608, -37.79610, -37.79612, -37.79615, -37.79615, -37.79616, -37.79617, -37.79619, -37.79620, -37.79665, -37.79675, -37.79693, -37.79704, -37.79712, -37.79716, -37.79718, -37.79714, -37.79708, -37.79702, -37.79697, -37.79695, -37.79695, -37.79696, -37.79698, -37.79700, -37.79706, -37.79711, -37.79722, -37.79736, -37.79751, -37.79765, -37.79785, -37.79801, -37.79815, -37.79829, -37.79842, -37.79854, -37.79863, -37.79876, -37.79890, -37.79929, -37.79952, -37.79967, -37.79981, -37.80006, -37.80026, -37.80047, -37.80073, -37.80082, -37.80089, -37.80109, -37.80132, -37.80158, -37.80210, -37.80239, -37.80265, -37.80297, -37.80316, -37.80330, -37.80346, -37.80368, -37.80390, -37.80408, -37.80419, -37.80433, -37.80448, -37.80461, -37.80474, -37.80485, -37.80498, -37.80510, -37.80518, -37.80524, -37.80529, -37.80532, -37.80534, -37.80534, -37.80532, -37.80527, -37.80518, -37.80511, -37.80503, -37.80494, -37.80485, -37.80475, -37.80458, -37.80445, -37.80433, -37.80425, -37.80423, -37.80420, -37.80417, -37.80417, -37.80418, -37.80419, -37.80423, -37.80428, -37.80439, -37.80451, -37.80470, -37.80486, -37.80504, -37.80521, -37.80536, -37.80548, -37.80565, -37.80583, -37.80601, -37.80620, -37.80640, -37.80660, -37.80668, -37.80679, -37.80688, -37.80697, -37.80705, -37.80713, -37.80721, -37.80724, -37.80723, -37.80723, -37.80725, -37.80724, -37.80723, -37.80725, -37.80727, -37.80728, -37.80729, -37.80727, -37.80719, -37.80718, -37.80719, -37.80721, -37.80725, -37.80731, -37.80740, -37.80752, -37.80759, -37.80771, -37.80784, -37.80799, -37.80814, -37.80840, -37.80844, -37.80870, -37.80901, -37.80930, -37.80960, -37.80979, -37.80994, -37.81014, -37.81032, -37.81040, -37.81047, -37.81050, -37.81049, -37.81050, -37.81053, -37.81057, -37.81058, -37.81058, -37.81059, -37.81062, -37.81063, -37.81063, -37.81060, -37.81057, -37.81050, -37.81047, -37.81047, -37.81050, -37.81054, -37.81062, -37.81075, -37.81085, -37.81100, -37.81129, -37.81154, -37.81186, -37.81214, -37.81214, -37.81210, -37.81200, -37.81179, -37.81171, -37.81163, -37.81140, -37.81144, -37.81145, -37.81134, -37.81123, -37.81120, -37.81113, -37.81112, -37.81104, -37.81101, -37.81097, -37.81091, -37.81080, -37.81073, -37.81056, -37.81045, -37.81040, -37.81033, -37.81027, -37.81021, -37.81014, -37.81009, -37.81001, -37.80993, -37.80986, -37.80985, -37.80976, -37.80974, -37.80972, -37.80972, -37.80973, -37.80936, -37.80864, -37.80816, -37.80752, -37.80716, -37.80499, -37.80350, -37.80268, -37.80249</span></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a><span class="co">#&gt; 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   144.94490, 144.94557, 144.94652, 144.94705, 144.94885, 144.94922, 144.95004, 144.95047, 144.95108, 144.95184, 144.95175, 144.95172, 144.95171, 144.95169, 144.95169, 144.95169, 144.95172, 144.95175, 144.95178, 144.95184, 144.95189, 144.95195, 144.95204, 144.95213, 144.95221, 144.95230, 144.95239, 144.95248, 144.95442, 144.95689, 144.95717, 144.95763, 144.95790, 144.95816, 144.95868, 144.95920, 144.95950, 144.95973, 144.96045, 144.96080, 144.96120, 144.96140, 144.96164, 144.96188, 144.96213, 144.96237, 144.96263, 144.96288, 144.96313, 144.96338, 144.96400, 144.96426, 144.96486, 144.96527, 144.96559, 144.96571, 144.96587, 144.96672, 144.96765, 144.96788, 144.96809, 144.96826, 144.96846, 144.96864, 144.96887, 144.96910, 144.96931, 144.96954, 144.96977, 144.96999, 144.97020, 144.97040, 144.97060, 144.97064, 144.97076, 144.97093, 144.97107, 144.97168, 144.97163, 144.97171, 144.97173, 144.97176, 144.97176, 144.97174, 144.97174, 144.97171, 144.97169, 144.97166, 144.97163, 144.97160, 144.97179, 144.97183, 144.97192, 144.97206, 144.97212, 144.97224, 144.97237, 144.97250, 144.97264, 144.97281, 144.97340, 144.97347, 144.97363, 144.97400, 144.97411, 144.97418, 144.97444, 144.97453, 144.97487, 144.97493, 144.97498, 144.97504, 144.97519, 144.97534, 144.97543, 144.97548, 144.97552, 144.97586, 144.97606, 144.97626, 144.97635, 144.97644, 144.97658, 144.97679, 144.97688, 144.97699, 144.97708, 144.97728, 144.97740, 144.97754, 144.97772, 144.97781, 144.97792, 144.97800, 144.97813, 144.97827, 144.97839, 144.97856, 144.97868, 144.97908, 144.97942, 144.97951, 144.97972, 144.98015, 144.98033, 144.98044, 144.98064, 144.97942, 144.97835, 144.97858, 144.97885, 144.97903, 144.97853, 144.97852, 144.97833, 144.97612, 144.97589, 144.97568, 144.97548, 144.97536, 144.97437, 144.97429, 144.97064, 144.97017, 144.96895, 144.96840, 144.96826, 144.96806, 144.96727, 144.96689, 144.96649, 144.96625, 144.96567, 144.96547, 144.96501, 144.96475, 144.96437, 144.96422, 144.96402, 144.96378, 144.96330, 144.96283, 144.96254, 144.96219, 144.96162, 144.96101, 144.96091, 144.96033, 144.95970, 144.95938, 144.95906, 144.95866, 144.95833, 144.95808, 144.95784, 144.95773, 144.95720, 144.95680, 144.95657, 144.95628, 144.95607, 144.95587, 144.95564, 144.95497, 144.95436, 144.95422, 144.95384, 144.95349, 144.95314, 144.95290, 144.95230, 144.95189, 144.95158, 144.95125, 144.95088, 144.95038, 144.94995, 144.94948, 144.94922, 144.94879, 144.94841, 144.94821, 144.94786, 144.94711, 144.94644, 144.94637, 144.94603, 144.94572, 144.94525, 144.94490, 144.94472, 144.94461, 144.94453, 144.94431, 144.94405, 144.94389, 144.94368, 144.94296, 144.94269, 144.94327, 144.94347, 144.94400, 144.94427, 144.94490, -37.84376, -37.84304, -37.84101, -37.84132, -37.84080, -37.84069, -37.84046, -37.84033, -37.84015, -37.83993, -37.83975, -37.83967, -37.83959, -37.83949, -37.83941, -37.83933, -37.83923, -37.83913, -37.83905, -37.83898, -37.83891, -37.83884, -37.83877, -37.83870, -37.83865, -37.83861, -37.83855, -37.83851, -37.83795, -37.83723, -37.83782, -37.83880, -37.83939, -37.83998, -37.84105, -37.84216, -37.84190, -37.84170, -37.84108, -37.84079, -37.84047, -37.84032, -37.84015, -37.83999, -37.83983, -37.83968, -37.83953, -37.83938, -37.83923, -37.83911, -37.83880, -37.83867, -37.83839, -37.83821, -37.83809, -37.83804, -37.83797, -37.83766, -37.83738, -37.83731, -37.83724, -37.83717, -37.83709, -37.83701, -37.83690, -37.83678, -37.83667, -37.83653, -37.83637, -37.83621, -37.83604, -37.83587, -37.83568, -37.83563, -37.83550, -37.83532, -37.83513, -37.83426, -37.83391, -37.83367, -37.83353, -37.83329, -37.83309, -37.83297, -37.83284, -37.83272, -37.83262, -37.83252, -37.83243, -37.83233, -37.83228, -37.83232, -37.83244, -37.83261, -37.83268, -37.83281, -37.83294, -37.83306, -37.83318, -37.83329, -37.83372, -37.83376, -37.83388, -37.83412, -37.83419, -37.83427, -37.83456, -37.83467, -37.83505, -37.83512, -37.83520, -37.83532, -37.83557, -37.83583, -37.83597, -37.83607, -37.83621, -37.83715, -37.83767, -37.83820, -37.83845, -37.83872, -37.83907, -37.83968, -37.83995, -37.84022, -37.84047, -37.84102, -37.84134, -37.84173, -37.84223, -37.84248, -37.84276, -37.84299, -37.84336, -37.84371, -37.84405, -37.84455, -37.84485, -37.84597, -37.84687, -37.84711, -37.84772, -37.84886, -37.84939, -37.84966, -37.85021, -37.85049, -37.85073, -37.85143, -37.85222, -37.85276, -37.85291, -37.85308, -37.85319, -37.85387, -37.85389, -37.85386, -37.85378, -37.85367, -37.85218, -37.85219, -37.85355, -37.85373, -37.85416, -37.85435, -37.85439, -37.85464, -37.85559, -37.85604, -37.85653, -37.85681, -37.85750, -37.85730, -37.85686, -37.85660, -37.85622, -37.85610, -37.85595, -37.85576, -37.85546, -37.85521, -37.85512, -37.85495, -37.85467, -37.85437, -37.85431, -37.85399, -37.85371, -37.85351, -37.85337, -37.85316, -37.85297, -37.85288, -37.85279, -37.85274, -37.85247, -37.85229, -37.85216, -37.85201, -37.85194, -37.85188, -37.85173, -37.85149, -37.85120, -37.85114, -37.85094, -37.85081, -37.85062, -37.85046, -37.85021, -37.85007, -37.84991, -37.84978, -37.84963, -37.84946, -37.84923, -37.84904, -37.84895, -37.84872, -37.84855, -37.84845, -37.84824, -37.84792, -37.84762, -37.84759, -37.84743, -37.84729, -37.84709, -37.84700, -37.84694, -37.84683, -37.84676, -37.84667, -37.84665, -37.84660, -37.84652, -37.84620, -37.84609, -37.84552, -37.84531, -37.84473, -37.84443, -37.84376</span></span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a><span class="co">#&gt; 3 145.02037, 145.02151, 145.02461, 145.02649, 145.02740, 145.02855, 145.03059, 145.03119, 145.03119, 145.03122, 145.03123, 145.03128, 145.03133, 145.03139, 145.03145, 145.03151, 145.03157, 145.03162, 145.03163, 145.03162, 145.03162, 145.03160, 145.03157, 145.03154, 145.03151, 145.03148, 145.03146, 145.03143, 145.03143, 145.03146, 145.03166, 145.03174, 145.03178, 145.03180, 145.03180, 145.03177, 145.03177, 145.03180, 145.03183, 145.03186, 145.03186, 145.03188, 145.03189, 145.03192, 145.03203, 145.03212, 145.03226, 145.03242, 145.03259, 145.03276, 145.03282, 145.03290, 145.03296, 145.03305, 145.03317, 145.03325, 145.03336, 145.03346, 145.03363, 145.03398, 145.03409, 145.03416, 145.03418, 145.03424, 145.03430, 145.03439, 145.03452, 145.03461, 145.03471, 145.03481, 145.03508, 145.03525, 145.03534, 145.03548, 145.03563, 145.03580, 145.03603, 145.03615, 145.03625, 145.03633, 145.03636, 145.03641, 145.03648, 145.03650, 145.03658, 145.03661, 145.03665, 145.03665, 145.03671, 145.03677, 145.03680, 145.03682, 145.03682, 145.03679, 145.03679, 145.03682, 145.03688, 145.03694, 145.03697, 145.03702, 145.03706, 145.03708, 145.03709, 145.03711, 145.03711, 145.03711, 145.03711, 145.03709, 145.03708, 145.03703, 145.03691, 145.03688, 145.03683, 145.03680, 145.03674, 145.03670, 145.03664, 145.03653, 145.03642, 145.03636, 145.03635, 145.03629, 145.03619, 145.03606, 145.03592, 145.03578, 145.03555, 145.03549, 145.03542, 145.03511, 145.03490, 145.03473, 145.03467, 145.03448, 145.03442, 145.03436, 145.03430, 145.03424, 145.03418, 145.03412, 145.03409, 145.03412, 145.03415, 145.03419, 145.03424, 145.03427, 145.03436, 145.03445, 145.03453, 145.03459, 145.03465, 145.03468, 145.03476, 145.03479, 145.03482, 145.03490, 145.03494, 145.03499, 145.03502, 145.03505, 145.03508, 145.03511, 145.03517, 145.03520, 145.03526, 145.03531, 145.03535, 145.03545, 145.03557, 145.03564, 145.03581, 145.03584, 145.03590, 145.03592, 145.03592, 145.03590, 145.03586, 145.03580, 145.03578, 145.03572, 145.03566, 145.03564, 145.03560, 145.03548, 145.03535, 145.03529, 145.03522, 145.03516, 145.03508, 145.03505, 145.03502, 145.03499, 145.03500, 145.03503, 145.03503, 145.03502, 145.03502, 145.03503, 145.03503, 145.03505, 145.03505, 145.03508, 145.03511, 145.03511, 145.03511, 145.03511, 145.03511, 145.03508, 145.03506, 145.03502, 145.03497, 145.03491, 145.03479, 145.03473, 145.03470, 145.03467, 145.03459, 145.03455, 145.03453, 145.03452, 145.03447, 145.03447, 145.03453, 145.03464, 145.03471, 145.03479, 145.03488, 145.03496, 145.03508, 145.03519, 145.03531, 145.03549, 145.03555, 145.03560, 145.03575, 145.03589, 145.03597, 145.03581, 145.03523, 145.03516, 145.03506, 145.03497, 145.03488, 145.03477, 145.03468, 145.03456, 145.03444, 145.03392, 145.03342, 145.03226, 145.03114, 145.03006, 145.02867, 145.02794, 145.02730, 145.02574, 145.02502, 145.02457, 145.02409, 145.02342, 145.02328, 145.02200, 145.02092, 145.01976, 145.01913, 145.01857, 145.01842, 145.01765, 145.01738, 145.01619, 145.01500, 145.01483, 145.01448, 145.01430, 145.01437, 145.01437, 145.01437, 145.01450, 145.01459, 145.01472, 145.01483, 145.01491, 145.01492, 145.01492, 145.01517, 145.01520, 145.01578, 145.01585, 145.01472, 145.01497, 145.01524, 145.01524, 145.01526, 145.01556, 145.01556, 145.01607, 145.01610, 145.01611, 145.01620, 145.01625, 145.01627, 145.01627, 145.01628, 145.01636, 145.01642, 145.01646, 145.01648, 145.01649, 145.01651, 145.01659, 145.01660, 145.01666, 145.01674, 145.01677, 145.01686, 145.01695, 145.01701, 145.01741, 145.01753, 145.01762, 145.01779, 145.01669, 145.01688, 145.01703, 145.01811, 145.01924, 145.02037, -37.76548, -37.76560, -37.76593, -37.76613, -37.76623, -37.76635, -37.76656, -37.76663, -37.76668, -37.76678, -37.76684, -37.76691, -37.76697, -37.76705, -37.76711, -37.76717, -37.76725, -37.76732, -37.76742, -37.76756, -37.76769, -37.76779, -37.76792, -37.76802, -37.76815, -37.76828, -37.76840, -37.76853, -37.76865, -37.76872, -37.76886, -37.76894, -37.76903, -37.76916, -37.76926, -37.76938, -37.76946, -37.76959, -37.76973, -37.76990, -37.77001, -37.77005, -37.77013, -37.77023, -37.77043, -37.77054, -37.77065, -37.77068, -37.77067, -37.77065, -37.77064, -37.77062, -37.77059, -37.77058, -37.77057, -37.77057, -37.77054, -37.77051, -37.77048, -37.77042, -37.77039, -37.77037, -37.77037, -37.77037, -37.77037, -37.77037, -37.77035, -37.77034, -37.77031, -37.77030, -37.77028, -37.77027, -37.77027, -37.77029, -37.77033, -37.77036, -37.77042, -37.77048, -37.77057, -37.77061, -37.77061, -37.77059, -37.77052, -37.77051, -37.77050, -37.77050, -37.77050, -37.77051, -37.77054, -37.77057, -37.77061, -37.77065, -37.77068, -37.77077, -37.77086, -37.77092, -37.77099, -37.77107, -37.77115, -37.77122, -37.77128, -37.77135, -37.77141, -37.77150, -37.77165, -37.77171, -37.77177, -37.77182, -37.77190, -37.77216, -37.77237, -37.77245, -37.77251, -37.77257, -37.77260, -37.77262, -37.77263, -37.77262, -37.77261, -37.77262, -37.77263, -37.77265, -37.77267, -37.77268, -37.77267, -37.77264, -37.77257, -37.77255, -37.77252, -37.77247, -37.77245, -37.77241, -37.77239, -37.77235, -37.77234, -37.77234, -37.77235, -37.77237, -37.77242, -37.77251, -37.77261, -37.77271, -37.77279, -37.77287, -37.77296, -37.77303, -37.77312, -37.77322, -37.77334, -37.77340, -37.77347, -37.77352, -37.77365, -37.77371, -37.77380, -37.77388, -37.77392, -37.77397, -37.77402, -37.77405, -37.77410, -37.77417, -37.77427, -37.77436, -37.77444, -37.77453, -37.77461, -37.77473, -37.77482, -37.77486, -37.77492, -37.77494, -37.77497, -37.77500, -37.77506, -37.77515, -37.77523, -37.77538, -37.77543, -37.77561, -37.77577, -37.77581, -37.77582, -37.77581, -37.77579, -37.77580, -37.77586, -37.77593, -37.77603, -37.77614, -37.77629, -37.77650, -37.77661, -37.77674, -37.77682, -37.77694, -37.77702, -37.77709, -37.77715, -37.77725, -37.77729, -37.77736, -37.77739, -37.77743, -37.77749, -37.77755, -37.77761, -37.77777, -37.77784, -37.77792, -37.77798, -37.77807, -37.77834, -37.77850, -37.77856, -37.77859, -37.77865, -37.77871, -37.77874, -37.77878, -37.77884, -37.77891, -37.77898, -37.77901, -37.77901, -37.77898, -37.77895, -37.77893, -37.77894, -37.77893, -37.77891, -37.77884, -37.77882, -37.77882, -37.77883, -37.77884, -37.77888, -37.77905, -37.77965, -37.77973, -37.77980, -37.77986, -37.77992, -37.77997, -37.78002, -37.78006, -37.78010, -37.78024, -37.78033, -37.78055, -37.78076, -37.78096, -37.78122, -37.78136, -37.78148, -37.78177, -37.78187, -37.78194, -37.78205, -37.78222, -37.78224, -37.78249, -37.78271, -37.78294, -37.78307, -37.78318, -37.78321, -37.78336, -37.78336, -37.78356, -37.78376, -37.78379, -37.78379, -37.78383, -37.78337, -37.78338, -37.78336, -37.78339, -37.78287, -37.78204, -37.78132, -37.78096, -37.78087, -37.78078, -37.77938, -37.77917, -37.77917, -37.77877, -37.77864, -37.77733, -37.77597, -37.77588, -37.77579, -37.77409, -37.77400, -37.77406, -37.77383, -37.77372, -37.77321, -37.77291, -37.77282, -37.77281, -37.77276, -37.77231, -37.77191, -37.77162, -37.77154, -37.77141, -37.77137, -37.77093, -37.77083, -37.77049, -37.77002, -37.76984, -37.76930, -37.76865, -37.76871, -37.76875, -37.76871, -37.76819, -37.76721, -37.76710, -37.76602, -37.76513, -37.76524, -37.76536, -37.76548</span></span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a><span class="co">#&gt; 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               145.01166, 145.01175, 145.01192, 145.01193, 145.01202, 145.01216, 145.01222, 145.01230, 145.01231, 145.01242, 145.01549, 145.01686, 145.01778, 145.01826, 145.01888, 145.01973, 145.02029, 145.02046, 145.02144, 145.02260, 145.02373, 145.02414, 145.02484, 145.02544, 145.02689, 145.02756, 145.02791, 145.02856, 145.02948, 145.02966, 145.03004, 145.02998, 145.02991, 145.02974, 145.02957, 145.02942, 145.02928, 145.02922, 145.02919, 145.02916, 145.02916, 145.02905, 145.02893, 145.02890, 145.02879, 145.02873, 145.02864, 145.02858, 145.02849, 145.02834, 145.02815, 145.02803, 145.02800, 145.02795, 145.02788, 145.02785, 145.02768, 145.02713, 145.02676, 145.02606, 145.02565, 145.02515, 145.02417, 145.02318, 145.02231, 145.02220, 145.02061, 145.02049, 145.01945, 145.01883, 145.01802, 145.01700, 145.01579, 145.01521, 145.01512, 145.01361, 145.01340, 145.01273, 145.01178, 145.01051, 145.01070, 145.01086, 145.01088, 145.01094, 145.01097, 145.01125, 145.01149, 145.01155, 145.01161, 145.01166, -37.85358, -37.85295, -37.85188, -37.85180, -37.85117, -37.85023, -37.84987, -37.84937, -37.84928, -37.84929, -37.84971, -37.84989, -37.85001, -37.85008, -37.85016, -37.85027, -37.85034, -37.85036, -37.85049, -37.85064, -37.85079, -37.85084, -37.85094, -37.85102, -37.85121, -37.85129, -37.85134, -37.85143, -37.85155, -37.85157, -37.85162, -37.85203, -37.85252, -37.85354, -37.85473, -37.85572, -37.85662, -37.85703, -37.85711, -37.85734, -37.85737, -37.85802, -37.85879, -37.85893, -37.85960, -37.85993, -37.86046, -37.86083, -37.86142, -37.86237, -37.86346, -37.86424, -37.86434, -37.86465, -37.86512, -37.86531, -37.86631, -37.86608, -37.86591, -37.86561, -37.86543, -37.86521, -37.86478, -37.86435, -37.86396, -37.86392, -37.86323, -37.86317, -37.86272, -37.86245, -37.86210, -37.86165, -37.86112, -37.86087, -37.86084, -37.86063, -37.86060, -37.86051, -37.86039, -37.86022, -37.85918, -37.85820, -37.85812, -37.85778, -37.85765, -37.85606, -37.85469, -37.85431, -37.85391, -37.85358</span></span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a><span class="co">#&gt; 5                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           144.89941, 144.89977, 144.90060, 144.90094, 144.90250, 144.90359, 144.90408, 144.90520, 144.90663, 144.90749, 144.90802, 144.90884, 144.90915, 144.91005, 144.91029, 144.91066, 144.91113, 144.91142, 144.91252, 144.91368, 144.91481, 144.91502, 144.91548, 144.91617, 144.91673, 144.91809, 144.91835, 144.91956, 144.92064, 144.92192, 144.92316, 144.92392, 144.92526, 144.92632, 144.92644, 144.92693, 144.92688, 144.92726, 144.92743, 144.92764, 144.93025, 144.93033, 144.93199, 144.93208, 144.93365, 144.93402, 144.93440, 144.93459, 144.93475, 144.93495, 144.93515, 144.93576, 144.93648, 144.93642, 144.93633, 144.93633, 144.93636, 144.93649, 144.93655, 144.93657, 144.93663, 144.93671, 144.93681, 144.93687, 144.93707, 144.93567, 144.93494, 144.93486, 144.93361, 144.93364, 144.93301, 144.93248, 144.93211, 144.93161, 144.93126, 144.93092, 144.93076, 144.93024, 144.93008, 144.93036, 144.93040, 144.92990, 144.93015, 144.93036, 144.93062, 144.93105, 144.93129, 144.93159, 144.93231, 144.93172, 144.93166, 144.93164, 144.93126, 144.93123, 144.93123, 144.93118, 144.93103, 144.93102, 144.93077, 144.93074, 144.93074, 144.93048, 144.93045, 144.93039, 144.93019, 144.92976, 144.92964, 144.92967, 144.92969, 144.92955, 144.92957, 144.92934, 144.92935, 144.92928, 144.92908, 144.92896, 144.92885, 144.92850, 144.92842, 144.92841, 144.92833, 144.92830, 144.92825, 144.92825, 144.92799, 144.92787, 144.92781, 144.92760, 144.92758, 144.92706, 144.92677, 144.92670, 144.92668, 144.92667, 144.92664, 144.92662, 144.92662, 144.92661, 144.92659, 144.92659, 144.92656, 144.92656, 144.92654, 144.92654, 144.92653, 144.92653, 144.92642, 144.92613, 144.92517, 144.92511, 144.92450, 144.92445, 144.92384, 144.92375, 144.92329, 144.92336, 144.92328, 144.92328, 144.92319, 144.92303, 144.92296, 144.92259, 144.92250, 144.92241, 144.92236, 144.92227, 144.92223, 144.92218, 144.92215, 144.92203, 144.92056, 144.92033, 144.91931, 144.91760, 144.91731, 144.91696, 144.91597, 144.91510, 144.91481, 144.91473, 144.91452, 144.91357, 144.91165, 144.91084, 144.90823, 144.90822, 144.90811, 144.90799, 144.90788, 144.90776, 144.90759, 144.90746, 144.90730, 144.90717, 144.90704, 144.90694, 144.90683, 144.90675, 144.90669, 144.90663, 144.90654, 144.90646, 144.90633, 144.90495, 144.90494, 144.90486, 144.90483, 144.90480, 144.90469, 144.90456, 144.90440, 144.90425, 144.90401, 144.90353, 144.90271, 144.90271, 144.90271, 144.90276, 144.90282, 144.90297, 144.90311, 144.90332, 144.90350, 144.90358, 144.90363, 144.90364, 144.90366, 144.90367, 144.90370, 144.90375, 144.90379, 144.90387, 144.90399, 144.90407, 144.90408, 144.90411, 144.90408, 144.90402, 144.90398, 144.90382, 144.90366, 144.90347, 144.90331, 144.90309, 144.90289, 144.90266, 144.90239, 144.90219, 144.90211, 144.90176, 144.90152, 144.90121, 144.90094, 144.90071, 144.90039, 144.90013, 144.89984, 144.89952, 144.89925, 144.89900, 144.89877, 144.89848, 144.89810, 144.89792, 144.89771, 144.89752, 144.89732, 144.89720, 144.89714, 144.89711, 144.89708, 144.89708, 144.89706, 144.89705, 144.89703, 144.89696, 144.89688, 144.89682, 144.89671, 144.89665, 144.89659, 144.89650, 144.89624, 144.89616, 144.89610, 144.89604, 144.89600, 144.89598, 144.89592, 144.89590, 144.89589, 144.89586, 144.89584, 144.89586, 144.89595, 144.89618, 144.89642, 144.89682, 144.89719, 144.89763, 144.89798, 144.89848, 144.89891, 144.89941, -37.77040, -37.77028, -37.77011, -37.77002, -37.77020, -37.77033, -37.77038, -37.77051, -37.77067, -37.77077, -37.77083, -37.77092, -37.77095, -37.77105, -37.77108, -37.77112, -37.77117, -37.77120, -37.77133, -37.77146, -37.77158, -37.77160, -37.77166, -37.77173, -37.77179, -37.77194, -37.77197, -37.77210, -37.77221, -37.77235, -37.77248, -37.77256, -37.77270, -37.77281, -37.77282, -37.77276, -37.77263, -37.77260, -37.77258, -37.77260, -37.77288, -37.77289, -37.77306, -37.77307, -37.77324, -37.77328, -37.77332, -37.77333, -37.77335, -37.77338, -37.77342, -37.77358, -37.77379, -37.77386, -37.77411, -37.77419, -37.77450, -37.77572, -37.77608, -37.77621, -37.77647, -37.77672, -37.77710, -37.77721, -37.77777, -37.77761, -37.77752, -37.77756, -37.77741, -37.77744, -37.77736, -37.77730, -37.77726, -37.77720, -37.77716, -37.77713, -37.77711, -37.77705, -37.77703, -37.77742, -37.77749, -37.77776, -37.77814, -37.77847, -37.77882, -37.77937, -37.77966, -37.78004, -37.78091, -37.78085, -37.78120, -37.78121, -37.78117, -37.78135, -37.78137, -37.78136, -37.78135, -37.78132, -37.78130, -37.78113, -37.78108, -37.78106, -37.78126, -37.78153, -37.78151, -37.78146, -37.78145, -37.78118, -37.78115, -37.78114, -37.78108, -37.78106, -37.78096, -37.78095, -37.78093, -37.78091, -37.78089, -37.78086, -37.78085, -37.78097, -37.78096, -37.78111, -37.78109, -37.78102, -37.78100, -37.78098, -37.78098, -37.78095, -37.78109, -37.78061, -37.78067, -37.78068, -37.78066, -37.78064, -37.78060, -37.78058, -37.78057, -37.78056, -37.78054, -37.78053, -37.78051, -37.78050, -37.78048, -37.78048, -37.78046, -37.78046, -37.78032, -37.78029, -37.78020, -37.78055, -37.78049, -37.78083, -37.78077, -37.78077, -37.78072, -37.78040, -37.78039, -37.78042, -37.78041, -37.78040, -37.78039, -37.78035, -37.78088, -37.78135, -37.78166, -37.78225, -37.78251, -37.78275, -37.78297, -37.78371, -37.78368, -37.78367, -37.78364, -37.78361, -37.78331, -37.78294, -37.78187, -37.78096, -37.78066, -37.78058, -37.78039, -37.77939, -37.78052, -37.78099, -37.78253, -37.78256, -37.78268, -37.78282, -37.78294, -37.78309, -37.78332, -37.78354, -37.78379, -37.78403, -37.78429, -37.78454, -37.78480, -37.78504, -37.78528, -37.78555, -37.78602, -37.78684, -37.78739, -37.78715, -37.78721, -37.78747, -37.78759, -37.78764, -37.78791, -37.78817, -37.78846, -37.78871, -37.78895, -37.78928, -37.78965, -37.78953, -37.78939, -37.78921, -37.78901, -37.78871, -37.78845, -37.78805, -37.78769, -37.78743, -37.78724, -37.78705, -37.78681, -37.78671, -37.78651, -37.78631, -37.78616, -37.78600, -37.78581, -37.78562, -37.78544, -37.78531, -37.78509, -37.78474, -37.78458, -37.78439, -37.78422, -37.78407, -37.78397, -37.78384, -37.78371, -37.78353, -37.78328, -37.78311, -37.78305, -37.78278, -37.78261, -37.78244, -37.78230, -37.78220, -37.78206, -37.78193, -37.78177, -37.78159, -37.78140, -37.78124, -37.78111, -37.78097, -37.78075, -37.78061, -37.78036, -37.78006, -37.77972, -37.77944, -37.77923, -37.77899, -37.77873, -37.77871, -37.77846, -37.77836, -37.77803, -37.77771, -37.77730, -37.77696, -37.77658, -37.77638, -37.77619, -37.77595, -37.77540, -37.77518, -37.77491, -37.77465, -37.77441, -37.77424, -37.77392, -37.77366, -37.77349, -37.77340, -37.77325, -37.77305, -37.77281, -37.77248, -37.77216, -37.77179, -37.77153, -37.77125, -37.77104, -37.77079, -37.77058, -37.77040</span></span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co">#&gt; 6                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           144.94974, 144.95001, 144.95018, 144.95032, 144.95007, 144.95015, 144.95030, 144.95042, 144.95065, 144.95065, 144.95067, 144.95068, 144.95068, 144.95070, 144.95073, 144.95073, 144.95076, 144.95079, 144.95081, 144.95082, 144.95085, 144.95087, 144.95091, 144.95094, 144.95102, 144.95119, 144.95169, 144.95192, 144.95221, 144.95273, 144.95320, 144.95326, 144.95340, 144.95351, 144.95360, 144.95369, 144.95383, 144.95386, 144.95396, 144.95480, 144.95576, 144.95645, 144.95674, 144.95752, 144.95822, 144.95871, 144.95906, 144.96008, 144.96153, 144.96173, 144.96217, 144.96388, 144.96411, 144.96481, 144.96599, 144.96736, 144.96751, 144.96811, 144.96941, 144.97040, 144.97113, 144.97232, 144.97331, 144.97392, 144.97403, 144.97485, 144.97610, 144.97661, 144.97697, 144.97662, 144.97575, 144.97513, 144.97513, 144.97510, 144.97450, 144.97395, 144.97391, 144.97389, 144.97386, 144.97408, 144.97406, 144.97403, 144.97398, 144.97382, 144.97362, 144.97359, 144.97350, 144.97334, 144.97339, 144.97305, 144.97305, 144.97293, 144.97279, 144.97273, 144.97258, 144.97229, 144.97218, 144.97217, 144.97197, 144.97186, 144.97171, 144.97165, 144.97162, 144.97160, 144.97150, 144.97137, 144.97127, 144.97121, 144.97113, 144.97113, 144.97101, 144.97104, 144.97095, 144.97092, 144.97084, 144.97069, 144.97058, 144.97052, 144.96899, 144.96809, 144.96764, 144.96771, 144.96721, 144.96597, 144.96518, 144.96394, 144.96333, 144.96248, 144.96162, 144.96147, 144.96022, 144.95990, 144.95926, 144.95808, 144.95645, 144.95512, 144.95416, 144.95314, 144.95239, 144.95166, 144.95029, 144.94965, 144.94943, 144.94940, 144.94879, 144.94888, 144.94896, 144.94914, 144.94933, 144.94955, 144.94984, 144.94928, 144.94876, 144.94853, 144.94864, 144.94870, 144.94885, 144.94887, 144.94896, 144.94901, 144.94914, 144.94930, 144.94937, 144.94940, 144.94942, 144.94943, 144.94943, 144.94974, -37.76276, -37.76105, -37.76016, -37.75931, -37.75928, -37.75893, -37.75809, -37.75737, -37.75623, -37.75619, -37.75616, -37.75612, -37.75610, -37.75607, -37.75605, -37.75604, -37.75601, -37.75598, -37.75596, -37.75595, -37.75592, -37.75591, -37.75589, -37.75587, -37.75584, -37.75578, -37.75562, -37.75554, -37.75543, -37.75521, -37.75501, -37.75497, -37.75489, -37.75480, -37.75470, -37.75456, -37.75432, -37.75423, -37.75424, -37.75434, -37.75445, -37.75453, -37.75456, -37.75466, -37.75474, -37.75480, -37.75484, -37.75496, -37.75513, -37.75515, -37.75520, -37.75541, -37.75545, -37.75554, -37.75568, -37.75583, -37.75585, -37.75591, -37.75606, -37.75617, -37.75625, -37.75638, -37.75649, -37.75656, -37.75657, -37.75666, -37.75681, -37.75687, -37.75692, -37.75901, -37.75891, -37.75883, -37.75884, -37.75883, -37.75876, -37.75870, -37.75901, -37.75913, -37.75921, -37.75923, -37.75927, -37.75946, -37.75974, -37.75972, -37.76087, -37.76100, -37.76110, -37.76203, -37.76204, -37.76387, -37.76390, -37.76455, -37.76532, -37.76576, -37.76655, -37.76813, -37.76877, -37.76889, -37.76994, -37.77056, -37.77140, -37.77178, -37.77193, -37.77203, -37.77266, -37.77339, -37.77410, -37.77448, -37.77496, -37.77501, -37.77577, -37.77586, -37.77652, -37.77672, -37.77724, -37.77829, -37.77890, -37.77928, -37.77910, -37.77923, -37.77931, -37.77894, -37.77888, -37.77874, -37.77864, -37.77849, -37.77842, -37.77831, -37.77821, -37.77819, -37.77804, -37.77800, -37.77792, -37.77778, -37.77759, -37.77742, -37.77731, -37.77719, -37.77709, -37.77701, -37.77684, -37.77676, -37.77674, -37.77673, -37.77569, -37.77516, -37.77470, -37.77384, -37.77283, -37.77161, -37.77015, -37.77008, -37.77002, -37.76999, -37.76936, -37.76903, -37.76820, -37.76812, -37.76760, -37.76729, -37.76651, -37.76549, -37.76506, -37.76479, -37.76467, -37.76459, -37.76457, -37.76276</span></span></code></pre></div>
+</div>
+<div id="sf-to-geojson" class="section level2">
+<h2>sf to GeoJSON</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>geo <span class="ot">&lt;-</span> <span class="fu">sf_geojson</span>(sf)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">substr</span>(geo, <span class="dv">1</span>, <span class="dv">80</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; {&quot;type&quot;:&quot;FeatureCollection&quot;,&quot;features&quot;:[{&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;SA2_NAM</span></span></code></pre></div>
+<div id="atomising" class="section level3">
+<h3>Atomising</h3>
+<p>Sometimes it’s useful to convert each row of an <code>sf</code>
+object into it’s own GeoJSON object, for example when you want to keep
+each geometry separate in a database. Set <code>atomise = TRUE</code> to
+return a vector of GeoJSON</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>geo <span class="ot">&lt;-</span> <span class="fu">sf_geojson</span>(sf, <span class="at">atomise =</span> T)</span></code></pre></div>
+<p>now <code>geo</code> is a vector of GeoJSON</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">substr</span>(geo[<span class="dv">1</span>], <span class="dv">1</span>, <span class="dv">80</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;{\&quot;type\&quot;:\&quot;Feature\&quot;,\&quot;properties\&quot;:{\&quot;SA2_NAME\&quot;:\&quot;Abbotsford\&quot;,\&quot;polygonId\&quot;:70.0,\&quot;stroke&quot;</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="fu">substr</span>(geo[<span class="dv">2</span>], <span class="dv">1</span>, <span class="dv">80</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;{\&quot;type\&quot;:\&quot;Feature\&quot;,\&quot;properties\&quot;:{\&quot;SA2_NAME\&quot;:\&quot;Albert Park\&quot;,\&quot;polygonId\&quot;:59.0,\&quot;strok&quot;</span></span></code></pre></div>
+</div>
+</div>
+<div id="well-known-text" class="section level2">
+<h2>Well-known Text</h2>
+<p>It also converts GeoJSON to Well-Known Text and returns a
+<code>data.frame</code></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>fc <span class="ot">&lt;-</span> <span class="st">&#39;{</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="st">  &quot;type&quot;: &quot;FeatureCollection&quot;,</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="st">  &quot;features&quot;: [</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="st">  {</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="st">    &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="st">    &quot;properties&quot;: {&quot;foo&quot; : &quot;feature 1.1&quot;, &quot;bar&quot; : &quot;feature 1.2&quot;},</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="st">    &quot;geometry&quot;: {&quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [100.0, 0.0]}</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="st">  },</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="st">  {</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="st">    &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="st">    &quot;properties&quot;: null,</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="st">    &quot;geometry&quot;: {&quot;type&quot;: &quot;LineString&quot;, &quot;coordinates&quot;: [[101.0, 0.0], [102.0, 1.0]]}</span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="st">  },</span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="st">  {</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="st">    &quot;type&quot;: &quot;Feature&quot;,</span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="st">        &quot;properties&quot;: {&quot;foo&quot; : &quot;feature 3.1&quot;, &quot;bar&quot; : &quot;feature 3.2&quot;},</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="st">        &quot;geometry&quot;: {&quot;type&quot;: &quot;LineString&quot;, &quot;coordinates&quot;: [[101.0, 0.0], [102.0, 1.0]]}</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="st"> ]</span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="st">}&#39;</span></span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">geojson_wkt</span>(fc)</span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="fu">head</span>(df)</span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="co">#&gt;           foo         bar                 geometry</span></span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="co">#&gt; 1 feature 1.1 feature 1.2            POINT (100 0)</span></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a><span class="co">#&gt; 2        &lt;NA&gt;        &lt;NA&gt; LINESTRING (101 0,102 1)</span></span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="co">#&gt; 3 feature 3.1 feature 3.2 LINESTRING (101 0,102 1)</span></span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

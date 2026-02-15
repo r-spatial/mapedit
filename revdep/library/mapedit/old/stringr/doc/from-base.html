@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Sara Stoudt" />
+
+
+<title>From base R</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">From base R</h1>
+<h4 class="author">Sara Stoudt</h4>
+
+
+
+<p>This vignette compares stringr functions to their base R equivalents
+to help users transitioning from using base R to stringr.</p>
+<div id="overall-differences" class="section level1">
+<h1>Overall differences</h1>
+<p>We’ll begin with a lookup table between the most important stringr
+functions and their base R equivalents.</p>
+<div id="yzxobywbib" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yzxobywbib table {
+font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+#yzxobywbib thead, #yzxobywbib tbody, #yzxobywbib tfoot, #yzxobywbib tr, #yzxobywbib td, #yzxobywbib th {
+border-style: none;
+}
+#yzxobywbib p {
+margin: 0;
+padding: 0;
+}
+#yzxobywbib .gt_table {
+display: table;
+border-collapse: collapse;
+line-height: normal;
+margin-left: auto;
+margin-right: auto;
+color: #333333;
+font-size: 16px;
+font-weight: normal;
+font-style: normal;
+background-color: #FFFFFF;
+width: auto;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #A8A8A8;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #A8A8A8;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+}
+#yzxobywbib .gt_caption {
+padding-top: 4px;
+padding-bottom: 4px;
+}
+#yzxobywbib .gt_title {
+color: #333333;
+font-size: 125%;
+font-weight: initial;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-color: #FFFFFF;
+border-bottom-width: 0;
+}
+#yzxobywbib .gt_subtitle {
+color: #333333;
+font-size: 85%;
+font-weight: initial;
+padding-top: 3px;
+padding-bottom: 5px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-color: #FFFFFF;
+border-top-width: 0;
+}
+#yzxobywbib .gt_heading {
+background-color: #FFFFFF;
+text-align: center;
+border-bottom-color: #FFFFFF;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#yzxobywbib .gt_bottom_border {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#yzxobywbib .gt_col_headings {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#yzxobywbib .gt_col_heading {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: bold;
+text-transform: inherit;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 6px;
+padding-left: 5px;
+padding-right: 5px;
+overflow-x: hidden;
+}
+#yzxobywbib .gt_column_spanner_outer {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: bold;
+text-transform: inherit;
+padding-top: 0;
+padding-bottom: 0;
+padding-left: 4px;
+padding-right: 4px;
+}
+#yzxobywbib .gt_column_spanner_outer:first-child {
+padding-left: 0;
+}
+#yzxobywbib .gt_column_spanner_outer:last-child {
+padding-right: 0;
+}
+#yzxobywbib .gt_column_spanner {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 5px;
+overflow-x: hidden;
+display: inline-block;
+width: 100%;
+}
+#yzxobywbib .gt_spanner_row {
+border-bottom-style: hidden;
+}
+#yzxobywbib .gt_group_heading {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+text-align: left;
+}
+#yzxobywbib .gt_empty_group_heading {
+padding: 0.5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: middle;
+}
+#yzxobywbib .gt_from_md > :first-child {
+margin-top: 0;
+}
+#yzxobywbib .gt_from_md > :last-child {
+margin-bottom: 0;
+}
+#yzxobywbib .gt_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+margin: 10px;
+border-top-style: solid;
+border-top-width: 1px;
+border-top-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+overflow-x: hidden;
+}
+#yzxobywbib .gt_stub {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+}
+#yzxobywbib .gt_stub_row_group {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+vertical-align: top;
+}
+#yzxobywbib .gt_row_group_first td {
+border-top-width: 2px;
+}
+#yzxobywbib .gt_row_group_first th {
+border-top-width: 2px;
+}
+#yzxobywbib .gt_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#yzxobywbib .gt_first_summary_row {
+border-top-style: solid;
+border-top-color: #D3D3D3;
+}
+#yzxobywbib .gt_first_summary_row.thick {
+border-top-width: 2px;
+}
+#yzxobywbib .gt_last_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#yzxobywbib .gt_grand_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#yzxobywbib .gt_first_grand_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-style: double;
+border-top-width: 6px;
+border-top-color: #D3D3D3;
+}
+#yzxobywbib .gt_last_grand_summary_row_top {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: double;
+border-bottom-width: 6px;
+border-bottom-color: #D3D3D3;
+}
+#yzxobywbib .gt_striped {
+background-color: rgba(128, 128, 128, 0.05);
+}
+#yzxobywbib .gt_table_body {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#yzxobywbib .gt_footnotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#yzxobywbib .gt_footnote {
+margin: 0px;
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#yzxobywbib .gt_sourcenotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#yzxobywbib .gt_sourcenote {
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#yzxobywbib .gt_left {
+text-align: left;
+}
+#yzxobywbib .gt_center {
+text-align: center;
+}
+#yzxobywbib .gt_right {
+text-align: right;
+font-variant-numeric: tabular-nums;
+}
+#yzxobywbib .gt_font_normal {
+font-weight: normal;
+}
+#yzxobywbib .gt_font_bold {
+font-weight: bold;
+}
+#yzxobywbib .gt_font_italic {
+font-style: italic;
+}
+#yzxobywbib .gt_super {
+font-size: 65%;
+}
+#yzxobywbib .gt_footnote_marks {
+font-size: 75%;
+vertical-align: 0.4em;
+position: initial;
+}
+#yzxobywbib .gt_asterisk {
+font-size: 100%;
+vertical-align: 0;
+}
+#yzxobywbib .gt_indent_1 {
+text-indent: 5px;
+}
+#yzxobywbib .gt_indent_2 {
+text-indent: 10px;
+}
+#yzxobywbib .gt_indent_3 {
+text-indent: 15px;
+}
+#yzxobywbib .gt_indent_4 {
+text-indent: 20px;
+}
+#yzxobywbib .gt_indent_5 {
+text-indent: 25px;
+}
+#yzxobywbib .katex-display {
+display: inline-flex !important;
+margin-bottom: 0.75em !important;
+}
+#yzxobywbib div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="stringr">stringr</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="base-R">base R</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_detect(string, pattern)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>grepl(pattern, x)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_dup(string, times)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>strrep(x, times)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_extract(string, pattern)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>regmatches(x, m = regexpr(pattern, text))</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_extract_all(string, pattern)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>regmatches(x, m = gregexpr(pattern, text))</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_length(string)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>nchar(x)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_locate(string, pattern)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>regexpr(pattern, text)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_locate_all(string, pattern)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>gregexpr(pattern, text)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_match(string, pattern)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>regmatches(x, m = regexec(pattern, text))</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_order(string)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>order(...)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_replace(string, pattern, replacement)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>sub(pattern, replacement, x)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_replace_all(string, pattern, replacement)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>gsub(pattern, replacement, x)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_sort(string)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>sort(x)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_split(string, pattern)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>strsplit(x, split)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_sub(string, start, end)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>substr(x, start, stop)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_subset(string, pattern)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>grep(pattern, x, value = TRUE)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_to_lower(string)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>tolower(x)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_to_title(string)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>tools::toTitleCase(text)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_to_upper(string)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>toupper(x)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_trim(string)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>trimws(x)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_which(string, pattern)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>grep(pattern, x)</code></span></td></tr>
+    <tr><td headers="stringr" class="gt_row gt_left"><span class="gt_from_md"><code>str_wrap(string)</code></span></td>
+<td headers="base R" class="gt_row gt_left"><span class="gt_from_md"><code>strwrap(x)</code></span></td></tr>
+  </tbody>
+  
+</table>
+</div>
+<p>Overall the main differences between base R and stringr are:</p>
+<ol style="list-style-type: decimal">
+<li><p>stringr functions start with <code>str_</code> prefix; base R
+string functions have no consistent naming scheme.</p></li>
+<li><p>The order of inputs is usually different between base R and
+stringr. In base R, the <code>pattern</code> to match usually comes
+first; in stringr, the <code>string</code> to manupulate always comes
+first. This makes stringr easier to use in pipes, and with
+<code>lapply()</code> or <code>purrr::map()</code>.</p></li>
+<li><p>Functions in stringr tend to do less, where many of the string
+processing functions in base R have multiple purposes.</p></li>
+<li><p>The output and input of stringr functions has been carefully
+designed. For example, the output of <code>str_locate()</code> can be
+fed directly into <code>str_sub()</code>; the same is not true of
+<code>regexpr()</code> and <code>substr()</code>.</p></li>
+<li><p>Base functions use arguments (like <code>perl</code>,
+<code>fixed</code>, and <code>ignore.case</code>) to control how the
+pattern is interpreted. To avoid dependence between arguments, stringr
+instead uses helper functions (like <code>fixed()</code>,
+<code>regex()</code>, and <code>coll()</code>).</p></li>
+</ol>
+<p>Next we’ll walk through each of the functions, noting the
+similarities and important differences. These examples are adapted from
+the stringr documentation and here they are contrasted with the
+analogous base R operations.</p>
+</div>
+<div id="detect-matches" class="section level1">
+<h1>Detect matches</h1>
+<div id="str_detect-detect-the-presence-or-absence-of-a-pattern-in-a-string" class="section level2">
+<h2><code>str_detect()</code>: Detect the presence or absence of a
+pattern in a string</h2>
+<p>Suppose you want to know whether each word in a vector of fruit names
+contains an “a”.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>fruit <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;apple&quot;</span>, <span class="st">&quot;banana&quot;</span>, <span class="st">&quot;pear&quot;</span>, <span class="st">&quot;pineapple&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">grepl</span>(<span class="at">pattern =</span> <span class="st">&quot;a&quot;</span>, <span class="at">x =</span> fruit)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; [1] TRUE TRUE TRUE TRUE</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">str_detect</span>(fruit, <span class="at">pattern =</span> <span class="st">&quot;a&quot;</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; [1] TRUE TRUE TRUE TRUE</span></span></code></pre></div>
+<p>In base you would use <code>grepl()</code> (see the “l” and think
+logical) while in stringr you use <code>str_detect()</code> (see the
+verb “detect” and think of a yes/no action).</p>
+</div>
+<div id="str_which-find-positions-matching-a-pattern" class="section level2">
+<h2><code>str_which()</code>: Find positions matching a pattern</h2>
+<p>Now you want to identify the positions of the words in a vector of
+fruit names that contain an “a”.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">grep</span>(<span class="at">pattern =</span> <span class="st">&quot;a&quot;</span>, <span class="at">x =</span> fruit)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; [1] 1 2 3 4</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">str_which</span>(fruit, <span class="at">pattern =</span> <span class="st">&quot;a&quot;</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; [1] 1 2 3 4</span></span></code></pre></div>
+<p>In base you would use <code>grep()</code> while in stringr you use
+<code>str_which()</code> (by analogy to <code>which()</code>).</p>
+</div>
+<div id="str_count-count-the-number-of-matches-in-a-string" class="section level2">
+<h2><code>str_count()</code>: Count the number of matches in a
+string</h2>
+<p>How many “a”s are in each fruit?</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># base </span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>loc <span class="ot">&lt;-</span> <span class="fu">gregexpr</span>(<span class="at">pattern =</span> <span class="st">&quot;a&quot;</span>, <span class="at">text =</span> fruit, <span class="at">fixed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">sapply</span>(loc, <span class="cf">function</span>(x) <span class="fu">length</span>(<span class="fu">attr</span>(x, <span class="st">&quot;match.length&quot;</span>)))</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; [1] 1 3 1 1</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">str_count</span>(fruit, <span class="at">pattern =</span> <span class="st">&quot;a&quot;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; [1] 1 3 1 1</span></span></code></pre></div>
+<p>This information can be gleaned from <code>gregexpr()</code> in base,
+but you need to look at the <code>match.length</code> attribute as the
+vector uses a length-1 integer vector (<code>-1</code>) to indicate no
+match.</p>
+</div>
+<div id="str_locate-locate-the-position-of-patterns-in-a-string" class="section level2">
+<h2><code>str_locate()</code>: Locate the position of patterns in a
+string</h2>
+<p>Within each fruit, where does the first “p” occur? Where are all of
+the “p”s?</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>fruit3 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;papaya&quot;</span>, <span class="st">&quot;lime&quot;</span>, <span class="st">&quot;apple&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="fu">str</span>(<span class="fu">gregexpr</span>(<span class="at">pattern =</span> <span class="st">&quot;p&quot;</span>, <span class="at">text =</span> fruit3))</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; List of 3</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt;  $ : int [1:2] 1 3</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt;   ..- attr(*, &quot;match.length&quot;)= int [1:2] 1 1</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt;   ..- attr(*, &quot;index.type&quot;)= chr &quot;chars&quot;</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt;   ..- attr(*, &quot;useBytes&quot;)= logi TRUE</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt;  $ : int -1</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt;   ..- attr(*, &quot;match.length&quot;)= int -1</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt;   ..- attr(*, &quot;index.type&quot;)= chr &quot;chars&quot;</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt;   ..- attr(*, &quot;useBytes&quot;)= logi TRUE</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt;  $ : int [1:2] 2 3</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt;   ..- attr(*, &quot;match.length&quot;)= int [1:2] 1 1</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt;   ..- attr(*, &quot;index.type&quot;)= chr &quot;chars&quot;</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt;   ..- attr(*, &quot;useBytes&quot;)= logi TRUE</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="fu">str_locate</span>(fruit3, <span class="at">pattern =</span> <span class="st">&quot;p&quot;</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt;      start end</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; [1,]     1   1</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; [2,]    NA  NA</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; [3,]     2   2</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="fu">str_locate_all</span>(fruit3, <span class="at">pattern =</span> <span class="st">&quot;p&quot;</span>)</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt;      start end</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; [1,]     1   1</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; [2,]     3   3</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt;      start end</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt;      start end</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt; [1,]     2   2</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt; [2,]     3   3</span></span></code></pre></div>
+</div>
+</div>
+<div id="subset-strings" class="section level1">
+<h1>Subset strings</h1>
+<div id="str_sub-extract-and-replace-substrings-from-a-character-vector" class="section level2">
+<h2><code>str_sub()</code>: Extract and replace substrings from a
+character vector</h2>
+<p>What if we want to grab part of a string?</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>hw <span class="ot">&lt;-</span> <span class="st">&quot;Hadley Wickham&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="fu">substr</span>(hw, <span class="at">start =</span> <span class="dv">1</span>, <span class="at">stop =</span> <span class="dv">6</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley&quot;</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">substring</span>(hw, <span class="at">first =</span> <span class="dv">1</span>) </span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley Wickham&quot;</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="fu">str_sub</span>(hw, <span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">6</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley&quot;</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="fu">str_sub</span>(hw, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley Wickham&quot;</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="fu">str_sub</span>(hw, <span class="at">end =</span> <span class="dv">6</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley&quot;</span></span></code></pre></div>
+<p>In base you could use <code>substr()</code> or
+<code>substring()</code>. The former requires both a start and stop of
+the substring while the latter assumes the stop will be the end of the
+string. The stringr version, <code>str_sub()</code> has the same
+functionality, but also gives a default start value (the beginning of
+the string). Both the base and stringr functions have the same order of
+expected inputs.</p>
+<p>In stringr you can use negative numbers to index from the right-hand
+side string: -1 is the last letter, -2 is the second to last, and so
+on.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">str_sub</span>(hw, <span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley Wickham&quot;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">str_sub</span>(hw, <span class="at">start =</span> <span class="sc">-</span><span class="dv">5</span>, <span class="at">end =</span> <span class="sc">-</span><span class="dv">2</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;ckha&quot;</span></span></code></pre></div>
+<p>Both base R and stringr subset are vectorized over their parameters.
+This means you can either choose the same subset across multiple strings
+or specify different subsets for different strings.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>al <span class="ot">&lt;-</span> <span class="st">&quot;Ada Lovelace&quot;</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="fu">substr</span>(<span class="fu">c</span>(hw,al), <span class="at">start =</span> <span class="dv">1</span>, <span class="at">stop =</span> <span class="dv">6</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley&quot; &quot;Ada Lo&quot;</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="fu">substr</span>(<span class="fu">c</span>(hw,al), <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">stop =</span> <span class="fu">c</span>(<span class="dv">6</span>,<span class="dv">7</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley&quot;  &quot;Ada Lov&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="fu">str_sub</span>(<span class="fu">c</span>(hw,al), <span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley Wickham&quot; &quot;Ada Lovelace&quot;</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="fu">str_sub</span>(<span class="fu">c</span>(hw,al), <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">2</span>))</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley Wickham&quot; &quot;Ada Lovelac&quot;</span></span></code></pre></div>
+<p>stringr will automatically recycle the first argument to the same
+length as <code>start</code> and <code>stop</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">str_sub</span>(hw, <span class="at">start =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley Wickham&quot; &quot;adley Wickham&quot;  &quot;dley Wickham&quot;   &quot;ley Wickham&quot;   </span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt; [5] &quot;ey Wickham&quot;</span></span></code></pre></div>
+<p>Whereas the base equivalent silently uses just the first value:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">substr</span>(hw, <span class="at">start =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">stop =</span> <span class="dv">15</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Hadley Wickham&quot;</span></span></code></pre></div>
+</div>
+<div id="str_sub---subset-assignment" class="section level2">
+<h2><code>str_sub() &lt;-</code>: Subset assignment</h2>
+<p><code>substr()</code> behaves in a surprising way when you replace a
+substring with a different number of characters:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">&quot;ABCDEF&quot;</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">substr</span>(x, <span class="dv">1</span>, <span class="dv">3</span>) <span class="ot">&lt;-</span> <span class="st">&quot;x&quot;</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>x</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;xBCDEF&quot;</span></span></code></pre></div>
+<p><code>str_sub()</code> does what you would expect:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">&quot;ABCDEF&quot;</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="fu">str_sub</span>(x, <span class="dv">1</span>, <span class="dv">3</span>) <span class="ot">&lt;-</span> <span class="st">&quot;x&quot;</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>x</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;xDEF&quot;</span></span></code></pre></div>
+</div>
+<div id="str_subset-keep-strings-matching-a-pattern-or-find-positions" class="section level2">
+<h2><code>str_subset()</code>: Keep strings matching a pattern, or find
+positions</h2>
+<p>We may want to retrieve strings that contain a pattern of
+interest:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">grep</span>(<span class="at">pattern =</span> <span class="st">&quot;g&quot;</span>, <span class="at">x =</span> fruit, <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="fu">str_subset</span>(fruit, <span class="at">pattern =</span> <span class="st">&quot;g&quot;</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span></code></pre></div>
+</div>
+<div id="str_extract-extract-matching-patterns-from-a-string" class="section level2">
+<h2><code>str_extract()</code>: Extract matching patterns from a
+string</h2>
+<p>We may want to pick out certain patterns from a string, for example,
+the digits in a shopping list:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>shopping_list <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;apples x4&quot;</span>, <span class="st">&quot;bag of flour&quot;</span>, <span class="st">&quot;10&quot;</span>, <span class="st">&quot;milk x2&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>matches <span class="ot">&lt;-</span> <span class="fu">regexpr</span>(<span class="at">pattern =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">d+&quot;</span>, <span class="at">text =</span> shopping_list) <span class="co"># digits</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="fu">regmatches</span>(shopping_list, <span class="at">m =</span> matches)</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;4&quot;  &quot;10&quot; &quot;2&quot;</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>matches <span class="ot">&lt;-</span> <span class="fu">gregexpr</span>(<span class="at">pattern =</span> <span class="st">&quot;[a-z]+&quot;</span>, <span class="at">text =</span> shopping_list) <span class="co"># words</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="fu">regmatches</span>(shopping_list, <span class="at">m =</span> matches)</span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; [1] &quot;apples&quot; &quot;x&quot;     </span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; [1] &quot;bag&quot;   &quot;of&quot;    &quot;flour&quot;</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="co">#&gt; [[4]]</span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co">#&gt; [1] &quot;milk&quot; &quot;x&quot;</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a></span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="fu">str_extract</span>(shopping_list, <span class="at">pattern =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">d+&quot;</span>) </span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="co">#&gt; [1] &quot;4&quot;  NA   &quot;10&quot; &quot;2&quot;</span></span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a><span class="fu">str_extract_all</span>(shopping_list, <span class="st">&quot;[a-z]+&quot;</span>)</span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a><span class="co">#&gt; [1] &quot;apples&quot; &quot;x&quot;     </span></span>
+<span id="cb13-28"><a href="#cb13-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-29"><a href="#cb13-29" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb13-30"><a href="#cb13-30" tabindex="-1"></a><span class="co">#&gt; [1] &quot;bag&quot;   &quot;of&quot;    &quot;flour&quot;</span></span>
+<span id="cb13-31"><a href="#cb13-31" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-32"><a href="#cb13-32" tabindex="-1"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb13-33"><a href="#cb13-33" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
+<span id="cb13-34"><a href="#cb13-34" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-35"><a href="#cb13-35" tabindex="-1"></a><span class="co">#&gt; [[4]]</span></span>
+<span id="cb13-36"><a href="#cb13-36" tabindex="-1"></a><span class="co">#&gt; [1] &quot;milk&quot; &quot;x&quot;</span></span></code></pre></div>
+<p>Base R requires the combination of <code>regexpr()</code> with
+<code>regmatches()</code>; but note that the strings without matches are
+dropped from the output. stringr provides <code>str_extract()</code> and
+<code>str_extract_all()</code>, and the output is always the same length
+as the input.</p>
+</div>
+<div id="str_match-extract-matched-groups-from-a-string" class="section level2">
+<h2><code>str_match()</code>: Extract matched groups from a string</h2>
+<p>We may also want to extract groups from a string. Here I’m going to
+use the scenario from Section 14.4.3 in <a href="https://r4ds.had.co.nz/strings.html">R for Data Science</a>.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">head</span>(sentences)</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;The birch canoe slid on the smooth planks.&quot; </span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; [2] &quot;Glue the sheet to the dark blue background.&quot;</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; [3] &quot;It&#39;s easy to tell the depth of a well.&quot;     </span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt; [4] &quot;These days a chicken leg is a rare dish.&quot;   </span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt; [5] &quot;Rice is often served in round bowls.&quot;       </span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt; [6] &quot;The juice of lemons makes fine punch.&quot;</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>noun <span class="ot">&lt;-</span> <span class="st">&quot;([A]a|[Tt]he) ([^ ]+)&quot;</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>matches <span class="ot">&lt;-</span> <span class="fu">regexec</span>(<span class="at">pattern =</span> noun, <span class="at">text =</span> <span class="fu">head</span>(sentences))</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="fu">do.call</span>(<span class="st">&quot;rbind&quot;</span>, <span class="fu">regmatches</span>(<span class="at">x =</span> <span class="fu">head</span>(sentences), <span class="at">m =</span> matches))</span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt;      [,1]        [,2]  [,3]   </span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt; [1,] &quot;The birch&quot; &quot;The&quot; &quot;birch&quot;</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; [2,] &quot;the sheet&quot; &quot;the&quot; &quot;sheet&quot;</span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; [3,] &quot;the depth&quot; &quot;the&quot; &quot;depth&quot;</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; [4,] &quot;The juice&quot; &quot;The&quot; &quot;juice&quot;</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="fu">str_match</span>(<span class="fu">head</span>(sentences), <span class="at">pattern =</span> noun)</span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a><span class="co">#&gt;      [,1]        [,2]  [,3]   </span></span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co">#&gt; [1,] &quot;The birch&quot; &quot;The&quot; &quot;birch&quot;</span></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="co">#&gt; [2,] &quot;the sheet&quot; &quot;the&quot; &quot;sheet&quot;</span></span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="co">#&gt; [3,] &quot;the depth&quot; &quot;the&quot; &quot;depth&quot;</span></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a><span class="co">#&gt; [4,] NA          NA    NA     </span></span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="co">#&gt; [5,] NA          NA    NA     </span></span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a><span class="co">#&gt; [6,] &quot;The juice&quot; &quot;The&quot; &quot;juice&quot;</span></span></code></pre></div>
+<p>As for extracting the full match base R requires the combination of
+two functions, and inputs with no matches are dropped from the
+output.</p>
+</div>
+</div>
+<div id="manage-lengths" class="section level1">
+<h1>Manage lengths</h1>
+<div id="str_length-the-length-of-a-string" class="section level2">
+<h2><code>str_length()</code>: The length of a string</h2>
+<p>To determine the length of a string, base R uses <code>nchar()</code>
+(not to be confused with <code>length()</code> which gives the length of
+vectors, etc.) while stringr uses <code>str_length()</code>.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">nchar</span>(letters)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co">#&gt;  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="fu">str_length</span>(letters)</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt;  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span></span></code></pre></div>
+<p>There are some subtle differences between base and stringr here.
+<code>nchar()</code> requires a character vector, so it will return an
+error if used on a factor. <code>str_length()</code> can handle a factor
+input.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">nchar</span>(<span class="fu">factor</span>(<span class="st">&quot;abc&quot;</span>)) </span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt; Error in nchar(factor(&quot;abc&quot;)): &#39;nchar()&#39; requires a character vector</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="fu">str_length</span>(<span class="fu">factor</span>(<span class="st">&quot;abc&quot;</span>))</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">#&gt; [1] 3</span></span></code></pre></div>
+<p>Note that “characters” is a poorly defined concept, and technically
+both <code>nchar()</code> and <code>str_length()</code> returns the
+number of code points. This is usually the same as what you’d consider
+to be a charcter, but not always:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;\u00fc&quot;</span>, <span class="st">&quot;u\u0308&quot;</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>x</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;ü&quot; &quot;ü&quot;</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="fu">nchar</span>(x)</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#&gt; [1] 1 2</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="fu">str_length</span>(x)</span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="co">#&gt; [1] 1 2</span></span></code></pre></div>
+</div>
+<div id="str_pad-pad-a-string" class="section level2">
+<h2><code>str_pad()</code>: Pad a string</h2>
+<p>To pad a string to a certain width, use stringr’s
+<code>str_pad()</code>. In base R you could use <code>sprintf()</code>,
+but unlike <code>str_pad()</code>, <code>sprintf()</code> has many other
+functionalities.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="fu">sprintf</span>(<span class="st">&quot;%30s&quot;</span>, <span class="st">&quot;hadley&quot;</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;                        hadley&quot;</span></span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="fu">sprintf</span>(<span class="st">&quot;%-30s&quot;</span>, <span class="st">&quot;hadley&quot;</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;hadley                        &quot;</span></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a><span class="co"># &quot;both&quot; is not as straightforward</span></span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a><span class="fu">rbind</span>(</span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>  <span class="fu">str_pad</span>(<span class="st">&quot;hadley&quot;</span>, <span class="dv">30</span>, <span class="st">&quot;left&quot;</span>),</span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>  <span class="fu">str_pad</span>(<span class="st">&quot;hadley&quot;</span>, <span class="dv">30</span>, <span class="st">&quot;right&quot;</span>),</span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a>  <span class="fu">str_pad</span>(<span class="st">&quot;hadley&quot;</span>, <span class="dv">30</span>, <span class="st">&quot;both&quot;</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>)</span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="co">#&gt;      [,1]                            </span></span>
+<span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a><span class="co">#&gt; [1,] &quot;                        hadley&quot;</span></span>
+<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="co">#&gt; [2,] &quot;hadley                        &quot;</span></span>
+<span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a><span class="co">#&gt; [3,] &quot;            hadley            &quot;</span></span></code></pre></div>
+</div>
+<div id="str_trunc-truncate-a-character-string" class="section level2">
+<h2><code>str_trunc()</code>: Truncate a character string</h2>
+<p>The stringr package provides an easy way to truncate a character
+string: <code>str_trunc()</code>. Base R has no function to do this
+directly.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">&quot;This string is moderately long&quot;</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="fu">rbind</span>(</span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>  <span class="fu">str_trunc</span>(x, <span class="dv">20</span>, <span class="st">&quot;right&quot;</span>),</span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>  <span class="fu">str_trunc</span>(x, <span class="dv">20</span>, <span class="st">&quot;left&quot;</span>),</span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>  <span class="fu">str_trunc</span>(x, <span class="dv">20</span>, <span class="st">&quot;center&quot;</span>)</span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>)</span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a><span class="co">#&gt;      [,1]                  </span></span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a><span class="co">#&gt; [1,] &quot;This string is mo...&quot;</span></span>
+<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a><span class="co">#&gt; [2,] &quot;...s moderately long&quot;</span></span>
+<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a><span class="co">#&gt; [3,] &quot;This stri...ely long&quot;</span></span></code></pre></div>
+</div>
+<div id="str_trim-trim-whitespace-from-a-string" class="section level2">
+<h2><code>str_trim()</code>: Trim whitespace from a string</h2>
+<p>Similarly, stringr provides <code>str_trim()</code> to trim
+whitespace from a string. This is analogous to base R’s
+<code>trimws()</code> added in R 3.3.0.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">trimws</span>(<span class="st">&quot; String with trailing and leading white space</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;String with trailing and leading white space&quot;</span></span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a><span class="fu">trimws</span>(<span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">String with trailing and leading white space</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;String with trailing and leading white space&quot;</span></span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a><span class="fu">str_trim</span>(<span class="st">&quot; String with trailing and leading white space</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a><span class="co">#&gt; [1] &quot;String with trailing and leading white space&quot;</span></span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a><span class="fu">str_trim</span>(<span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">String with trailing and leading white space</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a><span class="co">#&gt; [1] &quot;String with trailing and leading white space&quot;</span></span></code></pre></div>
+<p>The stringr function <code>str_squish()</code> allows for extra
+whitespace within a string to be trimmed (in contrast to
+<code>str_trim()</code> which removes whitespace at the beginning and/or
+end of string). In base R, one might take advantage of
+<code>gsub()</code> to accomplish the same effect.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="fu">str_squish</span>(<span class="st">&quot; String with trailing, middle,   and leading white space</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;String with trailing, middle, and leading white space&quot;</span></span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a><span class="fu">str_squish</span>(<span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">String with excess, trailing and leading white space</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;String with excess, trailing and leading white space&quot;</span></span></code></pre></div>
+</div>
+<div id="str_wrap-wrap-strings-into-nicely-formatted-paragraphs" class="section level2">
+<h2><code>str_wrap()</code>: Wrap strings into nicely formatted
+paragraphs</h2>
+<p><code>strwrap()</code> and <code>str_wrap()</code> use different
+algorithms. <code>str_wrap()</code> uses the famous <a href="http://litherum.blogspot.com/2015/07/knuth-plass-line-breaking-algorithm.html">Knuth-Plass
+algorithm</a>.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>gettysburg <span class="ot">&lt;-</span> <span class="st">&quot;Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.&quot;</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">strwrap</span>(gettysburg, <span class="at">width =</span> <span class="dv">60</span>), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a><span class="co">#&gt; Four score and seven years ago our fathers brought forth on</span></span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a><span class="co">#&gt; this continent, a new nation, conceived in Liberty, and</span></span>
+<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a><span class="co">#&gt; dedicated to the proposition that all men are created</span></span>
+<span id="cb23-8"><a href="#cb23-8" tabindex="-1"></a><span class="co">#&gt; equal.</span></span>
+<span id="cb23-9"><a href="#cb23-9" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb23-11"><a href="#cb23-11" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">str_wrap</span>(gettysburg, <span class="at">width =</span> <span class="dv">60</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-12"><a href="#cb23-12" tabindex="-1"></a><span class="co">#&gt; Four score and seven years ago our fathers brought forth</span></span>
+<span id="cb23-13"><a href="#cb23-13" tabindex="-1"></a><span class="co">#&gt; on this continent, a new nation, conceived in Liberty, and</span></span>
+<span id="cb23-14"><a href="#cb23-14" tabindex="-1"></a><span class="co">#&gt; dedicated to the proposition that all men are created equal.</span></span></code></pre></div>
+<p>Note that <code>strwrap()</code> returns a character vector with one
+element for each line; <code>str_wrap()</code> returns a single string
+containing line breaks.</p>
+</div>
+</div>
+<div id="mutate-strings" class="section level1">
+<h1>Mutate strings</h1>
+<div id="str_replace-replace-matched-patterns-in-a-string" class="section level2">
+<h2><code>str_replace()</code>: Replace matched patterns in a
+string</h2>
+<p>To replace certain patterns within a string, stringr provides the
+functions <code>str_replace()</code> and <code>str_replace_all()</code>.
+The base R equivalents are <code>sub()</code> and <code>gsub()</code>.
+Note the difference in default input order again.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>fruits <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;apple&quot;</span>, <span class="st">&quot;banana&quot;</span>, <span class="st">&quot;pear&quot;</span>, <span class="st">&quot;pineapple&quot;</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a><span class="fu">sub</span>(<span class="st">&quot;[aeiou]&quot;</span>, <span class="st">&quot;-&quot;</span>, fruits)</span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;-pple&quot;     &quot;b-nana&quot;    &quot;p-ar&quot;      &quot;p-neapple&quot;</span></span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a><span class="fu">gsub</span>(<span class="st">&quot;[aeiou]&quot;</span>, <span class="st">&quot;-&quot;</span>, fruits)</span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;-ppl-&quot;     &quot;b-n-n-&quot;    &quot;p--r&quot;      &quot;p-n--ppl-&quot;</span></span>
+<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a><span class="fu">str_replace</span>(fruits, <span class="st">&quot;[aeiou]&quot;</span>, <span class="st">&quot;-&quot;</span>)</span>
+<span id="cb24-11"><a href="#cb24-11" tabindex="-1"></a><span class="co">#&gt; [1] &quot;-pple&quot;     &quot;b-nana&quot;    &quot;p-ar&quot;      &quot;p-neapple&quot;</span></span>
+<span id="cb24-12"><a href="#cb24-12" tabindex="-1"></a><span class="fu">str_replace_all</span>(fruits, <span class="st">&quot;[aeiou]&quot;</span>, <span class="st">&quot;-&quot;</span>)</span>
+<span id="cb24-13"><a href="#cb24-13" tabindex="-1"></a><span class="co">#&gt; [1] &quot;-ppl-&quot;     &quot;b-n-n-&quot;    &quot;p--r&quot;      &quot;p-n--ppl-&quot;</span></span></code></pre></div>
+</div>
+<div id="case-convert-case-of-a-string" class="section level2">
+<h2>case: Convert case of a string</h2>
+<p>Both stringr and base R have functions to convert to upper and lower
+case. Title case is also provided in stringr.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>dog <span class="ot">&lt;-</span> <span class="st">&quot;The quick brown dog&quot;</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a><span class="fu">toupper</span>(dog)</span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;THE QUICK BROWN DOG&quot;</span></span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a><span class="fu">tolower</span>(dog)</span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the quick brown dog&quot;</span></span>
+<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">toTitleCase</span>(dog)</span>
+<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="co">#&gt; [1] &quot;The Quick Brown Dog&quot;</span></span>
+<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a></span>
+<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb25-12"><a href="#cb25-12" tabindex="-1"></a><span class="fu">str_to_upper</span>(dog)</span>
+<span id="cb25-13"><a href="#cb25-13" tabindex="-1"></a><span class="co">#&gt; [1] &quot;THE QUICK BROWN DOG&quot;</span></span>
+<span id="cb25-14"><a href="#cb25-14" tabindex="-1"></a><span class="fu">str_to_lower</span>(dog)</span>
+<span id="cb25-15"><a href="#cb25-15" tabindex="-1"></a><span class="co">#&gt; [1] &quot;the quick brown dog&quot;</span></span>
+<span id="cb25-16"><a href="#cb25-16" tabindex="-1"></a><span class="fu">str_to_title</span>(dog)</span>
+<span id="cb25-17"><a href="#cb25-17" tabindex="-1"></a><span class="co">#&gt; [1] &quot;The Quick Brown Dog&quot;</span></span></code></pre></div>
+<p>In stringr we can control the locale, while in base R locale
+distinctions are controlled with global variables. Therefore, the output
+of your base R code may vary across different computers with different
+global settings.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="fu">str_to_upper</span>(<span class="st">&quot;i&quot;</span>) <span class="co"># English</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;I&quot;</span></span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a><span class="fu">str_to_upper</span>(<span class="st">&quot;i&quot;</span>, <span class="at">locale =</span> <span class="st">&quot;tr&quot;</span>) <span class="co"># Turkish</span></span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;İ&quot;</span></span></code></pre></div>
+</div>
+</div>
+<div id="join-and-split" class="section level1">
+<h1>Join and split</h1>
+<div id="str_flatten-flatten-a-string" class="section level2">
+<h2><code>str_flatten()</code>: Flatten a string</h2>
+<p>If we want to take elements of a string vector and collapse them to a
+single string we can use the <code>collapse</code> argument in
+<code>paste()</code> or use stringr’s <code>str_flatten()</code>.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="fu">paste0</span>(letters, <span class="at">collapse =</span> <span class="st">&quot;-&quot;</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;a-b-c-d-e-f-g-h-i-j-k-l-m-n-o-p-q-r-s-t-u-v-w-x-y-z&quot;</span></span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a><span class="fu">str_flatten</span>(letters, <span class="at">collapse =</span> <span class="st">&quot;-&quot;</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;a-b-c-d-e-f-g-h-i-j-k-l-m-n-o-p-q-r-s-t-u-v-w-x-y-z&quot;</span></span></code></pre></div>
+<p>The advantage of <code>str_flatten()</code> is that it always returns
+a vector the same length as its input; to predict the return length of
+<code>paste()</code> you must carefully read all arguments.</p>
+</div>
+<div id="str_dup-duplicate-strings-within-a-character-vector" class="section level2">
+<h2><code>str_dup()</code>: duplicate strings within a character
+vector</h2>
+<p>To duplicate strings within a character vector use
+<code>strrep()</code> (in R 3.3.0 or greater) or
+<code>str_dup()</code>:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>fruit <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;apple&quot;</span>, <span class="st">&quot;pear&quot;</span>, <span class="st">&quot;banana&quot;</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a><span class="fu">strrep</span>(fruit, <span class="dv">2</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;appleapple&quot;   &quot;pearpear&quot;     &quot;bananabanana&quot;</span></span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a><span class="fu">strrep</span>(fruit, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;apple&quot;              &quot;pearpear&quot;           &quot;bananabananabanana&quot;</span></span>
+<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb28-10"><a href="#cb28-10" tabindex="-1"></a><span class="fu">str_dup</span>(fruit, <span class="dv">2</span>)</span>
+<span id="cb28-11"><a href="#cb28-11" tabindex="-1"></a><span class="co">#&gt; [1] &quot;appleapple&quot;   &quot;pearpear&quot;     &quot;bananabanana&quot;</span></span>
+<span id="cb28-12"><a href="#cb28-12" tabindex="-1"></a><span class="fu">str_dup</span>(fruit, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
+<span id="cb28-13"><a href="#cb28-13" tabindex="-1"></a><span class="co">#&gt; [1] &quot;apple&quot;              &quot;pearpear&quot;           &quot;bananabananabanana&quot;</span></span></code></pre></div>
+</div>
+<div id="str_split-split-up-a-string-into-pieces" class="section level2">
+<h2><code>str_split()</code>: Split up a string into pieces</h2>
+<p>To split a string into pieces with breaks based on a particular
+pattern match stringr uses <code>str_split()</code> and base R uses
+<code>strsplit()</code>. Unlike most other functions,
+<code>strsplit()</code> starts with the character vector to modify.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>fruits <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>  <span class="st">&quot;apples and oranges and pears and bananas&quot;</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>  <span class="st">&quot;pineapples and mangos and guavas&quot;</span></span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>)</span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a><span class="fu">strsplit</span>(fruits, <span class="st">&quot; and &quot;</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a><span class="co">#&gt; [1] &quot;apples&quot;  &quot;oranges&quot; &quot;pears&quot;   &quot;bananas&quot;</span></span>
+<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pineapples&quot; &quot;mangos&quot;     &quot;guavas&quot;</span></span>
+<span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a></span>
+<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a><span class="fu">str_split</span>(fruits, <span class="st">&quot; and &quot;</span>)</span>
+<span id="cb29-15"><a href="#cb29-15" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb29-16"><a href="#cb29-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;apples&quot;  &quot;oranges&quot; &quot;pears&quot;   &quot;bananas&quot;</span></span>
+<span id="cb29-17"><a href="#cb29-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb29-18"><a href="#cb29-18" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb29-19"><a href="#cb29-19" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pineapples&quot; &quot;mangos&quot;     &quot;guavas&quot;</span></span></code></pre></div>
+<p>The stringr package’s <code>str_split()</code> allows for more
+control over the split, including restricting the number of possible
+matches.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="fu">str_split</span>(fruits, <span class="st">&quot; and &quot;</span>, <span class="at">n =</span> <span class="dv">3</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;apples&quot;            &quot;oranges&quot;           &quot;pears and bananas&quot;</span></span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pineapples&quot; &quot;mangos&quot;     &quot;guavas&quot;</span></span>
+<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a><span class="fu">str_split</span>(fruits, <span class="st">&quot; and &quot;</span>, <span class="at">n =</span> <span class="dv">2</span>)</span>
+<span id="cb30-9"><a href="#cb30-9" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb30-10"><a href="#cb30-10" tabindex="-1"></a><span class="co">#&gt; [1] &quot;apples&quot;                        &quot;oranges and pears and bananas&quot;</span></span>
+<span id="cb30-11"><a href="#cb30-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb30-12"><a href="#cb30-12" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb30-13"><a href="#cb30-13" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pineapples&quot;        &quot;mangos and guavas&quot;</span></span></code></pre></div>
+</div>
+<div id="str_glue-interpolate-strings" class="section level2">
+<h2><code>str_glue()</code>: Interpolate strings</h2>
+<p>It’s often useful to interpolate varying values into a fixed string.
+In base R, you can use <code>sprintf()</code> for this purpose; stringr
+provides a wrapper for the more general purpose <a href="https://glue.tidyverse.org">glue</a> package.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>name <span class="ot">&lt;-</span> <span class="st">&quot;Fred&quot;</span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>age <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>anniversary <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">&quot;1991-10-12&quot;</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a><span class="fu">sprintf</span>(</span>
+<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a>  <span class="st">&quot;My name is %s my age next year is %s and my anniversary is %s.&quot;</span>, </span>
+<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a>  name,</span>
+<span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a>  age <span class="sc">+</span> <span class="dv">1</span>,</span>
+<span id="cb31-10"><a href="#cb31-10" tabindex="-1"></a>  <span class="fu">format</span>(anniversary, <span class="st">&quot;%A, %B %d, %Y&quot;</span>)</span>
+<span id="cb31-11"><a href="#cb31-11" tabindex="-1"></a>)</span>
+<span id="cb31-12"><a href="#cb31-12" tabindex="-1"></a><span class="co">#&gt; [1] &quot;My name is Fred my age next year is 51 and my anniversary is Saturday, October 12, 1991.&quot;</span></span>
+<span id="cb31-13"><a href="#cb31-13" tabindex="-1"></a></span>
+<span id="cb31-14"><a href="#cb31-14" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb31-15"><a href="#cb31-15" tabindex="-1"></a><span class="fu">str_glue</span>(</span>
+<span id="cb31-16"><a href="#cb31-16" tabindex="-1"></a>  <span class="st">&quot;My name is {name}, &quot;</span>,</span>
+<span id="cb31-17"><a href="#cb31-17" tabindex="-1"></a>  <span class="st">&quot;my age next year is {age + 1}, &quot;</span>,</span>
+<span id="cb31-18"><a href="#cb31-18" tabindex="-1"></a>  <span class="st">&quot;and my anniversary is {format(anniversary, &#39;%A, %B %d, %Y&#39;)}.&quot;</span></span>
+<span id="cb31-19"><a href="#cb31-19" tabindex="-1"></a>)</span>
+<span id="cb31-20"><a href="#cb31-20" tabindex="-1"></a><span class="co">#&gt; My name is Fred, my age next year is 51, and my anniversary is Saturday, October 12, 1991.</span></span></code></pre></div>
+</div>
+</div>
+<div id="order-strings" class="section level1">
+<h1>Order strings</h1>
+<div id="str_order-order-or-sort-a-character-vector" class="section level2">
+<h2><code>str_order()</code>: Order or sort a character vector</h2>
+<p>Both base R and stringr have separate functions to order and sort
+strings.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="co"># base</span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="fu">order</span>(letters)</span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="co">#&gt;  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25</span></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="co">#&gt; [26] 26</span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="fu">sort</span>(letters)</span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; &quot;e&quot; &quot;f&quot; &quot;g&quot; &quot;h&quot; &quot;i&quot; &quot;j&quot; &quot;k&quot; &quot;l&quot; &quot;m&quot; &quot;n&quot; &quot;o&quot; &quot;p&quot; &quot;q&quot; &quot;r&quot; &quot;s&quot;</span></span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a><span class="co">#&gt; [20] &quot;t&quot; &quot;u&quot; &quot;v&quot; &quot;w&quot; &quot;x&quot; &quot;y&quot; &quot;z&quot;</span></span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a><span class="fu">str_order</span>(letters)</span>
+<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a><span class="co">#&gt;  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25</span></span>
+<span id="cb32-12"><a href="#cb32-12" tabindex="-1"></a><span class="co">#&gt; [26] 26</span></span>
+<span id="cb32-13"><a href="#cb32-13" tabindex="-1"></a><span class="fu">str_sort</span>(letters)</span>
+<span id="cb32-14"><a href="#cb32-14" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; &quot;e&quot; &quot;f&quot; &quot;g&quot; &quot;h&quot; &quot;i&quot; &quot;j&quot; &quot;k&quot; &quot;l&quot; &quot;m&quot; &quot;n&quot; &quot;o&quot; &quot;p&quot; &quot;q&quot; &quot;r&quot; &quot;s&quot;</span></span>
+<span id="cb32-15"><a href="#cb32-15" tabindex="-1"></a><span class="co">#&gt; [20] &quot;t&quot; &quot;u&quot; &quot;v&quot; &quot;w&quot; &quot;x&quot; &quot;y&quot; &quot;z&quot;</span></span></code></pre></div>
+<p>Some options in <code>str_order()</code> and <code>str_sort()</code>
+don’t have analogous base R options. For example, the stringr functions
+have a <code>locale</code> argument to control how to order or sort. In
+base R the locale is a global setting, so the outputs of
+<code>sort()</code> and <code>order()</code> may differ across different
+computers. For example, in the Norwegian alphabet, å comes after z:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;å&quot;</span>, <span class="st">&quot;a&quot;</span>, <span class="st">&quot;z&quot;</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a><span class="fu">str_sort</span>(x)</span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;a&quot; &quot;å&quot; &quot;z&quot;</span></span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a><span class="fu">str_sort</span>(x, <span class="at">locale =</span> <span class="st">&quot;no&quot;</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;a&quot; &quot;z&quot; &quot;å&quot;</span></span></code></pre></div>
+<p>The stringr functions also have a <code>numeric</code> argument to
+sort digits numerically instead of treating them as strings.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="co"># stringr</span></span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;100a10&quot;</span>, <span class="st">&quot;100a5&quot;</span>, <span class="st">&quot;2b&quot;</span>, <span class="st">&quot;2a&quot;</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a><span class="fu">str_sort</span>(x)</span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;100a10&quot; &quot;100a5&quot;  &quot;2a&quot;     &quot;2b&quot;</span></span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a><span class="fu">str_sort</span>(x, <span class="at">numeric =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;2a&quot;     &quot;2b&quot;     &quot;100a5&quot;  &quot;100a10&quot;</span></span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

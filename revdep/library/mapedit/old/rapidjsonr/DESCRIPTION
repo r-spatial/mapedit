@@ -1,0 +1,25 @@
+Package: rapidjsonr
+Type: Package
+Title: 'Rapidjson' C++ Header Files
+Version: 1.2.1
+Date: 2025-11-23
+Authors@R: c(
+    person("David", "Cooley", ,"dcooley@symbolix.com.au", role = c("aut", "cre")),
+    person("Milo", "Yip", , role = "ctb", comment = "Author of c++ rapidjson library, provided through THL A29 Limited, a Tencent company"),
+    person("Alexander", "Chemeris", role = "ctb", comment = "Author of c++ msinttypes library")
+    )
+Description: Provides JSON parsing capability through the 'Rapidjson' 'C++' header-only library. 
+License: MIT + file LICENSE
+Encoding: UTF-8
+RoxygenNote: 7.3.1
+SystemRequirements: GNU make
+NeedsCompilation: no
+Packaged: 2025-11-23 16:12:43 UTC; david
+Author: David Cooley [aut, cre],
+  Milo Yip [ctb] (Author of c++ rapidjson library, provided through THL
+    A29 Limited, a Tencent company),
+  Alexander Chemeris [ctb] (Author of c++ msinttypes library)
+Maintainer: David Cooley <dcooley@symbolix.com.au>
+Repository: RSPM
+Date/Publication: 2025-11-24 08:50:07 UTC
+Built: R 4.5.0; ; 2025-12-02 12:23:12 UTC; unix

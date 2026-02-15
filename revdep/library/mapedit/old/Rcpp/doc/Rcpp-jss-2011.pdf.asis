@@ -1,0 +1,5 @@
+%\VignetteIndexEntry{Rcpp-JSS-2011}
+%\VignetteKeywords{Rcpp, foreign function interface, .Call, C++, R}
+%\VignettePackage{Rcpp}
+%\VignetteEncoding{UTF-8}
+%\VignetteEngine{Rcpp::asis}

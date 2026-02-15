@@ -1,0 +1,33 @@
+Package: lifecycle
+Title: Manage the Life Cycle of your Package Functions
+Version: 1.0.5
+Authors@R: c(
+    person("Lionel", "Henry", , "lionel@posit.co", role = c("aut", "cre")),
+    person("Hadley", "Wickham", , "hadley@posit.co", role = "aut",
+           comment = c(ORCID = "0000-0003-4757-117X")),
+    person("Posit Software, PBC", role = c("cph", "fnd"))
+  )
+Description: Manage the life cycle of your exported functions with shared
+    conventions, documentation badges, and user-friendly deprecation
+    warnings.
+License: MIT + file LICENSE
+URL: https://lifecycle.r-lib.org/, https://github.com/r-lib/lifecycle
+BugReports: https://github.com/r-lib/lifecycle/issues
+Depends: R (>= 3.6)
+Imports: cli (>= 3.4.0), rlang (>= 1.1.0)
+Suggests: covr, knitr, lintr (>= 3.1.0), rmarkdown, testthat (>=
+        3.0.1), tibble, tidyverse, tools, vctrs, withr, xml2
+VignetteBuilder: knitr
+Config/Needs/website: tidyverse/tidytemplate, usethis
+Config/testthat/edition: 3
+Encoding: UTF-8
+RoxygenNote: 7.3.3
+NeedsCompilation: no
+Packaged: 2026-01-07 15:00:49 UTC; lionel
+Author: Lionel Henry [aut, cre],
+  Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>),
+  Posit Software, PBC [cph, fnd]
+Maintainer: Lionel Henry <lionel@posit.co>
+Repository: RSPM
+Date/Publication: 2026-01-08 08:00:02 UTC
+Built: R 4.5.0; ; 2026-01-09 04:22:28 UTC; unix

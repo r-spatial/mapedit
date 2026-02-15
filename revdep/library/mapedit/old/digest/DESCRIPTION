@@ -1,0 +1,114 @@
+Package: digest
+Authors@R: c(person("Dirk", "Eddelbuettel", role = c("aut", "cre"), email = "edd@debian.org",
+                    comment = c(ORCID = "0000-0001-6419-907X")),
+             person("Antoine", "Lucas", role="ctb", comment = c(ORCID = "0000-0002-8059-9767")),
+             person("Jarek", "Tuszynski", role="ctb"),
+             person("Henrik", "Bengtsson", role="ctb", comment = c(ORCID = "0000-0002-7579-5165")),
+             person("Simon", "Urbanek", role="ctb", comment = c(ORCID = "0000-0003-2297-1732")),
+             person("Mario", "Frasca", role="ctb"),
+             person("Bryan", "Lewis", role="ctb"),
+             person("Murray", "Stokely", role="ctb"),
+             person("Hannes", "Muehleisen", role="ctb", comment = c(ORCID = "0000-0001-8552-0029")),
+             person("Duncan", "Murdoch", role="ctb"),
+             person("Jim", "Hester", role="ctb", comment = c(ORCID = "0000-0002-2739-7082")),
+             person("Wush", "Wu", role="ctb", comment = c(ORCID = "0000-0001-5180-0567")),
+             person("Qiang", "Kou", role="ctb", comment = c(ORCID = "0000-0001-6786-5453")),
+             person("Thierry", "Onkelinx", role="ctb", comment = c(ORCID = "0000-0001-8804-4216")),
+             person("Michel", "Lang", role="ctb", comment = c(ORCID = "0000-0001-9754-0393")),
+             person("Viliam", "Simko", role="ctb"),
+             person("Kurt", "Hornik", role="ctb", comment = c(ORCID = "0000-0003-4198-9911")),
+             person("Radford", "Neal", role="ctb", comment = c(ORCID = "0000-0002-2473-3407")),
+             person("Kendon", "Bell", role="ctb", comment = c(ORCID = "0000-0002-9093-8312")),
+             person("Matthew", "de Queljoe", role="ctb"),
+             person("Dmitry", "Selivanov", role="ctb", comment = c(ORCID = "0000-0003-0492-6647")),
+             person("Ion", "Suruceanu", role="ctb", comment = c(ORCID = "0009-0005-6446-4909")),
+             person("Bill", "Denney", role="ctb", comment = c(ORCID = "0000-0002-5759-428X")),
+             person("Dirk", "Schumacher", role="ctb"),
+             person("András", "Svraka", role="ctb", comment = c(ORCID = "0009-0008-8480-1329")),
+             person("Sergey", "Fedorov", role="ctb", comment = c(ORCID = "0000-0002-5970-7233")),
+             person("Will", "Landau", role="ctb", comment = c(ORCID = "0000-0003-1878-3253")),
+             person("Floris", "Vanderhaeghe", role="ctb", comment = c(ORCID = "0000-0002-6378-6229")),
+             person("Kevin", "Tappe", role="ctb"),
+             person("Harris", "McGehee", role="ctb"),
+             person("Tim", "Mastny", role="ctb"),
+             person("Aaron", "Peikert", role="ctb", comment = c(ORCID = "0000-0001-7813-818X")),
+             person("Mark", "van der Loo", role="ctb", comment = c(ORCID = "0000-0002-9807-4686")),
+             person("Chris", "Muir", role="ctb", comment = c(ORCID = "0000-0003-2555-3878")),
+             person("Moritz", "Beller", role="ctb", comment = c(ORCID = "0000-0003-4852-0526")),
+             person("Sebastian", "Campbell", role="ctb", comment = c(ORCID = "0009-0000-5948-4503")),
+             person("Winston", "Chang", role="ctb", comment = c(ORCID = "0000-0002-1576-2126")),
+             person("Dean", "Attali", role="ctb", comment = c(ORCID = "0000-0002-5645-3493")),
+             person("Michael", "Chirico", role="ctb", comment = c(ORCID = "0000-0003-0787-087X")),
+             person("Kevin", "Ushey", role="ctb", comment = c(ORCID = "0000-0003-2880-7407")),
+             person("Carl", "Pearson", role="ctb", comment = c(ORCID = "0000-0003-0701-7860")))
+Version: 0.6.39
+Date: 2025-11-19
+Title: Create Compact Hash Digests of R Objects
+Description: Implementation of a function 'digest()' for the creation of hash
+ digests of arbitrary R objects (using the 'md5', 'sha-1', 'sha-256', 'crc32',
+ 'xxhash', 'murmurhash', 'spookyhash', 'blake3', 'crc32c', 'xxh3_64', and 'xxh3_128'
+ algorithms) permitting easy comparison of R language objects, as well as functions
+ such as 'hmac()' to create hash-based message authentication code. Please note that
+ this package is not meant to be deployed for cryptographic purposes for which more
+ comprehensive (and widely tested) libraries such as 'OpenSSL' should be used.
+URL: https://github.com/eddelbuettel/digest,
+        https://eddelbuettel.github.io/digest/,
+        https://dirk.eddelbuettel.com/code/digest.html
+BugReports: https://github.com/eddelbuettel/digest/issues
+Depends: R (>= 3.3.0)
+Imports: utils
+License: GPL (>= 2)
+Suggests: tinytest, simplermarkdown, rbenchmark
+VignetteBuilder: simplermarkdown
+Encoding: UTF-8
+NeedsCompilation: yes
+Packaged: 2025-11-19 11:55:09 UTC; edd
+Author: Dirk Eddelbuettel [aut, cre] (ORCID:
+    <https://orcid.org/0000-0001-6419-907X>),
+  Antoine Lucas [ctb] (ORCID: <https://orcid.org/0000-0002-8059-9767>),
+  Jarek Tuszynski [ctb],
+  Henrik Bengtsson [ctb] (ORCID: <https://orcid.org/0000-0002-7579-5165>),
+  Simon Urbanek [ctb] (ORCID: <https://orcid.org/0000-0003-2297-1732>),
+  Mario Frasca [ctb],
+  Bryan Lewis [ctb],
+  Murray Stokely [ctb],
+  Hannes Muehleisen [ctb] (ORCID:
+    <https://orcid.org/0000-0001-8552-0029>),
+  Duncan Murdoch [ctb],
+  Jim Hester [ctb] (ORCID: <https://orcid.org/0000-0002-2739-7082>),
+  Wush Wu [ctb] (ORCID: <https://orcid.org/0000-0001-5180-0567>),
+  Qiang Kou [ctb] (ORCID: <https://orcid.org/0000-0001-6786-5453>),
+  Thierry Onkelinx [ctb] (ORCID: <https://orcid.org/0000-0001-8804-4216>),
+  Michel Lang [ctb] (ORCID: <https://orcid.org/0000-0001-9754-0393>),
+  Viliam Simko [ctb],
+  Kurt Hornik [ctb] (ORCID: <https://orcid.org/0000-0003-4198-9911>),
+  Radford Neal [ctb] (ORCID: <https://orcid.org/0000-0002-2473-3407>),
+  Kendon Bell [ctb] (ORCID: <https://orcid.org/0000-0002-9093-8312>),
+  Matthew de Queljoe [ctb],
+  Dmitry Selivanov [ctb] (ORCID: <https://orcid.org/0000-0003-0492-6647>),
+  Ion Suruceanu [ctb] (ORCID: <https://orcid.org/0009-0005-6446-4909>),
+  Bill Denney [ctb] (ORCID: <https://orcid.org/0000-0002-5759-428X>),
+  Dirk Schumacher [ctb],
+  András Svraka [ctb] (ORCID: <https://orcid.org/0009-0008-8480-1329>),
+  Sergey Fedorov [ctb] (ORCID: <https://orcid.org/0000-0002-5970-7233>),
+  Will Landau [ctb] (ORCID: <https://orcid.org/0000-0003-1878-3253>),
+  Floris Vanderhaeghe [ctb] (ORCID:
+    <https://orcid.org/0000-0002-6378-6229>),
+  Kevin Tappe [ctb],
+  Harris McGehee [ctb],
+  Tim Mastny [ctb],
+  Aaron Peikert [ctb] (ORCID: <https://orcid.org/0000-0001-7813-818X>),
+  Mark van der Loo [ctb] (ORCID: <https://orcid.org/0000-0002-9807-4686>),
+  Chris Muir [ctb] (ORCID: <https://orcid.org/0000-0003-2555-3878>),
+  Moritz Beller [ctb] (ORCID: <https://orcid.org/0000-0003-4852-0526>),
+  Sebastian Campbell [ctb] (ORCID:
+    <https://orcid.org/0009-0000-5948-4503>),
+  Winston Chang [ctb] (ORCID: <https://orcid.org/0000-0002-1576-2126>),
+  Dean Attali [ctb] (ORCID: <https://orcid.org/0000-0002-5645-3493>),
+  Michael Chirico [ctb] (ORCID: <https://orcid.org/0000-0003-0787-087X>),
+  Kevin Ushey [ctb] (ORCID: <https://orcid.org/0000-0003-2880-7407>),
+  Carl Pearson [ctb] (ORCID: <https://orcid.org/0000-0003-0701-7860>)
+Maintainer: Dirk Eddelbuettel <edd@debian.org>
+Repository: RSPM
+Date/Publication: 2025-11-19 13:20:08 UTC
+Built: R 4.5.0; x86_64-pc-linux-gnu; 2025-12-02 12:22:32 UTC; unix

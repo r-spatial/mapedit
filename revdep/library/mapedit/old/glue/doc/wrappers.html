@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>How to write a function that wraps glue</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">How to write a function that wraps
+glue</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(glue)</span></code></pre></div>
+<p>Imagine that you want to call <code>glue()</code> repeatedly inside
+your own code (e.g. in your own package) with a non-default value for
+one or more arguments. For example, maybe you anticipate producing R
+code where <code>{</code> and <code>}</code> have specific syntactic
+meaning. Therefore, you’d prefer to use <code>&lt;&lt;</code> and
+<code>&gt;&gt;</code> as the opening and closing delimiters for
+expressions in <code>glue()</code>.</p>
+<p>Spoiler alert: here’s the correct way to write such a wrapper:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>my_glue <span class="ot">&lt;-</span> <span class="cf">function</span>(..., <span class="at">.envir =</span> <span class="fu">parent.frame</span>()) {</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">glue</span>(..., <span class="at">.open =</span> <span class="st">&quot;&lt;&lt;&quot;</span>, <span class="at">.close =</span> <span class="st">&quot;&gt;&gt;&quot;</span>, <span class="at">.envir =</span> .envir)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>}</span></code></pre></div>
+<p>This is the key move:</p>
+<blockquote>
+<p>Include <code>.envir = parent.frame()</code> as an argument of the
+wrapper function and pass this <code>.envir</code> to the
+<code>.envir</code> argument of <code>glue()</code>.</p>
+</blockquote>
+<p>If you’d like to know why this is the way, keep reading. It pays off
+to understand this, because the technique applies more broadly than
+glue. Once you recognize this setup, you’ll see it in many functions in
+the withr, cli, and rlang packages (e.g. <code>withr::defer()</code>,
+<code>cli::cli_abort()</code>, <code>rlang::abort()</code>).</p>
+<div id="working-example" class="section level2">
+<h2>Working example</h2>
+<p>Here’s an abbreviated excerpt of the roxygen comment that generates
+the documentation for the starwars dataset in dplyr
+(<code>?dplyr::starwars</code>):</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#&#39; \describe{</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&#39; \item{name}{Name of the character}</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&#39; \item{height}{Height (cm)}</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&#39; \item{mass}{Weight (kg)}</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&#39; \item{species}{Name of species}</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&#39; \item{films}{List of films the character appeared in}</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&#39; }</span></span></code></pre></div>
+<p>To produce such text programmatically, the first step might be to
+generate the <code>\item{}{}</code> lines from a named list of column
+names and descriptions. Notice that <code>{</code> and <code>}</code>
+are important to the <code>\describe{...}</code> and
+<code>\item{}{}</code> syntax, so this is an example where it is nice
+for glue to use different delimiters for expressions.</p>
+<p>Put the metadata in a suitable list:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>sw_meta <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">name    =</span> <span class="st">&quot;Name of the character&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">height  =</span> <span class="st">&quot;Height (cm)&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">mass    =</span> <span class="st">&quot;Weight (kg)&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">species =</span> <span class="st">&quot;Name of species&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">films   =</span> <span class="st">&quot;List of films the character appeared in&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>)</span></code></pre></div>
+<p>Define a custom glue wrapper and use it inside another helper that
+generates <code>\item</code> entries<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>my_glue <span class="ot">=</span> <span class="cf">function</span>(...) {</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">glue</span>(..., <span class="at">.open =</span> <span class="st">&quot;&lt;&lt;&quot;</span>, <span class="at">.close =</span> <span class="st">&quot;&gt;&gt;&quot;</span>, <span class="at">.envir =</span> <span class="fu">parent.frame</span>())</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>}</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>named_list_to_items <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="fu">my_glue</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">item{&lt;&lt;names(x)&gt;&gt;}{&lt;&lt;x&gt;&gt;}&quot;</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>}</span></code></pre></div>
+<p>Apply <code>named_list_to_items()</code> to starwars metadata:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">named_list_to_items</span>(sw_meta)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; \item{name}{Name of the character}</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; \item{height}{Height (cm)}</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; \item{mass}{Weight (kg)}</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; \item{species}{Name of species}</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; \item{films}{List of films the character appeared in}</span></span></code></pre></div>
+<p>Here’s how this would fail if we did <em>not</em> handle
+<code>.envir</code> correctly in our wrapper function:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>my_glue_WRONG <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">glue</span>(..., <span class="at">.open =</span> <span class="st">&quot;&lt;&lt;&quot;</span>, <span class="at">.close =</span> <span class="st">&quot;&gt;&gt;&quot;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>}</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>named_list_to_items_WRONG <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">my_glue_WRONG</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">item{&lt;&lt;names(x)&gt;&gt;}{&lt;&lt;x&gt;&gt;}&quot;</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>}</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="fu">named_list_to_items_WRONG</span>(sw_meta)</span></code></pre></div>
+<p>It can be hard to understand why <code>x</code> can’t be found, when
+it is clearly available inside <code>named_list_to_items_WRONG()</code>.
+Why isn’t <code>x</code> available to <code>my_glue_WRONG()</code>?</p>
+</div>
+<div id="where-does-glue-evaluate-code" class="section level2">
+<h2>Where does <code>glue()</code> evaluate code?</h2>
+<p>What’s going on? It’s time to look at the (redacted) signature of
+<code>glue()</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">glue</span>(..., <span class="at">.envir =</span> <span class="fu">parent.frame</span>(), ...)</span></code></pre></div>
+<p>The expressions inside a glue string are evaluated with respect to
+<code>.envir</code>, which defaults to the environment where
+<code>glue()</code> is called from.</p>
+<p>Everything is simple when evaluating <code>glue()</code> in the
+global environment:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="fu">glue</span>(<span class="st">&quot;{x} {y} {z}&quot;</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; 0 0 0</span></span></code></pre></div>
+<p>Now we wrap <code>glue()</code> in our own simple function,
+<code>my_glue1()</code>. Notice that <code>my_glue1()</code> does not
+capture its caller environment and pass that along.</p>
+<p>When we execute <code>my_glue1()</code> in the global environment,
+there’s no obvious problem.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>my_glue1 <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="fu">glue</span>(...)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>}</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="fu">my_glue1</span>(<span class="st">&quot;{x} {y} {z}&quot;</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; 1 0 0</span></span></code></pre></div>
+<p>The value of <code>x</code> is found in the execution environment of
+<code>my_glue1()</code>. The values of <code>y</code> and <code>z</code>
+are found in the global environment. Importantly, this is because that
+is the environment where <code>my_glue1()</code> is defined, not because
+that is where <code>my_glue1()</code> is called.</p>
+<p>However, if we call our <code>my_glue1()</code> inside another
+function, we see that all is not well.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>my_glue2 <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="fu">my_glue1</span>(...)</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>}</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="fu">my_glue2</span>(<span class="st">&quot;{x} {y} {z}&quot;</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; 1 0 0</span></span></code></pre></div>
+<p>Why do <code>x</code> and <code>y</code> not have the value 2?
+Because <code>my_glue1()</code> and its eventual call to
+<code>glue()</code> have no access to the execution environment of
+<code>my_glue2()</code>, which is the caller environment of
+<code>my_glue1()</code>.</p>
+<p>If you want your glue wrapper to behave like <code>glue()</code>
+itself and to work as expected inside other functions, make sure it
+captures its caller environment and passes that along to
+<code>glue()</code>.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>my_glue3 <span class="ot">&lt;-</span> <span class="cf">function</span>(..., <span class="at">.envir =</span> <span class="fu">parent.frame</span>()) {</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">glue</span>(..., <span class="at">.envir =</span> .envir)</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>}</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="fu">my_glue3</span>(<span class="st">&quot;{x} {y} {z}&quot;</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; 0 0 0</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>my_glue4 <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>  <span class="fu">my_glue3</span>(...)</span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>}</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="fu">my_glue4</span>(<span class="st">&quot;{x} {y} {z}&quot;</span>)</span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt; 4 4 0</span></span></code></pre></div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>Note that delimiters <code>&lt;&lt;</code> and
+<code>&gt;&gt;</code> have special meaning in knitr (they are used for a
+templating feature in knitr itself). So in code chunks inside RMarkdown
+or Quarto documents, you may need to use different delimiters.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

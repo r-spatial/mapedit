@@ -1,0 +1,49 @@
+Type: Package
+Package: later
+Title: Utilities for Scheduling Functions to Execute Later with Event
+        Loops
+Version: 1.4.6
+Authors@R: c(
+    person("Winston", "Chang", , "winston@posit.co", role = "aut",
+           comment = c(ORCID = "0000-0002-1576-2126")),
+    person("Joe", "Cheng", , "joe@posit.co", role = "aut"),
+    person("Charlie", "Gao", , "charlie.gao@posit.co", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-0750-061X")),
+    person("Posit Software, PBC", role = c("cph", "fnd"),
+           comment = c(ROR = "03wc8by49")),
+    person("Marcus", "Geelnard", role = c("ctb", "cph"),
+           comment = "TinyCThread library, https://tinycthread.github.io/"),
+    person("Evan", "Nemerson", role = c("ctb", "cph"),
+           comment = "TinyCThread library, https://tinycthread.github.io/")
+  )
+Description: Executes arbitrary R or C functions some time after the
+    current time, after the R execution stack has emptied. The functions
+    are scheduled in an event loop.
+License: MIT + file LICENSE
+URL: https://later.r-lib.org, https://github.com/r-lib/later
+BugReports: https://github.com/r-lib/later/issues
+Depends: R (>= 3.5)
+Imports: Rcpp (>= 1.0.10), rlang
+Suggests: knitr, nanonext, promises, rmarkdown, testthat (>= 3.0.0)
+LinkingTo: Rcpp
+VignetteBuilder: knitr
+Config/build/compilation-database: true
+Config/Needs/website: tidyverse/tidytemplate
+Config/testthat/edition: 3
+Config/usethis/last-upkeep: 2025-07-18
+Encoding: UTF-8
+RoxygenNote: 7.3.3
+NeedsCompilation: yes
+Packaged: 2026-02-13 17:08:44 UTC; cg334
+Author: Winston Chang [aut] (ORCID: <https://orcid.org/0000-0002-1576-2126>),
+  Joe Cheng [aut],
+  Charlie Gao [aut, cre] (ORCID: <https://orcid.org/0000-0002-0750-061X>),
+  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>),
+  Marcus Geelnard [ctb, cph] (TinyCThread library,
+    https://tinycthread.github.io/),
+  Evan Nemerson [ctb, cph] (TinyCThread library,
+    https://tinycthread.github.io/)
+Maintainer: Charlie Gao <charlie.gao@posit.co>
+Repository: CRAN
+Date/Publication: 2026-02-13 18:00:08 UTC
+Built: R 4.5.0; x86_64-pc-linux-gnu; 2026-02-15 11:04:57 UTC; unix

@@ -1,0 +1,4 @@
+## Repositories
+
+* otel: https://github.com/r-lib/otel
+* otelsdk: https://github.com/r-lib/otelsdk

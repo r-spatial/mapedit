@@ -1,0 +1,32 @@
+sf_bbox                 sf bbox
+sf_boxes                sf boxes
+sf_cast                 sf cast
+sf_line                 Helper for sf LINESTRING
+sf_linestring           sf LINESTRING
+sf_mline                Helper for sf MULTILINESTRING
+sf_mpoly                Helper for sf MULTIPOLYGON
+sf_mpt                  Helper for sf MULTIPOINT
+sf_multilinestring      sf MULTILINESTRING
+sf_multipoint           sf MULTIPOINT
+sf_multipolygon         sf MULTIPOLYGON
+sf_point                sf POINT
+sf_poly                 Helper for sf POLYGON
+sf_polygon              sf POLYGON
+sf_pt                   Helper for sf POINT
+sf_remove_holes         remove holes
+sf_to_df                sf to df
+sfc_cast                sfc cast
+sfc_linestring          sfc LINESTRING
+sfc_multilinestring     sfc MULTILINESTRING
+sfc_multipoint          sfc MULTIPOINT
+sfc_multipolygon        sfc MULTIPOLYGON
+sfc_point               sfc POINT
+sfc_polygon             sfc POLYGON
+sfc_to_df               sfc to df
+sfg_linestring          sfg linestring
+sfg_multilinestring     sfg multilinestring
+sfg_multipoint          sfg multipoint
+sfg_multipolygon        sfg multipolygon
+sfg_point               sfg point
+sfg_polygon             sfg polygon
+sfg_to_df               sfg to df

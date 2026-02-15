@@ -1,0 +1,14 @@
+## Status
+
+The current status of the major functional components for OpenTelemetry
+R is as follows:
+
+```{R}
+#| include: FALSE
+link_base <- "https://opentelemetry.io/docs/specs/otel"
+link <- paste0(link_base, "/versioning-and-stability/#development")
+```
+
+*Traces*                | *Metrics*               | *Logs*
+------------------------+-------------------------|------------------------
+[Development](`r link`) | [Development](`r link`) | [Development](`r link`)

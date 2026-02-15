@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Working with promises in R</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Working with promises in R</h1>
+
+
+
+<p>One persistent challenge with developing Shiny apps for live
+deployment is the R language runtime’s single-threaded nature. Because
+of this, a given Shiny app process can only do one thing at a time: if
+it is fitting a linear model for one client, it cannot simultaneously
+prepare a CSV download for another client, and vice versa.</p>
+<p>For many Shiny apps, this isn’t a big problem; because no one
+processing step takes very long, no client has to wait an undue amount
+of time before they start seeing results. But for apps that perform
+long-running operations — either expensive computations that take a
+while to complete, or waiting on slow network operations like database
+or web API queries — your users’ experience can suffer dramatically as
+traffic ramps up.</p>
+<p>The traditional approach to scaling web applications is to launch
+multiple processes and balance traffic between them, and indeed, Shiny
+Server Pro and RStudio Connect both implement a variant of this
+strategy. You do some load testing to determine how many concurrent
+users a single process can support, then <a href="https://docs.posit.co/shiny-server/">configure Shiny Server
+Pro</a> to launch new processes as those limits are approached.</p>
+<p>But there are some applications that perform truly expensive
+operations, like simulations, training neural networks, or complex
+per-row processing, that take <em>minutes</em> to complete. Again, while
+this is happening, any other users that are unfortunate enough to be
+assigned to the same process are completely blocked from proceeding in
+any way — even loading static JavaScript/CSS assets must wait until the
+blocking operation is complete.</p>
+<p>Asynchronous (async) programming offers a way to offload certain
+classes of long-running operations from the main R thread, such that
+Shiny apps can remain responsive.</p>
+<p>A warning before we dive in: async code is hard to write! It is hard
+in C++, it is hard in Java, it is hard in JavaScript, and sadly, R is no
+exception. We have attempted to make the API as simple and elegant as
+possible, but just as with reactive programming, it will likely take
+some effort to internalize the main concepts, and plenty of practice
+before expressing logic this way begins to feel natural.</p>
+<div id="async-programming-in-r" class="section level2">
+<h2>Async programming in R</h2>
+<p>Integrating async programming capabilities into R involves two types
+of tasks:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Invoking:</strong> Getting expensive operations to happen
+either on a different thread, or (more likely) in a different process,
+leaving the main R thread/process free to continue doing other work.
+Generally, an expensive operation will either produce a result value
+(e.g. a data frame), or cause a side effect (e.g. a write to a
+database).</li>
+<li><strong>Handling:</strong> When an operation completes or fails,
+notify the main R thread/process so that it may make use of the
+resulting value or error in further logic. Handling logic may choose to
+perform side effects like logging or persisting, or to transform the
+value/error for further downstream processing.</li>
+</ol>
+<p>In our vision for R async programming, there should be several
+different ways of invoking expensive operations asynchronously, each
+with different tradeoffs, depending on the type of task you are trying
+to execute. We will go into more detail later, but just to give you an
+idea, here are just a few of the different strategies you could use to
+invoke code asynchronously:</p>
+<ul>
+<li>Run it in the current process, but on a different thread. (This
+strategy is impossible for R code, but you can run C/C++ code on a
+different thread, even in an R process.)</li>
+<li>Launch a separate R process and pass it the R code to evaluate.</li>
+<li>Fork the R process and run the code in the child process. (Doesn’t
+work on Windows.)</li>
+<li>Farm the code out to a pre-allocated cluster of R processes, either
+on the same machine or distributed across a network.</li>
+</ul>
+<p>Regardless of which approach you choose, the API for handling the
+result is identical. It’s centered around an abstraction that you will
+come to know very well: the <strong>promise</strong>.</p>
+</div>
+<div id="promises-the-central-abstraction-of-async-programming" class="section level2">
+<h2>Promises: the central abstraction of async programming</h2>
+<blockquote>
+<p><strong>Terminology note:</strong> Advanced R users (or users who
+have at least read <a href="http://adv-r.had.co.nz/Computing-on-the-language.html">Advanced
+R</a>) may be familiar with the term “promises” already: in R,
+unevaluated function arguments are technically called promises. Those
+types of promises have nothing to do with asynchronous programming, and
+the things we call “promises” in this document have nothing to do with
+those, so try to forget they exist for the time being. Sorry for the
+confusion.</p>
+</blockquote>
+<p>A promise is an object that represents the <em>eventual result</em>
+of a specific asynchronous operation.</p>
+<p>Whenever you launch an async task, you get a promise object back.
+That promise is what lets you know:</p>
+<ul>
+<li>When the task completes (if ever)</li>
+<li>Whether the task completed successfully or failed</li>
+<li>If success, the result value</li>
+<li>If failure, the error</li>
+</ul>
+<p>So if a regular, synchronous function call generally looks like
+this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>value <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;http://example.com/data/data.csv&quot;</span>)</span></code></pre></div>
+<p>An asynchronous function call (which uses <a href="promises_04_mirai.html">the mirai package</a>) will look instead
+like:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>promise <span class="ot">&lt;-</span> <span class="fu">as.promise</span>(<span class="fu">mirai</span>(<span class="fu">read.csv</span>(<span class="st">&quot;http://example.com/data/data.csv&quot;</span>)))</span></code></pre></div>
+<p>While the regular function call returns a data frame, the async call
+returns a promise, which is most definitely not a data frame. You cannot
+ask the promise how many rows it has, or the names of its columns. You
+cannot run dplyr operations on it, or turn it into a data.table.</p>
+<p>You might guess that you could call a function or method on a promise
+to extract the value, like <code>value(promise)</code> or
+<code>promise$value()</code>. But that isn’t how promises work. Instead,
+everything is based on a function called <code>then</code>.</p>
+</div>
+<div id="accessing-results-with-then" class="section level2">
+<h2>Accessing results with <code>then</code></h2>
+<p>The <code>promises::then</code> function is what ultimately makes
+promise objects useful. It is used to register success and failure
+handlers on a promise. Its signature looks like:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">then</span>(promise, <span class="at">onFulfilled =</span> <span class="cn">NULL</span>, <span class="at">onRejected =</span> <span class="cn">NULL</span>, ..., <span class="at">tee =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>In promise terminology, “fulfilled” (and equivalently, “resolved”)
+means success and “rejected” means failure. You can pass functions with
+single arguments to <code>onFulfilled</code> and <code>onRejected</code>
+to be notified when a promise succeeds or fails. (If the promise has
+already been fulfilled or resolved by the time <code>then</code> is
+called, don’t worry—the appropriate callback will be still be called.
+It’s never too late to call <code>then</code> on a promise.)</p>
+<p>The promise library guarantees that only one of
+<code>onFulfilled</code> or <code>onRejected</code> will be called,
+never both. And a callback will never be invoked more than once. It is
+possible, though, that neither callback will ever be called, i.e. the
+async operation never completes. (This is analogous to calling a regular
+function that never returns.)</p>
+<p>For now, we will focus on fulfillment, and come back to rejection in
+the <a href="#error-handling">Error Handling</a> section below.</p>
+<p>The following example shows a simple example of printing out a
+success message and the value.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">then</span>(promise,</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  \(value) {</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;The operation completed!</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="fu">print</span>(value)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  })</span></code></pre></div>
+<p>In the example above, we used the anonymous function shorthand
+(<code>\(x) { }</code>) to write an anonymous function.
+<code>function(x) { }</code> would behave just the same.</p>
+<p>To help reduce the amount of in/out reading, we can use the R pipe
+operator (<code>|&gt;</code>):</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>promise <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">then</span>(\(value) {</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;The operation completed!</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="fu">print</span>(value)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  })</span></code></pre></div>
+<p>Note that the call to <code>then()</code> <strong>always returns
+immediately</strong>, without invoking the callback function. The
+callback function will be invoked sometime in the future—it could be
+very soon, or it could be hours, depending mostly on how long it takes
+the async operation to complete.</p>
+</div>
+<div id="promise-chaining" class="section level2">
+<h2>Promise chaining</h2>
+<p>The <code>then()</code> function has an important function beyond
+registering callbacks. It also returns a promise—not the promise it
+takes as an argument, but a new, distinct promise. This new promise gets
+fulfilled after the input promise has resolved and the callback
+registered by <code>then()</code> has run; the return value of the
+callback is used to fulfill the new promise.</p>
+<p>For example:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">promise_resolve</span>(palmerpenguins<span class="sc">::</span>penguins)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">then</span>(nrow)</span></code></pre></div>
+<p>In this case, after <code>p</code> is fulfilled with a data frame,
+<code>p2</code> will be fulfilled with the number of rows of that data
+frame.</p>
+<p>Because <code>then()</code> uses promises for both input and output,
+you can chain multiple <code>then()</code> calls together directly:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>p <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">then</span>(\(df) <span class="fu">filter</span>(df, year <span class="sc">==</span> <span class="dv">2008</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">then</span>(\(df) <span class="fu">group_by</span>(df, species)) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">then</span>(\(df) <span class="fu">summarise</span>(df, <span class="at">mean_bill =</span> <span class="fu">mean</span>(bill_length_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="fu">then</span>(\(df) <span class="fu">arrange</span>(df, <span class="fu">desc</span>(mean_bill))) <span class="sc">|&gt;</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">then</span>(print)</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 2</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt;   species   mean_bill</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;         &lt;dbl&gt;</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; 1 Chinstrap      48.7</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; 2 Gentoo         46.9</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; 3 Adelie         38.6</span></span></code></pre></div>
+<p>Or, equivalently:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>p <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="fu">then</span>(\(df) {</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    df <span class="sc">|&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>      <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2008</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>      <span class="fu">group_by</span>(state) <span class="sc">|&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>      <span class="fu">summarise</span>(<span class="at">pop =</span> <span class="fu">sum</span>(population)) <span class="sc">|&gt;</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>      <span class="fu">arrange</span>(<span class="fu">desc</span>(pop))</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  })</span></code></pre></div>
+<p>Evaluating this expression results in a promise that will eventually
+resolve to the filtered, summarized, and ordered data.</p>
+</div>
+<div id="tee-operator" class="section level2">
+<h2>Tee operator</h2>
+<p>When working with promise pipelines, it may sometimes be useful to
+have a stage that performs an action but does not modify the value
+presented to downstream stages. For example, you may want to log the
+number of rows in a data frame for diagnostic purposes:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Incorrect!</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>promise <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="fu">then</span>(\(df) df <span class="sc">|&gt;</span> <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2008</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="fu">then</span>(\(df) <span class="fu">print</span>(<span class="fu">nrow</span>(df))) <span class="sc">|&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="fu">then</span>(\(df) df <span class="sc">|&gt;</span> <span class="fu">group_by</span>(state)) <span class="sc">|&gt;</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="fu">then</span>(\(df) df <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="at">pop =</span> <span class="fu">sum</span>(population))) <span class="sc">|&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="fu">then</span>(\(df) df <span class="sc">|&gt;</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(pop))) <span class="sc">|&gt;</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="fu">then</span>(print)</span></code></pre></div>
+<p>This is not correct, as the <code>print(nrow(df))</code> stage will
+not only print the desired value, but pass the return value of
+<code>print(nrow(.))</code>, which is just
+<code>invisible(nrow(df))</code>, to the next stage.</p>
+<p>For synchronous code, the <a href="https://magrittr.tidyverse.org/reference/tee.html"><code>{magrittr}</code>
+package offered the <code>%T&gt;%</code> (pronounced “tee”)
+operator</a>, which operates like a regular <code>|&gt;</code> except
+that, after executing its right-hand side, it returns its left-hand side
+value.</p>
+<p>Similarly, for asynchronous code, you can use the
+<code>then(tee = TRUE)</code> method, which is like <code>then()</code>
+except that after execution it resolves using its input promise. The
+only difference in the corrected code below is the operator immediately
+preceding <code>print(nrow(df))</code> has changed from
+<code>then()</code> to <code>then(tee = TRUE)</code>.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Correct.</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>promise <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="fu">then</span>(\(df) df <span class="sc">|&gt;</span> <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2008</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="fu">then</span>(<span class="at">tee =</span> <span class="cn">TRUE</span>, \(df) <span class="fu">print</span>(<span class="fu">nrow</span>(df))) <span class="sc">|&gt;</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="fu">then</span>(\(df) df <span class="sc">|&gt;</span> <span class="fu">group_by</span>(state)) <span class="sc">|&gt;</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="fu">then</span>(\(df) df <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="at">pop =</span> <span class="fu">sum</span>(population))) <span class="sc">|&gt;</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  <span class="fu">then</span>(\(df) df <span class="sc">|&gt;</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(pop))) <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>  <span class="fu">then</span>(print)</span></code></pre></div>
+</div>
+<div id="error-handling" class="section level2">
+<h2>Error handling</h2>
+<p>Many scripts and Shiny apps that use promises will not contain any
+explicit error handling code at all, just like most scripts and Shiny
+apps don’t contain <code>tryCatch</code> or <code>try</code> calls to
+handle errors in synchronous code. But if you need to handle errors,
+promises have a robust and flexible mechanism for doing so.</p>
+<div id="catching-errors-with-onrejected" class="section level3">
+<h3>Catching errors with <code>onRejected</code></h3>
+<p>The lowest level of error handling is built into the
+<code>then</code> function. To review, the <code>then</code> function
+takes an input promise, and up to two callbacks:
+<code>onFulfilled</code> and <code>onRejected</code>; and it returns a
+new promise as output. If the operation behind by the input promise
+succeeds, the <code>onFulfilled</code> callback (if provided) will be
+invoked. If the input promise’s operation fails, then
+<code>onRejected</code> (if provided) will be invoked with an error
+object.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>promise2 <span class="ot">&lt;-</span> promise1 <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="fu">then</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>    <span class="at">onFulfilled =</span> \(value) {</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>      <span class="co"># Getting here means promise1 succeeded</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>    },</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>    <span class="at">onRejected =</span> \(err) {</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>      <span class="co"># Getting here means promise1 failed</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>    }</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  )</span></code></pre></div>
+<p>In the code above, you can see that the success or failure of
+<code>promise1</code> is what will determine which of the two callbacks
+is invoked.</p>
+<p>But what about the output promise, <code>promise2</code>? We know
+what happens if <code>promise1</code> succeeds and the
+<code>onFulfilled</code> callback returns normally:
+<code>promise2</code> is resolved with the return value of
+<code>onFulfilled</code> (and if that return value is itself a promise,
+then <code>promise2</code> will do whatever that promise does). What
+happens if <code>promise1</code> is rejected; does that automatically
+mean <code>promise2</code> is rejected as well?</p>
+<p>The answer is no, <code>promise2</code> is not automatically rejected
+if <code>promise1</code> is rejected. The rejection of
+<code>promise1</code> causes <code>onRejected</code> to be called, but
+from there on, <code>onFulfilled</code> and <code>onRejected</code> are
+treated identically. Whichever callback is invoked, if the invocation of
+the callback succeeds (returns either a regular value, or, a promise
+that ultimately resolves successfully) then the output promise will be
+resolved/succeed. But if the invocation of the callback fails (either
+throws an error, or returns a promise that ultimately rejects) then the
+output promise will be rejected/fail.</p>
+<p>If you think about it, this behavior makes sense; just like
+<code>tryCatch</code>, once you’ve caught an error, it doesn’t continue
+to propagate, unless you go out of your way to do so by re-throwing it
+using <code>stop(err)</code>.</p>
+<p>So the equivalent to this (synchronous) code:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>value <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  somepkg<span class="sc">::</span><span class="fu">operation</span>(),</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="at">error =</span> \(err) {</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">&quot;An error occurred: &quot;</span>, err)</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">&quot;Using default value of 0 instead&quot;</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>    <span class="dv">0</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  }</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>)</span></code></pre></div>
+<p>would be this, when the operation is performed asynchronously:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>promise <span class="ot">&lt;-</span> <span class="fu">mirai</span>(somepkg<span class="sc">::</span><span class="fu">operation</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="fu">then</span>(<span class="at">onRejected =</span> \(err) {</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">&quot;An error occurred: &quot;</span>, err)</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">&quot;Using default value of 0 instead&quot;</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>    <span class="dv">0</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>  })</span></code></pre></div>
+<p>In the synchronous case, an error in <code>operation()</code> will
+result in the error being logged as a warning, and <code>0</code> being
+assigned to <code>value</code>. In the asynchronous case, the same
+warning log messages will happen but then the value of <code>0</code>
+will be used to resolve <code>promise</code>. In both cases, the error
+is caught, dealt with, and turned into a non-error.</p>
+</div>
+<div id="default-onrejected-behavior" class="section level3">
+<h3>Default onRejected behavior</h3>
+<p>In many of the examples above, we called <code>then</code> with an
+<code>onFulfilled</code> but no <code>onRejected</code>. What is the
+behavior of <code>then</code> if its input promise is rejected with an
+error, but the caller has not provided an explicit
+<code>onRejected</code> callback?</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>promise2 <span class="ot">&lt;-</span> promise1 <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  <span class="fu">then</span>(head) <span class="sc">|&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="fu">then</span>(print)</span></code></pre></div>
+<p>Well, <code>then</code> has its own default version of
+<code>onRejected</code>. It’s <em>not</em> an empty
+<code>onRejected = \(err) { }</code>, as you might think. Even though
+this function has no code in its body, it still returns normally, and
+thus would cause any errors to be caught and swallowed. That’s not the
+behavior we want; in the code above, we want a failure in
+<code>promise1</code> to cause <code>promise2</code> to be rejected so
+we know that something went wrong. So the default callback actually
+looks like: <code>onRejected = stop</code>, meaning, do nothing but
+raise the error, pushing the responsibility for error handling
+downstream.</p>
+<p>(Incidentally, it’s valid to call <code>then</code> with
+<code>onRejected</code> and not <code>onFulfilled</code>, and the
+default version of <code>onFulfilled</code> is not an empty function
+either; instead, it’s <code>onFulfilled = identity</code>, so that the
+input promise’s return value can be passed through to the output
+promise.)</p>
+</div>
+<div id="syntactic-sugar-for-onrejected" class="section level3">
+<h3>Syntactic sugar for onRejected</h3>
+<p>The same syntactic sugar that is offered for non-error cases, is
+available for error handling code as well. You can use formulas in
+<code>onRejected()</code>:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">mirai</span>(somepkg<span class="sc">::</span><span class="fu">operation</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  <span class="fu">then</span>(<span class="at">onRejected =</span> \(err) <span class="fu">warning</span>(err))</span></code></pre></div>
+<p>There’s a <code>catch()</code> function that is just a shorthand for
+<code>then(onRejected)</code>. It saves a little typing, but more
+importantly, is easier to read:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">mirai</span>(somepkg<span class="sc">::</span><span class="fu">operation</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="fu">catch</span>(warning)</span></code></pre></div>
+</div>
+<div id="error-tee" class="section level3">
+<h3>Error tee</h3>
+<p>Because it’s fairly common to want to do something with an error
+without stopping it from propagating (such as logging), there are a
+couple of additional shorthands for doing so without having to
+explicitly call <code>stop(err)</code>. For example:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>promise <span class="sc">|&gt;</span> <span class="fu">catch</span>(print)</span></code></pre></div>
+<p>will print the error, but also eat it. To print the error without
+eating it, you’d have to do this:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>promise <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>  <span class="fu">catch</span>(\(err) {</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>    <span class="fu">print</span>(err)</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>    <span class="fu">stop</span>(err)</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>  })</span></code></pre></div>
+<p>That’s a fair amount of boilerplate. Instead, you can either add
+<code>tee = TRUE</code> to your <code>catch</code> call. These two lines
+are equivalent to the previous code chunk:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>promise <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>  <span class="fu">catch</span>(print, <span class="at">tee =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="cleaning-up-with-finally" class="section level2">
+<h2>Cleaning up with <code>finally</code></h2>
+<p>In synchronous programming, you use
+either<code>tryCatch(expr, finally = ...)</code> or
+<code>on.exit(...)</code> to perform tasks (usually relating to freeing
+resources or reverting temporary changes) regardless of whether the main
+logic succeeds or fails (throws an error). When programming with
+promises, you can use the <code>finally()</code> call to do the same.
+The <code>finally()</code> function is similar to <code>then()</code>
+but it only takes a single callback that executes on both success and
+failure, and its return value is ignored.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>file_path <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.png&quot;</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>png_bytes_promise <span class="ot">&lt;-</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>  <span class="fu">mirai</span>(</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>    {</span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>      <span class="fu">png</span>(file_path)</span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>      <span class="fu">plot</span>(cars)</span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>      <span class="fu">dev.off</span>()</span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>      file_path</span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a>    },</span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a>    <span class="at">file_path =</span> file_path</span>
+<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a>  <span class="fu">then</span>(\() brio<span class="sc">::</span><span class="fu">read_file_raw</span>(file_path)) <span class="sc">|&gt;</span></span>
+<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a>  <span class="fu">finally</span>(\() <span class="fu">unlink</span>(file_path))</span></code></pre></div>
+<p>In this example, we need a temp file for the duration of the
+pipeline. Our <code>finally()</code> code expression makes sure the temp
+file is deleted when the operation is done, regardless of whether it
+succeeded or failed.</p>
+<div style="font-size: 20px; margin-top: 40px; text-align: right;">
+<p>Next: <a href="promises_04_mirai.html">Launching tasks</a></p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

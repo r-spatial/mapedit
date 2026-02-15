@@ -1,0 +1,8 @@
+yaml-package	yaml-package
+as.yaml	as.yaml
+read_yaml	read_yaml
+verbatim_logical	verbatim_logical
+write_yaml	write_yaml
+yaml	yaml-package
+yaml.load	yaml.load
+yaml.load_file	yaml.load

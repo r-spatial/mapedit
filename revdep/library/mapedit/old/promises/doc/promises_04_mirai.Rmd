@@ -1,0 +1,151 @@
+---
+title: "Launching tasks with mirai"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Launching tasks with mirai}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{css echo=FALSE}
+.alert-secondary a, .alert-secondary a:visited {
+  color: inherit;
+  text-decoration: underline;
+}
+.alert code {
+  color: inherit;
+  background-color: inherit;
+}
+```
+
+We've updated this guide to using the `mirai` package from `future` as we believe the following benefits are compelling in the context of Shiny apps:
+
+1. Faster startup times and much less per-task overhead, meaning you can boost performance by making even shorter tasks async.
+1. More linear scaling, meaning you get the same relative benefits whether running 2 or 200 cores.
+1. Event-driven promises using `mirai` vs. promises using `future`, which time-poll every 100 ms. Lower latency and response times can help with the user experience.
+
+The previous guide using `future` is available [here](promises_05a_futures.html). Using `future` continues to be supported within the Shiny ecosystem, and Henrik Bengtsson‘s excellent work on the futureverse deserves credit for pushing the boundaries of parallelism in R farther than many thought possible.
+
+<hr>
+
+The `mirai` package provides a lightweight way to launch R tasks that don't block the current R session.
+
+The `promises` package provides the API for working with the results of async tasks, but it totally abdicates responsibility for actually launching/creating async tasks. The idea is that any number of different packages could be capable of launching async tasks, using whatever techniques they want, but all of them would either return promise objects or objects that can be converted to promise objects, as is the case for `mirai`.
+
+This document will give an introduction to the parts of `mirai` that are most relevant to promises. For more information, please consult the documentation and vignettes that come with [`mirai`](https://mirai.r-lib.org).
+
+## How mirai works
+
+The main API that `mirai` provides couldn't be simpler. You call `mirai()` and pass it the code that you want executed asynchronously:
+
+```R
+m <- mirai({
+  # expensive operations go here...
+  df <- download_lots_of_data()
+  fit_model(df)
+})
+```
+
+The object that's returned is a mirai, which for all intents and purposes is a promise object[^1], which will eventually resolve to the return value of the code block (i.e. the last expression) or an error if the code does not complete executing successfully. The important thing is that no matter how long the expensive operation takes, these lines will execute almost instantly, while the operation continues in the background.
+
+[^1]: (The `mirai` package provides several functions for working with mirai objects, but they are not relevant for our purposes.)
+
+But we know that R is single-threaded, so how does `mirai` accomplish this? The answer: by utilizing another R process. `mirai` delegates the execution of the expensive operation to a totally different R process, so that the original R process can move on.
+
+## Choosing a launch method
+
+In mirai, the `daemons()` function is used to set and launch background R processes (*daemons*).
+
+These background processes will be used/recycled for the life of the originating R process. If a mirai is launched while all the background R processes are busy executing, then the new mirai is queued until one of the background processes frees up.
+
+To launch `n` processes locally, you just need to call `daemons(n)`, supplying the value of `n`.
+
+You need to determine `n` yourself, and typically this should be at most one less than the number of processor cores on your machine, to leave one for the main R process. The reason we don't automatically detect this for you is that you may also be running other tasks on your machine, and you should take this into account when supplying a value for `n`.
+
+`daemons()` has further arguments `url` and `remote` for setting and launching remote daemons over the network for distributed computing. To learn more, see the [`mirai::daemons()` reference docs](https://mirai.r-lib.org/reference/daemons.html) as well as the daemons sections of the [`mirai` reference vignette](https://mirai.r-lib.org/articles/mirai.html).
+
+If you don't set `daemons()` in a session, then each `mirai()` call will launch a new local R process solely for the purpose of performing that evaluation. Whilst this may be desirable in certain circumstances, this is rarely going to be the case for Shiny. This is as we cannot limit the total number of processes spawned at any one time. If a Shiny app has many simultaneous users, then this could lead to an excessive number of processes being created, overwhelming the system.
+
+## Caveats and limitations
+
+The abstractions that `mirai` presents are simple and consistent, although it may take some time to get used to them. Please read this entire section carefully before proceeding.
+
+### Globals: Providing input to mirai code chunks
+
+Most mirai code chunks will need to reference data from the original process, e.g. data to be fitted, URLs to be requested, file paths to read from.
+
+As evaluation happens in another process, these won't be available to the code chunk by default. These objects will need to be passed to the `...` argument of your `mirai()` call. These are then serialized and sent to the other process along with the code to be executed.
+
+These objects include any functions which are defined in your session and not in a package.
+
+For example:
+```R
+download_data <- \(url) {
+  file <- tempfile()
+  download.file(url, file, "libcurl")
+  file
+}
+
+url <- "http://example.com/data.csv"
+
+m <- mirai(
+  {
+    file <- download_data(url)
+    read.csv(file)
+  },
+  download_data = download_data,
+  url = url
+)
+```
+If there are many variables to pass through, mirai does offer a convenience feature to pass an environment instead of individual `...` pairs. The above call would then look like this instead:
+
+```R
+m <- mirai(
+  {
+    file <- download_data(url)
+    read.csv(file)
+  },
+  environment()
+)
+```
+This passes the calling environment, which includes both the `download_data` function as well as `url`.
+
+Care should be taken when using this feature as it will also pass anything else that happens to be in the same environment. It is safer to use when mirai is called inside of another function, then `environment()` will only consist of variables passed as arguments to that function, or created locally within it.
+
+### Package loading
+
+Besides variables, package functions need to be declared with the full namespace so that they can be found in the other process. For example, using `dplyr::mutate()` instead of just `mutate()`, even if the `dplyr` package is loaded in your main session, as the other process will not have any packages loaded by default.
+
+Alternatively, make a call to load the package inside your mirai code chunk, for example by adding `library(dplyr)`. Sometimes this may be the most convenient option, especially for for infix operators. For example the `{magrittr}` pipe `%>%`, requires a `library(magrittr)` to load the package beforehand.
+
+### Custom Data Types
+
+Certain objects are implemented at a low level, not using one of R's native vector types, and represented in R by an external pointer. An example of this is an Arrow table. It is not possible to serialize these to and from R's native rds format. Instead they provide their own serialization and deserialization methods.
+
+mirai offers a seamless solution for working with these data types, integrating those custom serialization and deserialization methods with R's native serialization so that you don't need to manually handle each instance of these objects when moving them across processes.
+
+This does require a one-off configuration step when you set up daemons, and you may read more about this in the [`mirai` serialization vignette](https://mirai.r-lib.org/articles/mirai-serialization.html).
+
+### Native resources
+
+Mirai code blocks cannot use resources such as database connections and network sockets that were created in the parent process. Even if it seems to work with a simple test, you are asking for crashes or worse by sharing these kinds of resources across processes.
+
+Instead, make sure you create, use, and destroy such resources entirely within the scope of the mirai code block.
+
+### Mutation
+
+Reference class objects (including R6 objects, S7 objects, and data.table objects) and environments are among the few "native" R object types that are mutable, that is, can be modified in-place. Unless they contain native resources (see previous section), there's nothing wrong with using mutable objects from within mirai code blocks, even objects created in the parent process. However, note that any changes you make to these objects will not be visible from the parent process; the mirai code is operating on a copy of the object, not the original.
+
+### Returning values
+
+Mirai code blocks return a value—they'd be a lot less useful if they couldn't! Like everywhere else in R, the return value is determined by the last expression in the code block, unless `return()` is explicitly called earlier.
+
+The return value will always be copied back into the parent process. This matters for two reasons.
+
+First, if the return value is very large, the copying process can take some time — and because the data must essentially be serialized to and deserialized from rds format, it can take a surprising amount of time. In the case of mirai blocks that execute fairly quickly but return huge amounts of data, you may be better off not using async techniques at all.
+
+Second, objects that refer to native resources are unlikely to work in this direction either; just as you can't use the parent's database connections in the child process, you also cannot have the child process return a database connection for the parent to use.
+
+<div style="font-size: 20px; margin-top: 40px; text-align: right;">
+Next: [Using `promises` with Shiny](promises_06_shiny.html)
+</div>

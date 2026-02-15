@@ -1,0 +1,38 @@
+Package: textshaping
+Title: Bindings to the 'HarfBuzz' and 'Fribidi' Libraries for Text
+        Shaping
+Version: 1.0.4
+Authors@R: c(
+    person("Thomas Lin", "Pedersen", , "thomas.pedersen@posit.co", role = c("cre", "aut"),
+           comment = c(ORCID = "0000-0002-5147-4711")),
+    person("Posit Software, PBC", role = c("cph", "fnd"),
+           comment = c(ROR = "03wc8by49"))
+  )
+Description: Provides access to the text shaping functionality in the
+    'HarfBuzz' library and the bidirectional algorithm in the 'Fribidi'
+    library. 'textshaping' is a low-level utility package mainly for
+    graphic devices that expands upon the font tool-set provided by the
+    'systemfonts' package.
+License: MIT + file LICENSE
+URL: https://github.com/r-lib/textshaping
+BugReports: https://github.com/r-lib/textshaping/issues
+Depends: R (>= 3.2.0)
+Imports: lifecycle, stats, stringi, systemfonts (>= 1.3.0), utils
+Suggests: covr, grDevices, grid, knitr, rmarkdown, testthat (>= 3.0.0)
+LinkingTo: cpp11 (>= 0.2.1), systemfonts (>= 1.0.0)
+VignetteBuilder: knitr
+Config/build/compilation-database: true
+Config/testthat/edition: 3
+Config/usethis/last-upkeep: 2025-04-23
+Encoding: UTF-8
+RoxygenNote: 7.3.2
+SystemRequirements: freetype2, harfbuzz, fribidi
+NeedsCompilation: yes
+Packaged: 2025-10-10 07:33:22 UTC; thomas
+Author: Thomas Lin Pedersen [cre, aut] (ORCID:
+    <https://orcid.org/0000-0002-5147-4711>),
+  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)
+Maintainer: Thomas Lin Pedersen <thomas.pedersen@posit.co>
+Repository: RSPM
+Date/Publication: 2025-10-10 08:00:02 UTC
+Built: R 4.5.0; x86_64-pc-linux-gnu; 2026-01-21 04:29:18 UTC; unix

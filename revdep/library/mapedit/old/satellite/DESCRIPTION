@@ -1,0 +1,50 @@
+Package: satellite
+Title: Handling and Manipulating Remote Sensing Data
+Version: 1.0.6
+Authors@R: c(
+        person(given = "Thomas",
+               family = "Nauss",
+               role = "aut"),
+        person(given = "Hanna",
+               family = "Meyer",
+               role = "aut"),
+        person(given = "Tim",
+               family = "Appelhans",
+               role = "aut"),
+        person(given = "Florian",
+               family = "Detsch",
+               role = c("aut", "cre"),
+               email = "fdetsch@web.de"))
+Description: Herein, we provide a broad variety of functions which are useful
+    for handling, manipulating, and visualizing satellite-based remote sensing 
+    data. These operations range from mere data import and layer handling (eg 
+    subsetting), over Raster* typical data wrangling (eg crop, extend), to more 
+    sophisticated (pre-)processing tasks typically applied to satellite imagery 
+    (eg atmospheric and topographic correction). This functionality is 
+    complemented by a full access to the satellite layers' metadata at any 
+    stage and the documentation of performed actions in a separate log file. 
+    Currently available sensors include Landsat 4-5 (TM), 7 (ETM+), and 8 
+    (OLI/TIRS Combined), and additional compatibility is ensured for the Landsat 
+    Global Land Survey data set. 
+URL: https://github.com/environmentalinformatics-marburg/satellite
+BugReports: https://github.com/environmentalinformatics-marburg/satellite/issues
+Depends: R (>= 2.10), raster, methods, utils, stats, grDevices,
+        graphics
+Imports: plyr, Rcpp (>= 0.10.3), terra, tools, stats4
+License: MIT + file LICENSE
+Suggests: devtools, knitr, testthat, rmarkdown
+LazyData: true
+VignetteBuilder: knitr
+LinkingTo: Rcpp
+RoxygenNote: 7.3.2
+Encoding: UTF-8
+NeedsCompilation: yes
+Packaged: 2025-08-21 05:21:11 UTC; flowd
+Author: Thomas Nauss [aut],
+  Hanna Meyer [aut],
+  Tim Appelhans [aut],
+  Florian Detsch [aut, cre]
+Maintainer: Florian Detsch <fdetsch@web.de>
+Repository: RSPM
+Date/Publication: 2025-08-21 06:10:02 UTC
+Built: R 4.5.0; x86_64-pc-linux-gnu; 2026-01-11 06:37:52 UTC; unix

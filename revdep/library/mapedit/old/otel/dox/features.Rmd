@@ -1,0 +1,14 @@
+## Features
+
+* Lightweight packages. otel is a small R package without dependencies and
+  compiled code. otelsdk needs a C++11 compiler and otel.
+* Minimal performance impact when tracing is disabled. otel functions do
+  not evaluate their arguments in this case.
+* Zero-code instrumentation support. Add tracing to (some) functions of
+  selected packages automatically.
+* Configuration via environment variables.
+* Minimal extra code. Add tracing to a function with a single extra
+  function call.
+* Production mode: otel functions do not crash your production app in
+  production mode.
+* Development mode: otel functions error early in development mode.

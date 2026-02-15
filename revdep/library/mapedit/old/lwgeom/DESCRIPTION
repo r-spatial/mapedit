@@ -1,0 +1,35 @@
+Package: lwgeom
+Version: 0.2-15
+Title: Bindings to Selected 'liblwgeom' Functions for Simple Features
+Description: Access to selected functions found in 'liblwgeom' <https://github.com/postgis/postgis/tree/master/liblwgeom>, the light-weight geometry library used by 'PostGIS' <http://postgis.net/>.
+Authors@R: c(person("Edzer", "Pebesma", role = c("aut", "cre"), email = "edzer.pebesma@uni-muenster.de", comment = c(ORCID = "0000-0001-8049-7069")),
+	person("Colin", "Rundel", role = "ctb"),
+	person("Andy", "Teucher", role = "ctb"),
+	person("liblwgeom developers", role = "cph"))
+Depends: R (>= 3.3.0)
+Imports: Rcpp, units, sf (>= 1.0-15)
+Suggests: covr, sp, geosphere, testthat
+LinkingTo: Rcpp, sf (>= 0.6-0)
+SystemRequirements: GEOS (>= 3.5.0), PROJ (>= 4.8.0), sqlite3
+License: GPL-2
+Copyright: file COPYRIGHTS
+Encoding: UTF-8
+URL: https://r-spatial.github.io/lwgeom/,
+        https://github.com/r-spatial/lwgeom
+BugReports: https://github.com/r-spatial/lwgeom/issues
+Collate: init.R RcppExports.R geohash.R split.R subdivide.R valid.R
+        transform.R bounding_circle.R bearing.R snap_to_grid.R
+        startpoint.R twkb.R perimeter.R clockwise.R geod.R wkt.R
+        wrap_x.R
+RoxygenNote: 7.3.3
+NeedsCompilation: yes
+Packaged: 2026-01-12 09:01:50 UTC; edzer
+Author: Edzer Pebesma [aut, cre] (ORCID:
+    <https://orcid.org/0000-0001-8049-7069>),
+  Colin Rundel [ctb],
+  Andy Teucher [ctb],
+  liblwgeom developers [cph]
+Maintainer: Edzer Pebesma <edzer.pebesma@uni-muenster.de>
+Repository: RSPM
+Date/Publication: 2026-01-12 16:40:02 UTC
+Built: R 4.5.0; x86_64-pc-linux-gnu; 2026-01-13 04:26:14 UTC; unix

@@ -1,0 +1,35 @@
+# Suppressing Instrumentation Scopes (R Packages)
+
+otel has two environment variables to fine tune which instrumentation
+scopes (i.e. R packages, typically) emit telemetry data. By default,
+i.e. if neither of these are set, all packages emit telemetry data.
+
+* ``r otel:::otel_emit_scopes_envvar``
+
+  Set this environment variable to a comma separated string of
+  instrumentation scope names or R package names to restrict telemetry to
+  these packages only. The name of the instrumentation scope is the same
+  as the name of the tracer, logger or meter, see [otel::default_tracer_name()].
+
+  You can mix package names and instrumentation scope names and you can
+  also use wildcards (globbing). For example the value
+
+  `r paste0(otel:::otel_emit_scopes_envvar, '="org.r-lib.*,dplyr"')`
+
+  selects all packages with an instrumentation scope that starts with
+  `org.r-lib.` and also dplyr.
+
+* ``r otel:::otel_suppress_scopes_envvar``
+
+  Set this environment variable to a comma separated string of
+  instrumentation scope names or R package names to suppress telemetry
+  data from these packages. The name of the instrumentation scope is the same
+  as the name of the tracer, logger or meter, see [otel::default_tracer_name()].
+
+  You can mix package names and instrumentation scope names and you can
+  also use wildcards (globbing). For example the value
+
+  `r paste0(otel:::otel_suppress_scopes_envvar, '="org.r-lib.*,dplyr"')`
+
+  excludes packages with an instrumentation scope that starts with
+  `org.r-lib.` and also dplyr.

@@ -1,0 +1,17 @@
+# Attribute Limits
+
+* ``r otel:::otel_attr_cnt_limit_var``
+
+  Set this environment variable to limit the number of attributes for a
+  single span, log record, metric measurement, etc. If unset, the default
+  limit is `r otel:::otel_attr_cnt_limit_dflt` attributes.
+  Note that only attributes specified with [otel::as_attributes()] are
+  subject to this environment variable.
+
+* ``r otel:::otel_attr_val_lth_limit_var``
+
+  Set this environment variable to limit the length of vectors in
+  attributes for a single span, log record, metric measurement, etc.
+  If unset, there is no limit on the lengths of vectors in attributes.
+  Note that only attributes specified with [otel::as_attributes()] are
+  subject to this environment variable.

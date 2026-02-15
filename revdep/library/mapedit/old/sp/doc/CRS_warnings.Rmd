@@ -1,0 +1,31 @@
+---
+title: "Testing packages using CRS objects"
+author: "Roger Bivand"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{Testing packages using CRS objects}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+As has been explained in the former `rgdal` vignette https://r-spatial.github.io/evolution/CRS_projections_transformations.html, now posted on the Evolution project site, coordinate reference systems are represented differently when PROJ < 6 and PROJ >= 6.
+
+To alert interactive users to the possibility that their workflows might be degraded unless they take the representational changes into account, the **sp** `proj4string()` method issues warnings if a `"CRS"` object does not have an accompanying `WKT2 2019` representation (stored in a `comment` attached to the `"CRS"` object). This is because `proj4string()` only returns the PROJ 4 representation, not the accompanying `WKT2 2019` representation if any, so may constitute a loss of information. See also https://stat.ethz.ch/pipermail/r-sig-geo/2020-May/028125.html for further discussion.
+
+In general, it is good practice to replace all use in packages of `proj4string()` with `slot(, "proj4string")` and its assignment form by the assignment form of `slot()`; when `sp::proj4string()` is not called, many of the warnings are suppressed anyway.  
+
+
+Both CRAN checks and use of checks by end users may trigger spurious errors, if the versions of PROJ and GDAL differ from those on the development platform. Since the `WKT2 2019` representation is only generated on systems with PROJ >= 6 (and GDAL >= 3), warnings should not be expected when the same code is run on platforms with older versions of PROJ and GDAL. There are many such platforms, including RHEL and CentOS systems, as well as Ubuntu 18 and others. Think of a large lab with a cluster runnning such a system version, and that those installing software may wish to run `R CMD check` or just your test suite to confirm that things are as they should be. They will be dismayed to find that tests fail, but will not be able to find out whether this matters for them. 
+
+Consequently, it is best either not to check warnings that perform differently when run under different versions of upstream external software (PROJ and GDAL), or to condition on the software versions with different expectations depending on the version. 
+
+Fine-grained control may be obtained using `sf::sf_extSoftVersion()` or `terra::gdal()` to determine versions if necessary.
+

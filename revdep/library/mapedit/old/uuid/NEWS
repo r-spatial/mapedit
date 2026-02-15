@@ -1,0 +1,94 @@
+ NEWS for uuid
+---------------
+
+1.2-2	2025-01-23
+    o	time-generated UUIDs are not guaranteed to be unique if they are
+	requested within the same time slot, so the time-based UUID generation
+	will now stall and re-generate until the UUID is different from
+	the previously generated one (can happen for very fast CPUs). (#17)
+
+
+1.2-1	2024-07-29
+    o	minor DESCRIPTION updates (add ORCID, Authors@R and /issues)
+
+
+1.2-0	2024-01-13
+    o	add UUIDfromName() which allows generation of version 3 and 5
+	UUIDs based on a namespace UUID and a string.
+
+
+1.1-1	2022-12-02
+    o	clean up strict prototype warnings
+
+    o	update to upstream util-linux version 25b98ae
+
+
+1.1-0	2022-04-19
+    o	added UUIDparse() and UUIDvalidate() functions
+
+    o	added an internal representation of UUIDs as
+	class "UUID" which represents a vector of 128-bit
+	elements interpreted as UUIDs. This also allows seamless
+	conversion between textual representation, raw vectors and
+	UUID objects.
+
+
+1.0-5	2022-04-19
+    o	update to upstream util-linux version e928e8ed6
+
+    o	add LinkingTo includes in the source tree. This fixes issues
+	on Windows where the headers were not copied since configure
+	is not run on Windows. The headers can be updated using
+	src/update-inst.sh script in the source tree.
+
+
+1.0-4	2022-03-15
+    o	Windows: use dynamic buffer when querying DLLs to
+	avoid "Too many DLLs" error.
+
+
+1.0-3	2021-11-01
+    o	guard flock() with HAVE_FLOCK for platforms that
+	don't have it
+
+
+1.0-2	2021-10-25
+    o	silence benign sendfile warning from upstream
+
+
+1.0-1	2021-10-20
+    o	update to latest upstream libuuid sources
+	(util-linux c4a543ff, libuuid e6743239)
+
+    o	Add LinkingTo: API allowing other packages to
+	use UUID generation from C code
+
+
+0.1-4	2020-02-26
+    o	add `n' parameter to UUIDgenerate() to generate
+	multiple UUIDs at once (#2)
+
+    o	use crypto-safe RNG on Windows to avoid UUIDs
+	that are identical. That makes the default behavior
+	equivalent to `use.time=FALSE' on Windows. (#8)
+
+
+0.1-3	2020-02-25
+    o	don't use deprecated `R CMD config CPP`
+
+    o	isolate rand()/srand() to avoid warnings
+
+
+0.1-2	2015-07-27
+    o	update License entry to conform to CRAN rules
+
+    o	don't break on systems without flock()
+	(thanks to Brian Ripley)
+
+
+0.1-1	2013-09-03
+    o	initial CRAN release
+
+
+0.1-0	2013-02-24
+    o	initial version based on libuuid

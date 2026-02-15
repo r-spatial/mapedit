@@ -1,0 +1,7 @@
+get_providers           Fetch leaflet providers from Leaflet.js.
+providers_default       Return default providers, providers_details,
+                        version, and HTML Dependency.
+providers_loaded        Return currently loaded providers,
+                        providers_details, version, and HTML
+                        Dependency.
+use_providers           Use custom tile provider

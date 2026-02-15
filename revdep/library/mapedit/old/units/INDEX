@@ -1,0 +1,27 @@
+Math.units              Mathematical operations for units objects
+Ops.units               S3 Ops Group Generic Functions for units
+                        objects
+as_difftime             convert units object into difftime object
+boxplot.units           boxplot for unit objects
+cbind.units             Combine R Objects by Rows or Columns
+convert_to_base         Convert units to their base units
+deparse_unit            deparse unit to string in product power form
+                        (e.g. km m-2 s-1)
+drop_units              Drop Units
+hist.units              histogram for unit objects
+install_unit            Define or remove units
+keep_units              Apply a function keeping units
+load_units_xml          Load a unit system
+matrixOps.units         S3 matrixOps Group Generic Functions for units
+                        objects
+mixed_units             Create or convert to a mixed units list-column
+plot.units              Plot 'units' objects
+scale_x_units           Continuous scales for units data
+seq.units               seq method for units objects
+udunits2                'udunits2' utilities
+unitless                The "unit" type for vectors that are actually
+                        dimension-less.
+units                   Handle measurement units
+units-defunct           Defunct functions in 'units'
+units_options           set one or more units global options
+valid_udunits           Get information about valid units
