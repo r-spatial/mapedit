@@ -1,5 +1,0 @@
-add_web_fonts           Add web font imports to an already created SVG
-                        file
-font_face               Create a font-face specification
-svglite                 An SVG Graphics Driver
-svgstring               Access current SVG as a string.

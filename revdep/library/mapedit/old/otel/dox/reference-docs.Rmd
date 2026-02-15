@@ -1,4 +1,0 @@
-## Reference Documentation
-
-* otel: https://otel.r-lib.org/reference/
-* otelsdk: https://otelsdk.r-lib.org/reference/

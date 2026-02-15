@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<!DOCTYPE mrow SYSTEM "mathml.dtd" [
-   <!ENTITY invisibletimes "invisible">
-]>
-<msup> <mi>x</mi> <mn>2</mn> </msup>

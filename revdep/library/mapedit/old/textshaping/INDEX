@@ -1,7 +1,0 @@
-get_font_features       Get available OpenType features in a font
-lorem_text              Get gibberish text in various scripts
-plot_shape              Preview shaped text and the metrics for the
-                        text box
-shape_text              Calculate glyph positions for strings
-text_width              Calculate the width of a string, ignoring
-                        new-lines

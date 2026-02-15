@@ -1,2 +1,0 @@
-[format]
-exclude = ["R/api.R", "R/shiny.R", "R/defaults.R", "R/api-dev.R", ".dev/*"]

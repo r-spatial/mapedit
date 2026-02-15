@@ -1,6 +1,0 @@
-create_loop             Private event loops
-later                   Executes a function later
-later_fd                Executes a function when a file descriptor is
-                        ready
-next_op_secs            Relative time to next scheduled operation
-run_now                 Execute scheduled operations

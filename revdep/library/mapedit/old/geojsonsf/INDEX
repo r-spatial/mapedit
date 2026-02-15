@@ -1,7 +1,0 @@
-df_geojson              df to GeoJSON
-geo_melbourne           geo_melbourne
-geojson_sf              Geojson to sf
-geojson_sfc             Geojson to sfc
-geojson_wkt             Geojson to WKT
-sf_geojson              sf to GeoJSON
-sfc_geojson             sfc to GeoJSON
